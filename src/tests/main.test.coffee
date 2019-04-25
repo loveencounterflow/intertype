@@ -259,16 +259,59 @@ INTERTYPE                 = require '../..'
   done()
   return null
 
-
-
-  return done(); XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-  info 'µ01-47', xrpr all_keys_of          [ null, ]
-  # info 'µ01-37', xrpr type_of              Buffer.from [ 1, 2, 3, ]
+#-----------------------------------------------------------------------------------------------------------
+@[ "size_of" ] = ( T, done ) ->
+  # debug ( new Buffer '𣁬', ), ( '𣁬'.codePointAt 0 ).toString 16
+  # debug ( new Buffer '𡉜', ), ( '𡉜'.codePointAt 0 ).toString 16
+  # debug ( new Buffer '𠑹', ), ( '𠑹'.codePointAt 0 ).toString 16
+  # debug ( new Buffer '𠅁', ), ( '𠅁'.codePointAt 0 ).toString 16
+  ### TAINT re-implement types object, pod ###
+  # T.eq ( isa.size_of { '~isa': 'XYZ/yadda', 'foo': 42, 'bar': 108, 'baz': 3, }      ), 4
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    all_keys_of } = intertype.export_methods()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [[ [ 1, 2, 3, 4, ]                                 ], 4,                                          null, ]
+    [[ new Buffer [ 1, 2, 3, 4, ]                      ], 4,                                          null, ]
+    [[ '𣁬𡉜𠑹𠅁'                                      ], 2 * ( Array.from '𣁬𡉜𠑹𠅁' ).length,       null, ]
+    [[ '𣁬𡉜𠑹𠅁', 'codepoints'                        ], ( Array.from '𣁬𡉜𠑹𠅁' ).length,           null, ]
+    [[ '𣁬𡉜𠑹𠅁', 'codeunits'                         ], 2 * ( Array.from '𣁬𡉜𠑹𠅁' ).length,       null, ]
+    [[ '𣁬𡉜𠑹𠅁', 'bytes'                             ], ( new Buffer '𣁬𡉜𠑹𠅁', 'utf-8' ).length,  null, ]
+    [[ 'abcdefghijklmnopqrstuvwxyz'                    ], 26,                                         null, ]
+    [[ 'abcdefghijklmnopqrstuvwxyz', 'codepoints'      ], 26,                                         null, ]
+    [[ 'abcdefghijklmnopqrstuvwxyz', 'codeunits'       ], 26,                                         null, ]
+    [[ 'abcdefghijklmnopqrstuvwxyz', 'bytes'           ], 26,                                         null, ]
+    [[ 'ä'                                             ], 1,                                          null, ]
+    [[ 'ä', 'codepoints'                               ], 1,                                          null, ]
+    [[ 'ä', 'codeunits'                                ], 1,                                          null, ]
+    [[ 'ä', 'bytes'                                    ], 2,                                          null, ]
+    [[ new Map [ [ 'foo', 42, ], [ 'bar', 108, ], ]    ], 2,                                          null, ]
+    [[ new Set [ 'foo', 42, 'bar', 108, ]              ], 4,                                          null, ]
+    [[ { 'foo': 42, 'bar': 108, 'baz': 3, }            ], 3,                                          null, ]
+    [[ { 'foo': null, 'bar': 108, 'baz': 3, }          ], 3,                                          null, ]
+    [[ { 'foo': undefined, 'bar': 108, 'baz': 3, }     ], 2,                                          null, ]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+    # debug 'µ22900', probe
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      result = size_of probe...
+      resolve result
+      return null
   done()
+  return null
 
+
+later = ->
   ###
-  # info size_of 'xxx'
+  info 'µ01-47', xrpr all_keys_of          [ null, ]
   X                 = {}
   X.x               = true
   X.spec            = {}
@@ -288,32 +331,6 @@ INTERTYPE                 = require '../..'
   info Y.spec.spec_of_Y
   ###
 
-#-----------------------------------------------------------------------------------------------------------
-@[ "_test size_of" ] = ( T ) ->
-  # debug ( new Buffer '𣁬', ), ( '𣁬'.codePointAt 0 ).toString 16
-  # debug ( new Buffer '𡉜', ), ( '𡉜'.codePointAt 0 ).toString 16
-  # debug ( new Buffer '𠑹', ), ( '𠑹'.codePointAt 0 ).toString 16
-  # debug ( new Buffer '𠅁', ), ( '𠅁'.codePointAt 0 ).toString 16
-  T.eq ( isa.size_of [ 1, 2, 3, 4, ]                                    ), 4
-  T.eq ( isa.size_of new Buffer [ 1, 2, 3, 4, ]                         ), 4
-  T.eq ( isa.size_of '𣁬𡉜𠑹𠅁'                                         ), 2 * ( Array.from '𣁬𡉜𠑹𠅁' ).length
-  T.eq ( isa.size_of '𣁬𡉜𠑹𠅁', 'codepoints'                           ), ( Array.from '𣁬𡉜𠑹𠅁' ).length
-  T.eq ( isa.size_of '𣁬𡉜𠑹𠅁', 'codeunits'                            ), 2 * ( Array.from '𣁬𡉜𠑹𠅁' ).length
-  T.eq ( isa.size_of '𣁬𡉜𠑹𠅁', 'bytes'                                ), ( new Buffer '𣁬𡉜𠑹𠅁', 'utf-8' ).length
-  T.eq ( isa.size_of 'abcdefghijklmnopqrstuvwxyz'                       ), 26
-  T.eq ( isa.size_of 'abcdefghijklmnopqrstuvwxyz', 'codepoints'         ), 26
-  T.eq ( isa.size_of 'abcdefghijklmnopqrstuvwxyz', 'codeunits'          ), 26
-  T.eq ( isa.size_of 'abcdefghijklmnopqrstuvwxyz', 'bytes'              ), 26
-  T.eq ( isa.size_of 'ä'                                                ), 1
-  T.eq ( isa.size_of 'ä', 'codepoints'                                  ), 1
-  T.eq ( isa.size_of 'ä', 'codeunits'                                   ), 1
-  T.eq ( isa.size_of 'ä', 'bytes'                                       ), 2
-  T.eq ( isa.size_of new Map [ [ 'foo', 42, ], [ 'bar', 108, ], ]       ), 2
-  T.eq ( isa.size_of new Set [ 'foo', 42, 'bar', 108, ]                 ), 4
-  T.eq ( isa.size_of { 'foo': 42, 'bar': 108, 'baz': 3, }                           ), 3
-  ### TAINT re-implement types object, pod ###
-  # T.eq ( isa.size_of { '~isa': 'XYZ/yadda', 'foo': 42, 'bar': 108, 'baz': 3, }      ), 4
-
 
 
 
@@ -325,3 +342,15 @@ unless module.parent?
   # test @[ "_demo 2" ]
 
   # do -> debug ( require '../helpers' ).js_type_of arguments
+  # do ->
+  #   intertype = new Intertype
+  #   { isa
+  #     validate
+  #     type_of
+  #     types_of
+  #     size_of
+  #     declare
+  #     all_keys_of } = intertype.export_methods()
+  #   urge size_of '𣁬𡉜𠑹𠅁', 'codepoints'
+
+

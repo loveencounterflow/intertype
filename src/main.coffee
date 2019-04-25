@@ -48,7 +48,6 @@ class @Intertype extends Multimix
     @specs    = {}
     @isa      = Multimix.get_keymethod_proxy @, isa
     @validate = Multimix.get_keymethod_proxy @, validate
-    debug 'µ1401', @validate
     declarations.declare_types.apply @
 
 

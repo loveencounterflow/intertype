@@ -39,16 +39,11 @@ copy_if_original = ( x ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_check_spec = ( validate, type, xP... ) ->
   ### Check all constraints in spec: ###
-  # debug 'µ21009-1', validate, type
   throw new Error "µ6500 unknown type #{rpr type}" unless ( spec = @specs[ type ] )?
-  # debug 'µ21009-2', validate, type
   for aspect, test of spec.tests
-    # debug 'µ21009-3', validate, type
     unless test.apply @, xP
       return false unless validate
-      # debug 'µ21009-4', validate, type
       throw new Error "µ3342"
-  # debug 'µ21009-5', validate, type
   return true
 
 #-----------------------------------------------------------------------------------------------------------
@@ -165,7 +160,7 @@ copy_if_original = ( x ) ->
   @specs[ type ]  = spec
   @isa[ type ]    = ( P... ) => @isa type, P...
   # @validate[ type ]    = ( P... ) => @validate type, P...
-  spec.size_of    = @_sizeof_method_from_spec type, spec
+  spec.size       = @_sizeof_method_from_spec type, spec
   #.........................................................................................................
   return null
 
