@@ -49,7 +49,17 @@
 	@declare 'negative',            ( x ) => ( @isa.number x ) and ( x < 0 )
 	@declare 'multiple_of',         ( x, n ) => ( @isa.number x ) and ( x %% n ) is 0
 	#.........................................................................................................
-	@declare 'buffer',  { size: 'length', },  ( x ) => Buffer.isBuffer x
+	@declare 'buffer',  					{ size: 'length', },  ( x ) => Buffer.isBuffer x
+	@declare 'arraybuffer',      	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'arraybuffer'
+	@declare 'int8array',        	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'int8array'
+	@declare 'uint8array',       	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'uint8array'
+	@declare 'uint8clampedarray',	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'uint8clampedarray'
+	@declare 'int16array',       	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'int16array'
+	@declare 'uint16array',      	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'uint16array'
+	@declare 'int32array',       	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'int32array'
+	@declare 'uint32array',      	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'uint32array'
+	@declare 'float32array',     	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'float32array'
+	@declare 'float64array',     	{ size: 'length', },  ( x ) => ( js_type_of x ) is 'float64array'
 	@declare 'list',    { size: 'length', },  ( x ) => ( js_type_of x ) is 'array'
 	@declare 'object',  { size: 'length', },  ( x ) => ( js_type_of x ) is 'object'
 	@declare 'text',    { size: 'length', },  ( x ) => ( js_type_of x ) is 'string'
@@ -57,6 +67,11 @@
 	@declare 'map',     { size: 'size',   },  ( x ) -> ( js_type_of x ) is 'map'
 	@declare 'weakmap',                       ( x ) -> ( js_type_of x ) is 'weakmap'
 	@declare 'weakset',                       ( x ) -> ( js_type_of x ) is 'weakset'
+	@declare 'error',                         ( x ) -> ( js_type_of x ) is 'error'
+	@declare 'regex',                         ( x ) -> ( js_type_of x ) is 'regex'
+
+	### not supported until we figure out how to do it in strict mode: ###
+	# @declare 'arguments',                     ( x ) -> ( js_type_of x ) is 'arguments'
 
 #-----------------------------------------------------------------------------------------------------------
   # list:       'length'
