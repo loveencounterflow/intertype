@@ -9,7 +9,7 @@ CND           = require 'cnd'
 @flatten      = CND.flatten
 _xrpr         = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArrayLength: Infinity, depth: Infinity, }
 @xrpr         = ( x ) -> ( _xrpr x )[ .. 1024 ]
-@js_type_of   = ( x ) -> return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase()
+@js_type_of   = ( x ) -> ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase()
 
 #-----------------------------------------------------------------------------------------------------------
 @get_rprs_of_tprs = ( tprs ) ->
