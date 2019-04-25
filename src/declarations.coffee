@@ -65,7 +65,7 @@
   @declare 'weakmap',                                   ( x ) -> ( js_type_of x ) is 'weakmap'
   @declare 'weakset',                                   ( x ) -> ( js_type_of x ) is 'weakset'
   @declare 'error',                                     ( x ) -> ( js_type_of x ) is 'error'
-  @declare 'regex',                                     ( x ) -> ( js_type_of x ) is 'regex'
+  @declare 'regex',                                     ( x ) -> ( js_type_of x ) is 'regexp'
   #.........................................................................................................
   @declare 'object',
     tests:  ( x     ) => ( js_type_of x ) is 'object'
