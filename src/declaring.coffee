@@ -103,8 +103,10 @@ copy_if_original = ( x ) ->
   unless ( T = js_type_of spec.type ) is 'string'
     throw new Error "µ6992 expected a text for spec.type, got a #{T}"
   #.........................................................................................................
-  unless ( T = js_type_of spec.tests ) is 'object'
-    throw new Error "µ7115 expected an object for spec.tests, got a #{T}"
+  switch ( T = js_type_of spec.tests )
+    when 'function' then spec.tests = { main: spec.tests, }
+    when 'object'   then null
+    else throw new Error "µ7115 expected an object for spec.tests, got a #{T}"
   #.........................................................................................................
   return @_declare spec
 
