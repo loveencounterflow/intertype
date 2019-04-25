@@ -59,8 +59,6 @@ copy_if_original = ( x ) ->
       [ x, ] = xP
       unless Number.isFinite x
         R = if ( Number.isNaN x ) then 'nan' else 'infinity'
-      # for subtype in [ 'nan', 'infinity', ]
-      #   return subtype if @_check_spec false, subtype, xP...
     when 'regexp' then R = 'regex'
     when 'string' then R = 'text'
     when 'array'  then R = 'list'
