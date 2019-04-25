@@ -26,18 +26,14 @@ declarations              = require './declarations'
 
 #-----------------------------------------------------------------------------------------------------------
 isa = ( type, xP... ) ->
-  # debug 'µ33444', type, xP
-  # debug 'µ33444', ( k for k of @ )
   return true if ( @type_of xP... ) is type
-  return @_check_spec type, xP...
+  return @_check_spec false, type, xP...
 
 #-----------------------------------------------------------------------------------------------------------
-@_validate = ( type, xP... ) ->
-
-#-----------------------------------------------------------------------------------------------------------
-@validate = new Proxy @_validate,
-  get: ( target, type ) -> ( P... ) => target type, P...
-
+validate = ( type, xP... ) ->
+  unless ( @type_of xP... ) is type
+    throw new Error "µ3093"
+  return @_check_spec true, type, xP...
 
 #===========================================================================================================
 class @Intertype extends Multimix
@@ -51,7 +47,8 @@ class @Intertype extends Multimix
     super()
     @specs    = {}
     @isa      = Multimix.get_keymethod_proxy @, isa
-    # @validate = Multimix.get_keymethod_proxy @, validate
+    @validate = Multimix.get_keymethod_proxy @, validate
+    debug 'µ1401', @validate
     declarations.declare_types.apply @
 
 
