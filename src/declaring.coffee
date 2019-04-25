@@ -37,14 +37,17 @@ copy_if_original = ( x ) ->
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_check_spec = ( validate, type, xP... ) ->
+@_satisfies_all_aspects = ( type, xP... ) ->
+  return true unless ( @_get_unsatisfied_aspect type, xP... )?
+  return false
+
+#-----------------------------------------------------------------------------------------------------------
+@_get_unsatisfied_aspect = ( type, xP... ) ->
   ### Check all constraints in spec: ###
   throw new Error "µ6500 unknown type #{rpr type}" unless ( spec = @specs[ type ] )?
   for aspect, test of spec.tests
-    unless test.apply @, xP
-      return false unless validate
-      throw new Error "µ3342"
-  return true
+    return aspect unless test.apply @, xP
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
 @type_of = ( xP... ) ->
