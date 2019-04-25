@@ -37,26 +37,38 @@ copy_if_original = ( x ) ->
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_check_spec = ( type, xP... ) ->
+@_check_spec = ( validate, type, xP... ) ->
   ### Check all constraints in spec: ###
+  # debug 'µ21009-1', validate, type
   throw new Error "µ6500 unknown type #{rpr type}" unless ( spec = @specs[ type ] )?
+  # debug 'µ21009-2', validate, type
   for aspect, test of spec.tests
-    return false unless test.apply @, xP
+    # debug 'µ21009-3', validate, type
+    unless test.apply @, xP
+      return false unless validate
+      # debug 'µ21009-4', validate, type
+      throw new Error "µ3342"
+  # debug 'µ21009-5', validate, type
   return true
 
 #-----------------------------------------------------------------------------------------------------------
 @type_of = ( xP... ) ->
+  ### TAINT this should be generalized for all Intertype types that split up / rename a JS type: ###
   switch R = js_type_of xP...
+    when 'uint8array'
+      R = 'buffer' if Buffer.isBuffer xP...
     when 'number'
-      ### TAINT this should be generalized for all Intertype types that split up / rename a JS type: ###
-      for subtype in [ 'nan', 'infinity', ]
-        return subtype if @_check_spec subtype, xP...
+      [ x, ] = xP
+      unless Number.isFinite x
+        R = if ( Number.isNaN x ) then 'nan' else 'infinity'
+      # for subtype in [ 'nan', 'infinity', ]
+      #   return subtype if @_check_spec false, subtype, xP...
     when 'regexp' then R = 'regex'
     when 'string' then R = 'text'
     when 'array'  then R = 'list'
   ### Refuse to answer question in case type found is not in specs: ###
   # debug 'µ33332', R, ( k for k of @specs )
-  throw new Error "µ6623 unknown type #{rpr R}" unless @specs[ R ]?
+  throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
   return R
 
 #-----------------------------------------------------------------------------------------------------------
