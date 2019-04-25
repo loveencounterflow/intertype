@@ -19,21 +19,25 @@ Multimix                  = require 'multimix'
   jr
   flatten
   xrpr
+  get_rprs_of_tprs
   js_type_of }            = require './helpers'
 #...........................................................................................................
 declarations              = require './declarations'
 
 
 #-----------------------------------------------------------------------------------------------------------
-isa = ( type, xP... ) ->
-  return true if ( @type_of xP... ) is type
-  return @_check_spec false, type, xP...
+isa = ( type, xP... ) -> @_satisfies_all_aspects type, xP...
 
 #-----------------------------------------------------------------------------------------------------------
 validate = ( type, xP... ) ->
-  unless ( @type_of xP... ) is type
-    throw new Error "µ3093"
-  return @_check_spec true, type, xP...
+  return true unless ( aspect = @_get_unsatisfied_aspect type, xP... )?
+  [ x, P..., ] = xP
+  { rpr_of_tprs, srpr_of_tprs, } = get_rprs_of_tprs P
+  message = if aspect is 'main'
+    "µ3093 not a valid #{type}: #{xrpr x}#{srpr_of_tprs}"
+  else
+    "µ3093 not a valid #{type} (violates #{rpr aspect}): #{xrpr x}#{srpr_of_tprs}"
+  throw new Error message
 
 #===========================================================================================================
 class @Intertype extends Multimix
