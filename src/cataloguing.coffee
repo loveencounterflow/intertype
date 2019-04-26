@@ -79,14 +79,11 @@ flatten                   = require 'lodash/flattenDeep'
   return true
 
 #-----------------------------------------------------------------------------------------------------------
+@has_key = ( x, key ) -> @has_keys x, key
+
+#-----------------------------------------------------------------------------------------------------------
 @has_only_keys = ( x, P... ) ->
   probes  = ( flatten P ).sort()
   keys    = ( @values_of @keys_of x ).sort()
   return CND.equals probes, keys
-
-#-----------------------------------------------------------------------------------------------------------
-@has_key = ( x, key ) ->
-  return false unless x?
-  return x[ key ] isnt undefined
-
 
