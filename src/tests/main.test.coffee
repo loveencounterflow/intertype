@@ -90,7 +90,7 @@ INTERTYPE                 = require '../..'
     types_of
     size_of
     declare
-    all_keys_of } = intertype.export_methods()
+    all_keys_of } = intertype.export()
   #.........................................................................................................
   probes_and_matchers = [
     [ "isa( 'callable', 'xxx'                                  )", false,                 null, ]
@@ -167,7 +167,7 @@ INTERTYPE                 = require '../..'
     types_of
     size_of
     declare
-    all_keys_of } = intertype.export_methods()
+    all_keys_of } = intertype.export()
   #.........................................................................................................
   probes_and_matchers = [
     [ "type_of( new WeakMap()                                  )", 'weakmap',             null, ]
@@ -233,7 +233,7 @@ INTERTYPE                 = require '../..'
     types_of
     size_of
     declare
-    all_keys_of } = intertype.export_methods()
+    all_keys_of } = intertype.export()
   #.........................................................................................................
   probes_and_matchers = [
     [ "validate( 'callable', 'xxx'                                  )", false, 'not a valid callable',    ]
@@ -312,7 +312,7 @@ INTERTYPE                 = require '../..'
     types_of
     size_of
     declare
-    all_keys_of } = intertype.export_methods()
+    all_keys_of } = intertype.export()
   #.........................................................................................................
   probes_and_matchers = [
     [123,       ["count","finite","frozen","integer","nonnegative","notunset","number","numeric","odd","positive","safeinteger","sealed","truthy"],null]
@@ -352,7 +352,7 @@ INTERTYPE                 = require '../..'
     types_of
     size_of
     declare
-    all_keys_of } = intertype.export_methods()
+    all_keys_of } = intertype.export()
   #.........................................................................................................
   probes_and_matchers = [
     [[ [ 1, 2, 3, 4, ]                                 ], 4,                                          null, ]
@@ -382,6 +382,20 @@ INTERTYPE                 = require '../..'
       result = size_of probe...
       resolve result
       return null
+  done()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "export to target" ] = ( T, done ) ->
+  #.........................................................................................................
+  target        = {}
+  intertype     = new Intertype
+  return_value  = intertype.export target
+  T.ok return_value is target
+  target.declare 'sometype', ( x ) -> ( @isa.text x ) and ( x.startsWith ':' )
+  debug 'µ44333', target
+  debug 'µ44333', target.isa.sometype 'sometext'
+  debug 'µ44333', target.isa.sometype ':sometext'
   done()
   return null
 
@@ -425,7 +439,7 @@ unless module.parent?
       types_of
       size_of
       declare
-      all_keys_of } = intertype.export_methods()
+      all_keys_of } = intertype.export()
     urge size_of '𣁬𡉜𠑹𠅁', 'codepoints'
 
     intertype.declare 'point',

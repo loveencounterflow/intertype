@@ -47,13 +47,13 @@ class @Intertype extends Multimix
   @include require './declaring'
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ( @instance_name ) ->
+  constructor: ( target = null ) ->
     super()
     @specs    = {}
     @isa      = Multimix.get_keymethod_proxy @, isa
     @validate = Multimix.get_keymethod_proxy @, validate
     declarations.declare_types.apply @
-
+    @export target if target?
 
 
 
