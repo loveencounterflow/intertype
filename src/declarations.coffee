@@ -48,6 +48,21 @@
   @declare 'negative',            ( x ) => ( @isa.number x ) and ( x < 0 )
   @declare 'multiple_of',         ( x, n ) => ( @isa.number x ) and ( x %% n ) is 0
   #.........................................................................................................
+  @declare 'empty',               ( x ) -> ( @size_of x ) == 0
+  @declare 'singular',            ( x ) -> ( @size_of x ) == 1
+  @declare 'nonempty',            ( x ) -> ( @size_of x ) > 0
+  @declare 'plural',              ( x ) -> ( @size_of x ) > 1
+  @declare 'nonempty_text',       ( x ) -> ( @isa.text    x ) and ( @isa.nonempty x )
+  @declare 'nonempty_list',       ( x ) -> ( @isa.list    x ) and ( @isa.nonempty x )
+  @declare 'nonempty_object',     ( x ) -> ( @isa.object  x ) and ( @isa.nonempty x )
+  @declare 'nonempty_set',        ( x ) -> ( @isa.set     x ) and ( @isa.nonempty x )
+  @declare 'nonempty_map',        ( x ) -> ( @isa.map     x ) and ( @isa.nonempty x )
+  @declare 'empty_text',          ( x ) -> ( @isa.text    x ) and ( @isa.empty x )
+  @declare 'empty_list',          ( x ) -> ( @isa.list    x ) and ( @isa.empty x )
+  @declare 'empty_object',        ( x ) -> ( @isa.object  x ) and ( @isa.empty x )
+  @declare 'empty_set',           ( x ) -> ( @isa.set     x ) and ( @isa.empty x )
+  @declare 'empty_map',           ( x ) -> ( @isa.map     x ) and ( @isa.empty x )
+  #.........................................................................................................
   @declare 'buffer',              { size: 'length', },  ( x ) => Buffer.isBuffer x
   @declare 'arraybuffer',         { size: 'length', },  ( x ) => ( js_type_of x ) is 'arraybuffer'
   @declare 'int8array',           { size: 'length', },  ( x ) => ( js_type_of x ) is 'int8array'
