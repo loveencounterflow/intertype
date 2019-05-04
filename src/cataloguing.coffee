@@ -14,7 +14,7 @@ urge                      = CND.get_logger 'urge',      badge
 info                      = CND.get_logger 'info',      badge
 { assign
   jr }                    = CND
-flatten                   = require 'lodash/flattenDeep'
+flatten                   = require 'lodash.flattendeep'
 #...........................................................................................................
 { inspect, }              = require 'util'
 # _xrpr                     = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArrayLength: Infinity, depth: Infinity, }
