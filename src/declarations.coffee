@@ -48,10 +48,10 @@
   @declare 'negative',            ( x ) => ( @isa.number x ) and ( x < 0 )
   @declare 'multiple_of',         ( x, n ) => ( @isa.number x ) and ( x %% n ) is 0
   #.........................................................................................................
-  @declare 'empty',               ( x ) -> ( @size_of x ) == 0
-  @declare 'singular',            ( x ) -> ( @size_of x ) == 1
-  @declare 'nonempty',            ( x ) -> ( @size_of x ) > 0
-  @declare 'plural',              ( x ) -> ( @size_of x ) > 1
+  @declare 'empty',               ( x ) -> ( @has_size    x ) and ( @size_of x ) == 0
+  @declare 'singular',            ( x ) -> ( @has_size    x ) and ( @size_of x ) == 1
+  @declare 'nonempty',            ( x ) -> ( @has_size    x ) and ( @size_of x ) > 0
+  @declare 'plural',              ( x ) -> ( @has_size    x ) and ( @size_of x ) > 1
   @declare 'nonempty_text',       ( x ) -> ( @isa.text    x ) and ( @isa.nonempty x )
   @declare 'nonempty_list',       ( x ) -> ( @isa.list    x ) and ( @isa.nonempty x )
   @declare 'nonempty_object',     ( x ) -> ( @isa.object  x ) and ( @isa.nonempty x )

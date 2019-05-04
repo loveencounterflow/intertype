@@ -54,4 +54,7 @@ info                      = CND.get_logger 'info',      badge
     throw new Error "µ88733 expected a callable, got a #{type}"
   return x.length
 
+#-----------------------------------------------------------------------------------------------------------
+@has_size = ( x ) -> @isa.function @specs[ @type_of x ]?.size
+
 
