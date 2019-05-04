@@ -321,8 +321,8 @@ INTERTYPE                 = require '../..'
     [true,      ["boolean","frozen","notunset","odd","sealed","truthy"],null]
     [null,      ["falsy","frozen","null","odd","sealed","unset"],null]
     [undefined, ["falsy","frozen","odd","sealed","undefined","unset"],null]
-    [{},        ["extensible","notunset","object","odd","truthy"],null]
-    [[],        ["extensible","list","notunset","odd","truthy"],null]
+    [{},        ["empty","extensible","notunset","object","odd","truthy"],null]
+    [[],        ["empty","extensible","list","notunset","odd","truthy"],null]
     ]
   #.........................................................................................................
   # debug intersection_of [ 1, 2, 3, ], [ 'a', 3, 1, ]
@@ -428,7 +428,9 @@ later = ->
 ############################################################################################################
 unless module.parent?
   test @
-  # test @[ "validate" ]
+  # test @[ "types_of" ]
+
+
 
   # do -> debug ( require '../helpers' ).js_type_of arguments
   do ->
@@ -495,5 +497,6 @@ unless module.parent?
     help types_of 42
     help types_of new Number 42
     # help validate.multiple_of 3, 4
+    debug 'µ12233', types_of []
 
 
