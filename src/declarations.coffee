@@ -34,6 +34,8 @@
   #.........................................................................................................
   @declare 'truthy',              ( x ) => not not x
   @declare 'falsy',               ( x ) => not x
+  @declare 'true',                ( x ) => x is true
+  @declare 'false',               ( x ) => x is false
   @declare 'unset',               ( x ) => not x?
   @declare 'notunset',            ( x ) => x?
   #.........................................................................................................
@@ -52,6 +54,9 @@
   @declare 'singular',            ( x ) -> ( @has_size    x ) and ( @size_of x ) == 1
   @declare 'nonempty',            ( x ) -> ( @has_size    x ) and ( @size_of x ) > 0
   @declare 'plural',              ( x ) -> ( @has_size    x ) and ( @size_of x ) > 1
+  @declare 'blank_text',          ( x ) -> ( @isa.text    x ) and     ( x.match /// ^ \s* $ ///us )?
+  @declare 'nonblank_text',       ( x ) -> ( @isa.text    x ) and not ( x.match /// ^ \s* $ ///us )?
+  @declare 'chr',                 ( x ) -> ( @isa.text    x ) and     ( x.match /// ^  .  $ ///us )?
   @declare 'nonempty_text',       ( x ) -> ( @isa.text    x ) and ( @isa.nonempty x )
   @declare 'nonempty_list',       ( x ) -> ( @isa.list    x ) and ( @isa.nonempty x )
   @declare 'nonempty_object',     ( x ) -> ( @isa.object  x ) and ( @isa.nonempty x )
