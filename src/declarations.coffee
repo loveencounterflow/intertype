@@ -44,6 +44,8 @@
   @declare 'count',               ( x ) -> ( @isa.safeinteger x ) and ( @isa.nonnegative x )
   @declare 'nonnegative',         ( x ) => ( @isa.number x ) and ( x >= 0 )
   @declare 'positive',            ( x ) => ( @isa.number x ) and ( x > 0 )
+  @declare 'positive_integer',    ( x ) => ( @isa.integer x ) and ( x > 0 )
+  @declare 'negative_integer',    ( x ) => ( @isa.integer x ) and ( x < 0 )
   @declare 'zero',                ( x ) => x is 0
   @declare 'infinity',            ( x ) => ( x is +Infinity ) or ( x is -Infinity )
   @declare 'nonpositive',         ( x ) => ( @isa.number x ) and ( x <= 0 )
