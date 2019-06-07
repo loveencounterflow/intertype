@@ -429,7 +429,6 @@ later = ->
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "cast" ] = ( T, done ) ->
-  intersection_of = ( a, b ) -> ( x for x in a when x in b ).sort()
   #.........................................................................................................
   intertype = new Intertype
   { isa
@@ -453,36 +452,15 @@ later = ->
     [[ 'number',    'text',       123,    ], '123',   ]
     [[ 'boolean',   'text',       true,   ], 'true',  ]
     [[ 'null',      'text',       null,   ], 'null',  ]
-    [['int10text',  'text',      '1245',  ], '1245',  ]
-    [['int16text',  'text',      '1245',  ], '1245',  ]
-    [['int10text',  'number',    '1245',  ], 1245,    ]
-    [['int16text',  'number',    '1245',  ], 4677,    ]
-    [['int16text',  'int2text',  '7',     ], '111',   ]
+    [[ 'int10text', 'text',      '1245',  ], '1245',  ]
+    [[ 'int16text', 'text',      '1245',  ], '1245',  ]
+    [[ 'int10text', 'number',    '1245',  ], 1245,    ]
+    [[ 'int16text', 'number',    '1245',  ], 4677,    ]
+    [[ 'int16text', 'int2text',  '7',     ], '111',   ]
     [[ 'number',    'null',       0,      ], null,'unable to cast a number as null', ]
     [[ 'number',    'null',       1,      ], null,'unable to cast a number as null', ]
-    # [[ 'null',      'number',     null,   ], 0,       ]
     ]
   #.........................................................................................................
-  # info isa.int10text '1245'
-  # info isa.int16text '1245'
-  # info jr types_of '1245'
-  # info jr types_of '110'
-  # info isa.int10text '1245x'
-  urge rpr cast 'int10text', 'text',      '1245'
-  urge rpr cast 'int16text', 'text',      '1245'
-  urge rpr cast 'int10text', 'number',    '1245'
-  urge rpr cast 'int16text', 'number',    '1245'
-  urge rpr cast 'int16text', 'int2text',  '7'
-  urge rpr cast.int10text 'text',         '1245'
-  urge rpr cast.int16text 'text',         '1245'
-  urge rpr cast.int10text 'number',       '1245'
-  urge rpr cast.int16text 'number',       '1245'
-  urge rpr cast.int16text 'int2text',     '7'
-  # urge rpr cast.int10text.text            '1245'
-  # urge rpr cast.int16text.text            '1245'
-  # urge rpr cast.int10text.number          '1245'
-  # urge rpr cast.int16text.number          '1245'
-  # urge rpr cast.int16text.int2text        '7'
   for [ probe, matcher, error, ] in probes_and_matchers
   #.........................................................................................................
     await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
@@ -500,12 +478,48 @@ later = ->
   done()
   return null
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "list_of" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    cast
+    all_keys_of } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [[ 'number',     [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 1,2,3,123.5, ],    ], false,     ]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+  #.........................................................................................................
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ type, x, ] = probe
+      result = isa.list_of type, x
+      resolve result
+      return null
+  # #.........................................................................................................
+  #   await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+  #     [ type, x, ] = probe
+  #     result = isa.list_of[ type ] x
+  #     resolve result
+  #     return null
+  done()
+  return null
+
 
 
 ############################################################################################################
 unless module.parent?
-  # test @
-  test @[ "cast" ]
+  test @
+  # test @[ "cast" ]
+  # test @[ "list_of" ]
 
 
 

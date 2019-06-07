@@ -119,6 +119,14 @@
         else throw new Error "unknown counting selector #{rpr selector}"
 
   #.........................................................................................................
+  @declare 'list_of',
+    tests:
+      "x is a list":              ( type, x, xP... ) => @isa.list x
+      ### TAINT should check for `@isa.type type` ###
+      "type is nonempty_text":    ( type, x, xP... ) => @isa.nonempty_text type
+      "all elements pass test":   ( type, x, xP... ) => x.every ( xx ) => @isa type, xx, xP...
+
+  #.........................................................................................................
   @declare 'int2text',
     tests: ( x ) => ( @isa.text x ) and ( x.match /^[01]+$/ )?
     casts:
