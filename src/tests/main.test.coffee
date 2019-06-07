@@ -479,17 +479,11 @@ later = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "list_of" ] = ( T, done ) ->
+@[ "isa.list_of A" ] = ( T, done ) ->
   #.........................................................................................................
   intertype = new Intertype
   { isa
-    validate
-    type_of
-    types_of
-    size_of
-    declare
-    cast
-    all_keys_of } = intertype.export()
+    validate } = intertype.export()
   #.........................................................................................................
   probes_and_matchers = [
     [[ 'number',     [ 123, ],    ], true,     ]
@@ -498,18 +492,80 @@ later = ->
     ]
   #.........................................................................................................
   for [ probe, matcher, error, ] in probes_and_matchers
-  #.........................................................................................................
     await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
       [ type, x, ] = probe
       result = isa.list_of type, x
       resolve result
       return null
-  # #.........................................................................................................
-  #   await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
-  #     [ type, x, ] = probe
-  #     result = isa.list_of[ type ] x
-  #     resolve result
-  #     return null
+  done()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "isa.list_of B" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    isa_list_of
+    validate } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [[ 'number',     [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 1,2,3,123.5, ],    ], false,     ]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ type, x, ] = probe
+      result = isa_list_of[ type ] x
+      resolve result
+      return null
+  done()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "validate.list_of A" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [[ 'number',     [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 1,2,3,123.5, ],    ], null, "not a valid list_of"     ]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ type, x, ] = probe
+      result = validate.list_of type, x
+      resolve result
+      return null
+  done()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "validate.list_of B" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate
+    isa_list_of
+    validate_list_of } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [[ 'number',     [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 123, ],    ], true,     ]
+    [[ 'integer',    [ 1,2,3,123.5, ],    ], null, "not a valid list_of"     ]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ type, x, ] = probe
+      result = validate_list_of type, x
+      resolve result
+      return null
   done()
   return null
 
@@ -519,7 +575,10 @@ later = ->
 unless module.parent?
   test @
   # test @[ "cast" ]
-  # test @[ "list_of" ]
+  # test @[ "isa.list_of A" ]
+  # test @[ "isa.list_of B" ]
+  # test @[ "validate.list_of A" ]
+  # test @[ "validate.list_of B" ]
 
 
 

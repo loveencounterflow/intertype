@@ -26,10 +26,9 @@ declarations              = require './declarations'
 
 
 #-----------------------------------------------------------------------------------------------------------
-isa = ( type, xP... ) -> @_satisfies_all_aspects type, xP...
-
-#-----------------------------------------------------------------------------------------------------------
-isa_list_of = ( type, xP... ) -> @isa.list_of type, xP...
+isa               = ( type, xP... ) -> @_satisfies_all_aspects  type, xP...
+isa_list_of       = ( type, xP... ) -> @isa.list_of             type, xP...
+validate_list_of  = ( type, xP... ) -> @validate.list_of        type, xP...
 
 #-----------------------------------------------------------------------------------------------------------
 cast = ( type_a, type_b, x, xP... ) ->
@@ -62,11 +61,12 @@ class @Intertype extends Multimix
   #---------------------------------------------------------------------------------------------------------
   constructor: ( target = null ) ->
     super()
-    @specs        = {}
-    @isa          = Multimix.get_keymethod_proxy @, isa
-    @isa.xlist_of  = Multimix.get_keymethod_proxy @, isa_list_of
-    @cast         = Multimix.get_keymethod_proxy @, cast
-    @validate     = Multimix.get_keymethod_proxy @, validate
+    @specs            = {}
+    @isa              = Multimix.get_keymethod_proxy @, isa
+    @isa_list_of      = Multimix.get_keymethod_proxy @, isa_list_of
+    @cast             = Multimix.get_keymethod_proxy @, cast
+    @validate         = Multimix.get_keymethod_proxy @, validate
+    @validate_list_of = Multimix.get_keymethod_proxy @, validate_list_of
     declarations.declare_types.apply @
     @export target if target?
 
