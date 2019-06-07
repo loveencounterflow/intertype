@@ -45,6 +45,11 @@ info                      = CND.get_logger 'info',      badge
   return getter x, P...
 
 #-----------------------------------------------------------------------------------------------------------
+### TAINT faulty implementation:
+  * does not use size_of but length
+  * does not accept additional arguments as needed for texts
+  * risks to break codepoints apart
+  ###
 @first_of   = ( collection ) -> collection[ 0 ]
 @last_of    = ( collection ) -> collection[ collection.length - 1 ]
 
