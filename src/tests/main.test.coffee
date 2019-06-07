@@ -427,81 +427,153 @@ later = ->
   info Y.spec.spec_of_Y
   ###
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "cast" ] = ( T, done ) ->
+  intersection_of = ( a, b ) -> ( x for x in a when x in b ).sort()
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    cast
+    all_keys_of } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [[ 'number',    'number',     123,    ], 123,     ]
+    [[ 'number',    'integer',    123,    ], 123,     ]
+    [[ 'number',    'integer',    23.9,   ], 24,      ]
+    [[ 'boolean',   'number',     true,   ], 1,       ]
+    [[ 'boolean',   'number',     false,  ], 0,       ]
+    [[ 'number',    'boolean',    0,      ], false,   ]
+    [[ 'number',    'boolean',    1,      ], true,    ]
+    [[ 'number',    'boolean',    -154.7, ], true,    ]
+    [[ 'number',    'text',       123,    ], '123',   ]
+    [[ 'boolean',   'text',       true,   ], 'true',  ]
+    [[ 'null',      'text',       null,   ], 'null',  ]
+    [['int10text',  'text',      '1245',  ], '1245',  ]
+    [['int16text',  'text',      '1245',  ], '1245',  ]
+    [['int10text',  'number',    '1245',  ], 1245,    ]
+    [['int16text',  'number',    '1245',  ], 4677,    ]
+    [['int16text',  'int2text',  '7',     ], '111',   ]
+    [[ 'number',    'null',       0,      ], null,'unable to cast a number as null', ]
+    [[ 'number',    'null',       1,      ], null,'unable to cast a number as null', ]
+    # [[ 'null',      'number',     null,   ], 0,       ]
+    ]
+  #.........................................................................................................
+  # info isa.int10text '1245'
+  # info isa.int16text '1245'
+  # info jr types_of '1245'
+  # info jr types_of '110'
+  # info isa.int10text '1245x'
+  urge rpr cast 'int10text', 'text',      '1245'
+  urge rpr cast 'int16text', 'text',      '1245'
+  urge rpr cast 'int10text', 'number',    '1245'
+  urge rpr cast 'int16text', 'number',    '1245'
+  urge rpr cast 'int16text', 'int2text',  '7'
+  urge rpr cast.int10text 'text',         '1245'
+  urge rpr cast.int16text 'text',         '1245'
+  urge rpr cast.int10text 'number',       '1245'
+  urge rpr cast.int16text 'number',       '1245'
+  urge rpr cast.int16text 'int2text',     '7'
+  # urge rpr cast.int10text.text            '1245'
+  # urge rpr cast.int16text.text            '1245'
+  # urge rpr cast.int10text.number          '1245'
+  # urge rpr cast.int16text.number          '1245'
+  # urge rpr cast.int16text.int2text        '7'
+  for [ probe, matcher, error, ] in probes_and_matchers
+  #.........................................................................................................
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ type_a, type_b, x, ] = probe
+      result = cast type_a, type_b, x
+      resolve result
+      return null
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ type_a, type_b, x, ] = probe
+      result = cast[ type_a ] type_b, x
+      resolve result
+      return null
+  done()
+  return null
 
 
 
 ############################################################################################################
 unless module.parent?
-  test @
-  # test @[ "types_of" ]
+  # test @
+  test @[ "cast" ]
 
 
 
   # do -> debug ( require '../helpers' ).js_type_of arguments
-  do ->
-    intertype = new Intertype
-    { isa
-      validate
-      type_of
-      types_of
-      size_of
-      declare
-      all_keys_of } = intertype.export()
-    urge size_of '𣁬𡉜𠑹𠅁', 'codepoints'
+demo = ->
+  intertype = new Intertype
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    all_keys_of } = intertype.export()
+  urge size_of '𣁬𡉜𠑹𠅁', 'codepoints'
 
-    intertype.declare 'point',
-      size:   2
-      tests:
-        '? is an object':   ( x ) -> @isa.object x
-        '?.x is set':       ( x ) -> @has_key    x, 'x'
-        '?.y is set':       ( x ) -> @has_key    x, 'y'
-        '?.x is a number':  ( x ) -> @isa.number x.x
-        '?.y is a number':  ( x ) -> @isa.number x.x
-    intertype.declare 'vector',
-      size:   2
-      tests:
-        '? is a list':        ( x ) -> @isa.list   x
-        'size of ? is 2':     ( x ) -> ( @size_of x ) is 2
-        '?[ 0 ] is a number': ( x ) -> @isa.number x[ 0 ]
-        '?[ 1 ] is a number': ( x ) -> @isa.number x[ 1 ]
-    info isa.point 42
-    info isa.point { x: 42, y: 108, }
-    info isa.point { x: Infinity, y: 108, }
+  intertype.declare 'point',
+    size:   2
+    tests:
+      '? is an object':   ( x ) -> @isa.object x
+      '?.x is set':       ( x ) -> @has_key    x, 'x'
+      '?.y is set':       ( x ) -> @has_key    x, 'y'
+      '?.x is a number':  ( x ) -> @isa.number x.x
+      '?.y is a number':  ( x ) -> @isa.number x.x
+  intertype.declare 'vector',
+    size:   2
+    tests:
+      '? is a list':        ( x ) -> @isa.list   x
+      'size of ? is 2':     ( x ) -> ( @size_of x ) is 2
+      '?[ 0 ] is a number': ( x ) -> @isa.number x[ 0 ]
+      '?[ 1 ] is a number': ( x ) -> @isa.number x[ 1 ]
+  info isa.point 42
+  info isa.point { x: 42, y: 108, }
+  info isa.point { x: Infinity, y: 108, }
 
-    tests = [
-      [ 1,  ( -> validate.number    42                         ), ]
-      [ 2,  ( -> validate.integer   42                         ), ]
-      [ 3,  ( -> validate.even      42                         ), ]
-      [ 4,  ( -> validate.number    42.5                       ), ]
-      [ 5,  ( -> validate.integer   42.5                       ), ]
-      [ 6,  ( -> validate.even      42.5                       ), ]
-      [ 7,  ( -> validate.point     42                         ), ]
-      [ 8,  ( -> validate.point     { x: 42, y: 108, }         ), ]
-      [ 9,  ( -> validate.point     { y: 108, }                ), ]
-      [ 10, ( -> validate.point     { x: Infinity, y: 108, }  ), ]
-      [ 11, ( -> validate.vector    null                      ), ]
-      [ 12, ( -> validate.vector    [ 2, ]                    ), ]
-      [ 13, ( -> validate.vector    [ 2, 3, ]                 ), ]
-      [ 14, ( -> validate.regex     [ 2, 3, ]                 ), ]
-      [ 15, ( -> validate.regex     /x/                       ), ]
-      [ 16, ( -> validate.regex     /^x$/g                    ), ]
-      [ 17, ( -> isa.regex          /x/                       ), ]
-      [ 18, ( -> isa.regex          /^x$/g                    ), ]
-      ]
-    for [ nr, test, ] in tests
-      try
-        result = test()
-      catch error
-        warn nr, error.message
-        # throw error
-        continue
-      info nr, result
+  tests = [
+    [ 1,  ( -> validate.number    42                         ), ]
+    [ 2,  ( -> validate.integer   42                         ), ]
+    [ 3,  ( -> validate.even      42                         ), ]
+    [ 4,  ( -> validate.number    42.5                       ), ]
+    [ 5,  ( -> validate.integer   42.5                       ), ]
+    [ 6,  ( -> validate.even      42.5                       ), ]
+    [ 7,  ( -> validate.point     42                         ), ]
+    [ 8,  ( -> validate.point     { x: 42, y: 108, }         ), ]
+    [ 9,  ( -> validate.point     { y: 108, }                ), ]
+    [ 10, ( -> validate.point     { x: Infinity, y: 108, }  ), ]
+    [ 11, ( -> validate.vector    null                      ), ]
+    [ 12, ( -> validate.vector    [ 2, ]                    ), ]
+    [ 13, ( -> validate.vector    [ 2, 3, ]                 ), ]
+    [ 14, ( -> validate.regex     [ 2, 3, ]                 ), ]
+    [ 15, ( -> validate.regex     /x/                       ), ]
+    [ 16, ( -> validate.regex     /^x$/g                    ), ]
+    [ 17, ( -> isa.regex          /x/                       ), ]
+    [ 18, ( -> isa.regex          /^x$/g                    ), ]
+    ]
+  for [ nr, test, ] in tests
+    try
+      result = test()
+    catch error
+      warn nr, error.message
+      # throw error
+      continue
+    info nr, result
 
-    help isa.number 42
-    help isa.number new Number 42
-    help types_of 42
-    help types_of new Number 42
-    # help validate.multiple_of 3, 4
-    debug 'µ12233', types_of []
+  help isa.number 42
+  help isa.number new Number 42
+  help types_of 42
+  help types_of new Number 42
+  # help validate.multiple_of 3, 4
+  debug 'µ12233', types_of []
 
 

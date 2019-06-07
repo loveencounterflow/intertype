@@ -14,12 +14,24 @@
   ### NOTE to be called as `( require './declarations' ).declare_types.apply instance` ###
   @declare 'null',                ( x ) => x is null
   @declare 'undefined',           ( x ) => x is undefined
-  @declare 'boolean',             ( x ) => ( x is true ) or ( x is false )
+  #.........................................................................................................
+  @declare 'boolean',
+    tests:
+      "x is true or false":       ( x ) => ( x is true ) or ( x is false )
+    casts:
+      number:                     ( x ) => if x then 1 else 0
+  #.........................................................................................................
   @declare 'nan',                 ( x ) => Number.isNaN         x
   @declare 'finite',              ( x ) => Number.isFinite      x
   @declare 'integer',             ( x ) => Number.isInteger     x
   @declare 'safeinteger',         ( x ) => Number.isSafeInteger x
-  @declare 'number',              ( x ) => Number.isFinite      x
+  #.........................................................................................................
+  @declare 'number',
+    tests:                        ( x ) => Number.isFinite      x
+    casts:
+      boolean:                    ( x ) => if x is 0 then false else true
+      integer:                    ( x ) => Math.round x
+  #.........................................................................................................
   @declare 'frozen',              ( x ) => Object.isFrozen      x
   @declare 'sealed',              ( x ) => Object.isSealed      x
   @declare 'extensible',          ( x ) => Object.isExtensible  x
@@ -105,6 +117,23 @@
         when 'codeunits'  then return x.length
         when 'bytes'      then return Buffer.byteLength x, ( settings?[ 'encoding' ] ? 'utf-8' )
         else throw new Error "unknown counting selector #{rpr selector}"
+
+  #.........................................................................................................
+  @declare 'int2text',
+    tests: ( x ) => ( @isa.text x ) and ( x.match /^[01]+$/ )?
+    casts:
+      number: ( x ) => parseInt x, 2
+  #.........................................................................................................
+  @declare 'int10text',
+    tests: ( x ) => ( @isa.text x ) and ( x.match /^[0-9]+$/ )?
+    casts:
+      number: ( x ) => parseInt x, 10
+  #.........................................................................................................
+  @declare 'int16text',
+    tests: ( x ) => ( @isa.text x ) and ( x.match /^[0-9a-fA-F]+$/ )?
+    casts:
+      number:   ( x ) => parseInt x, 16
+      int2text: ( x ) => ( parseInt x, 16 ).toString 2 ### TAINT could use `cast()` API ###
 
   ### not supported until we figure out how to do it in strict mode: ###
   # @declare 'arguments',                     ( x ) -> ( js_type_of x ) is 'arguments'

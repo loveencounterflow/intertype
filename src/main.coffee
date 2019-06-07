@@ -29,6 +29,16 @@ declarations              = require './declarations'
 isa = ( type, xP... ) -> @_satisfies_all_aspects type, xP...
 
 #-----------------------------------------------------------------------------------------------------------
+cast = ( type_a, type_b, x, xP... ) ->
+  @validate type_a, x, xP...
+  return x if type_a is type_b
+  return x if @isa type_b, x, xP...
+  if ( casts = @specs[ type_a ].casts )?
+    return ( converter.call @, x, xP... ) if ( converter = casts[ type_b ] )?
+  return "#{x}" if type_b is 'text' ### TAINT use better method like util.inspect ###
+  throw new Error "µ30981 unable to cast a #{type_a} as #{type_b}"
+
+#-----------------------------------------------------------------------------------------------------------
 validate = ( type, xP... ) ->
   return true unless ( aspect = @_get_unsatisfied_aspect type, xP... )?
   [ x, P..., ] = xP
@@ -51,6 +61,7 @@ class @Intertype extends Multimix
     super()
     @specs    = {}
     @isa      = Multimix.get_keymethod_proxy @, isa
+    @cast     = Multimix.get_keymethod_proxy @, cast
     @validate = Multimix.get_keymethod_proxy @, validate
     declarations.declare_types.apply @
     @export target if target?
