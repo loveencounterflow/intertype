@@ -143,6 +143,16 @@
       number:   ( x ) => parseInt x, 16
       int2text: ( x ) => ( parseInt x, 16 ).toString 2 ### TAINT could use `cast()` API ###
 
+  #.........................................................................................................
+  @declare 'int32', ( x ) -> ( @isa.integer x ) and ( -2147483648 <= x <= 2147483647 )
+
+  #.........................................................................................................
+  @declare 'vnr', ( x ) ->
+    ### A vectorial number (VNR) is a non-empty array of integers. It can be expressed as an ordinary
+    list of integers or as an `Int32Array`. ###
+    return ( @isa.int32array x ) or ( ( @isa_list_of.int32 x ) and ( x.length > 0 ) )
+
+
   ### not supported until we figure out how to do it in strict mode: ###
   # @declare 'arguments',                     ( x ) -> ( js_type_of x ) is 'arguments'
 

@@ -569,11 +569,42 @@ later = ->
   done()
   return null
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "vnr, int32" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    declare
+    validate
+    isa_list_of
+    validate_list_of } = intertype.export()
+  #.........................................................................................................
+  T.ok isa.int32 1234
+  T.ok isa.int32 -1234
+  T.ok not isa.int32 1.3
+  T.ok isa.vnr [ -1234, ]
+  T.ok isa_list_of.int32 [ -1234, ]
+  T.ok isa_list_of.int32 []
+  T.ok not isa.vnr [ -1234, 7e20, ]
+  T.ok isa.vnr Int32Array.from [ -1234, ]
+  d = []
+  d.push Int32Array.from [ 10,      ]
+  d.push Int32Array.from [ 10,  0,  ]
+  d.push Int32Array.from [ 10, -1,  ]
+  d.push Int32Array.from [ 10,  2,  ]
+  d.push Int32Array.from [ 10,  20,  ]
+  d.push Int32Array.from [ 10,  1,  ]
+  d.push Int32Array.from [ 10,  10,  ]
+  debug 'µ43222', d.sort()
+  done()
+  return null
+
 
 
 ############################################################################################################
 unless module.parent?
-  test @
+  # test @
+  test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]
   # test @[ "isa.list_of B" ]
