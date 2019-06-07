@@ -120,6 +120,10 @@ The call signatures are:
 
 * [ ] Implement method to iterate over type names, specs.
 
+* [ ] Catch errors that originate in type checking clauses
+
+* [ ] Trace cause for failure in recursive type checks
+
 
 
 
