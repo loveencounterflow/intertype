@@ -108,6 +108,9 @@ The call signatures are:
   },  ( x ) => Buffer.isBuffer x` (here, the `size` spec defines how InterType's `size_of()` method should
   deal with buffers).
 
+## Typed Value Casting
+
+**XXX TBW XXX**
 
 ## To Do
 
@@ -124,7 +127,7 @@ The call signatures are:
 
 * [ ] Trace cause for failure in recursive type checks
 
-
+* [ ] Allow to declare additional casts after type has been declared
 
 
 
