@@ -733,8 +733,8 @@ later = ->
 
 ############################################################################################################
 unless module.parent?
-  # test @
-  test @[ "validation with intermediate results" ]
+  test @
+  # test @[ "validation with intermediate results" ]
   # test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]
