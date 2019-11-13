@@ -150,6 +150,10 @@ Distinguish between
   value is sad (i.e. when `is_sad check.t x, ...` or equivalently `not is_happy check.t x, ...` is
   `true`), and vice versa.
 
+Checks will never throw except when presented with an unknown type or check name.
+
+Checks and types share a common namespace; overwriting or shadowing is not allowed.
+
 `sad` is the JS symbol `intertype.sad`; it has the property that it 'is sad', i.e. `is_sad intertype.sad`
 returns `true`.
 
