@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "cnd": "^4.5.0",
+    "cnd": "^4.6.0",
     "lodash.flattendeep": "^4.4.0",
-    "multimix": "^2.0.0"
+    "multimix": "^2.1.0"
   },
   "devDependencies": {
-    "guy-test": "^1.4.0"
+    "guy-test": "^1.4.1"
   }
 }
