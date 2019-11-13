@@ -1,11 +1,27 @@
 
-
 # InterType
 
 A JavaScript type checker with helpers to implement own types and do object shape validation.
 
 
-## Concepts
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Concepts](#concepts)
+- [Usage](#usage)
+- [Declaring New Types](#declaring-new-types)
+- [Typed Value Casting](#typed-value-casting)
+- [Checks](#checks)
+  - [Concatenating Checks](#concatenating-checks)
+- [To Do](#to-do)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+
+
+# Concepts
 
 * what is a type
 * fundamental types vs. domain types
@@ -33,7 +49,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   a Boolean value can be regarded as a list of aspects, hence defining a (possibly empty) set of values.
 
 
-## Usage
+# Usage
 
 [WIP]
 
@@ -65,7 +81,7 @@ console.log validate.mytype 20    # true
 console.log validate.mytype 100   # throws "not a valid mytype"
 ```
 
-## Declaring New Types
+# Declaring New Types
 
 `intertype.declare()` allows to add new type specifications to `intertype.specs`. It may be called with one
 to three arguments. The three argument types are:
@@ -108,11 +124,80 @@ The call signatures are:
   },  ( x ) => Buffer.isBuffer x` (here, the `size` spec defines how InterType's `size_of()` method should
   deal with buffers).
 
-## Typed Value Casting
+# Typed Value Casting
 
 **XXX TBW XXX**
 
-## To Do
+
+# Checks
+
+**WIP**
+
+* `validate.t x, ...`—returns `true` on success, throws error otherwise
+* `isa.t      x, ...`—returns `true` on success, `false` otherwise
+* `check.t    x, ...`—returns any kind of happy value on success, a sad value otherwise
+<!-- * `is.t       x, ...`—short for `not is_sad check.t x, ...` (???) -->
+
+Distinguish between
+
+* `isa.t x` with *single* argument: this tests for *constant* types (including `isa.even x` which tests
+  against remainder of constant `n = 2`). `isa` methods always return a boolean value.
+
+* `check.t x, ...` with *variable* number of arguments (which may include previously obtained results for
+  better speed, consistency); this includes `check.multiple_of x, 2` which is equivalent to `isa.even x`
+  but parametrizes `n`. Checks return arbitrary values; this also holds for failed checks since even a
+  failed check may have collected some potentially expensive data. A check has failed when its return
+  value is sad (i.e. when `is_sad check.t x, ...` or equivalently `not is_happy check.t x, ...` is
+  `true`), and vice versa.
+
+`sad` is the JS symbol `intertype.sad`; it has the property that it 'is sad', i.e. `is_sad intertype.sad`
+returns `true`.
+
+`is_sad x` is `true` for
+* `sad` itself,
+* instances of `Error`s
+* all objects that have an attribute `x[ sad ]` whose value is `true`.
+
+Conversely, `is_sad x` is `false`
+* all primitive values except `sad` itself,
+* for all objects `x` except those where `x[ sad ] === true`.
+
+One should never use <strike>`r is sad`</strike> to test for a bad result, as that will only capture cases
+where a checker returned the `sad` symbol; instead, always use `is_sad r`.
+
+There is an equivalence (invariance) between checks, isa-tests and validations such that it is always
+possible to express one in terms of the other, e.g.
+
+```
+check_integer     = ( x ) -> return try x if ( validate.integer x ) catch error then error
+isa_integer       = ( x ) -> is_happy check_integer x
+validate_integer  = ( x ) -> if is_happy ( R = check_integer x ) then return R else throw R
+```
+
+## Concatenating Checks
+
+Since checks never throw the programmer must be aware to check for sad results themself. It's advantageous
+to not use nested `if/then/else` statements as that would quickly grow to a mess; instead, put related
+checks into a function on their own and return as soon as any intermediate result is sad, then return the
+result of the last check.
+
+Another idiom is to use a `loop` (or `wjhile ( true ) { ... }`) construct and break as soon as a sad
+intermediate result is encountered; not to be forgotten is the final `break` statement that is needed to
+keep the code from looping indefinetly:
+
+```
+R     = null
+loop
+  break if ( R = check_fso_exists    path, R ) is sad
+  break if ( R = check_is_file       path, R ) is sad
+  break if is_sad ( R = check_is_json_file  path, R )
+  break
+if is_sad R then  warn "fails with", ( rpr R )[ ... 80 ]
+else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
+```
+
+
+# To Do
 
 * [x] Allow to pass in target object at instantiation, so e.g. `new intertype @` will cause all InterType
   methods to become available on target as `@isa()`, `@validate` and so on.
