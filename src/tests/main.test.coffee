@@ -600,7 +600,7 @@ later = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "validation with intermediate results" ] = ( T, done ) ->
+@[ "check(): validation with intermediate results (experiment)" ] = ( T, done ) ->
   #.........................................................................................................
   PATH                      = require 'path'
   FS                        = require 'fs'
@@ -613,6 +613,18 @@ later = ->
   is_sad    = ( x ) -> ( x is sad ) or ( x instanceof Error ) or ( ( isa.object x ) and ( x[ sad ] is true ) )
   is_happy  = ( x ) -> not is_sad x
   sadden    = ( x ) -> { [sad]: true, _: x, }
+  #.........................................................................................................
+  check = new Proxy {},
+    get: ( t, k ) -> ( P... ) ->
+      return fn unless isa.callable fn = t[ k ]
+      return try ( fn P... ) catch error then error
+    set: ( t, k, v ) -> t[ k ] = v
+    delete: ( t, k, v ) -> delete t[ k ]
+  check.foo = 42
+  check.foo
+  check.integer = ( x ) -> validate.integer x
+  debug '^336552^', check.integer 42
+  debug '^336552^', check.integer 42.5
   #.........................................................................................................
   check_fso_exists   = ( path, stats = null ) ->
     try ( stats ? FS.statSync path ) catch error then error
@@ -675,7 +687,7 @@ later = ->
   validate_integer  = ( x ) -> if is_happy ( R = check_integer x ) then return R else throw R
   #.........................................................................................................
   debug '^333442^', check_integer 42
-  debug '^333442^', check_integer 42.5
+  debug '^333442^', ( rpr check_integer 42.5 )[ .. 80 ]
   debug '^333442^', isa_integer 42
   debug '^333442^', isa_integer 42.5
   # debug stats
@@ -685,12 +697,55 @@ later = ->
   done()
   return null
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "check(): validation with intermediate results (for reals)" ] = ( T, done ) ->
+  #.........................................................................................................
+  PATH                      = require 'path'
+  FS                        = require 'fs'
+  intertype                 = new Intertype
+  { isa
+    validate
+    check
+    sad
+    is_sad
+    is_happy
+    sadden
+    declare }               = intertype.export()
+  debug '^3378^', intertype.is_happy
+  debug '^3378^', intertype.export().is_happy
+  debug '^3378^', intertype.export().is_happy 42
+  debug '^3378^', intertype.export().is_sad 42
+  debug '^3378^', intertype.export().sadden 42
+  #.........................................................................................................
+  intertype.checks.dvsbl_2_3 = ( x ) ->
+    validate.even x
+    return x %% 3 is 0
+  #.........................................................................................................
+  T.eq ( is_happy check 'integer',      42     ), true
+  T.eq ( is_happy check 'integer',      42.5   ), false
+  T.eq ( is_happy check 'dvsbl_2_3',    42     ), true
+  T.eq ( is_happy check 'dvsbl_2_3',    43     ), false
+  T.eq ( is_happy check 'dvsbl_2_3',    2 * 3  ), true
+  T.eq ( is_happy check.integer         42     ), true
+  T.eq ( is_happy check.integer         42.5   ), false
+  T.eq ( is_happy check.dvsbl_2_3       42     ), true
+  T.eq ( is_happy check.dvsbl_2_3       43     ), false
+  T.eq ( is_happy check.dvsbl_2_3       2 * 3  ), true
+  # debug '^390-1^',          check.integer         42.5
+  # debug '^390-2^',         ( check.integer         42.5 ) is intertype.sad
+  # debug '^390-3^',         sad
+  # debug '^390-4^',         intertype.sad
+  # debug '^390-5^',         sad is intertype.sad
+  # debug '^390-6^', is_happy check.integer         42.5
+  done()
+  return null
 
 
 ############################################################################################################
 unless module.parent?
   # test @
-  test @[ "validation with intermediate results" ]
+  # test @[ "check(): validation with intermediate results (experiment)" ]
+  test @[ "check(): validation with intermediate results (for reals)" ]
   # test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]

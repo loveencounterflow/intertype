@@ -23,7 +23,7 @@ Multimix                  = require 'multimix'
   js_type_of }            = require './helpers'
 #...........................................................................................................
 declarations              = require './declarations'
-
+sad                       = Symbol 'sad'
 
 #-----------------------------------------------------------------------------------------------------------
 isa               = ( type, xP... ) -> @_satisfies_all_aspects  type, xP...
@@ -41,6 +41,16 @@ cast = ( type_a, type_b, x, xP... ) ->
   throw new Error "µ30981 unable to cast a #{type_a} as #{type_b}"
 
 #-----------------------------------------------------------------------------------------------------------
+check = ( type, x, xP... ) ->
+  # debug '^33342^', { type: ( rpr type ), has_specs: @specs[ type ]?, }
+  # debug '^33342^', @specs
+  ### NOTE will not allow extra arguments to `isa` in upcoming version: ###
+  if @specs[ type ]?
+    return if ( @isa type, x, xP... ) then true else sad
+  throw new Error "µ44521 unknown type or check #{rpr type}" unless ( check = @checks[ type ] )?
+  return try check x, xP... catch error then error
+
+#-----------------------------------------------------------------------------------------------------------
 validate = ( type, xP... ) ->
   return true unless ( aspect = @_get_unsatisfied_aspect type, xP... )?
   [ x, P..., ] = xP
@@ -51,6 +61,7 @@ validate = ( type, xP... ) ->
     "µ3093 not a valid #{type} (violates #{rpr aspect}): #{xrpr x}#{srpr_of_tprs}"
   throw new Error message
 
+
 #===========================================================================================================
 class @Intertype extends Multimix
   # @extend   object_with_class_properties
@@ -59,14 +70,32 @@ class @Intertype extends Multimix
   @include require './declaring'
 
   #---------------------------------------------------------------------------------------------------------
+
+  #---------------------------------------------------------------------------------------------------------
   constructor: ( target = null ) ->
     super()
+    #.......................................................................................................
+    ### TAINT bug in MultiMix, should be possible to declare methods in class, not the constructor,
+    and still get a bound version with `export()`; declaring them here FTTB ###
+    @is_sad           = ( x ) ->
+      return ( x is sad ) or ( x instanceof Error ) or ( ( @isa.object x ) and ( x[ sad ] is true ) )
+    #.......................................................................................................
+    @is_happy         = ( x ) ->
+      return not @is_sad x
+    #.......................................................................................................
+    @sadden           = ( x ) ->
+      return { [sad]: true, _: x, }
+    #.......................................................................................................
+    @sad              = sad
     @specs            = {}
+    @checks           = {}
     @isa              = Multimix.get_keymethod_proxy @, isa
     @isa_list_of      = Multimix.get_keymethod_proxy @, isa_list_of
     @cast             = Multimix.get_keymethod_proxy @, cast
     @validate         = Multimix.get_keymethod_proxy @, validate
     @validate_list_of = Multimix.get_keymethod_proxy @, validate_list_of
+    @check            = Multimix.get_keymethod_proxy @, check
+    # @checks           = ( require './checks' ).provide.apply @
     declarations.declare_types.apply @
     @export target if target?
 
