@@ -599,12 +599,143 @@ later = ->
   done()
   return null
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "validation with intermediate results" ] = ( T, done ) ->
+  #.........................................................................................................
+  PATH                      = require 'path'
+  FS                        = require 'fs'
+  intertype                 = new Intertype
+  { isa
+    validate
+    declare }               = intertype.export()
+  sad                       = Symbol 'sad' # will be made attribute of `intertype`
+  #.........................................................................................................
+  ###
+
+  * `validate.t x, ...`—returns `true` on success, throws error otherwise
+  * `isa.t      x, ...`—returns `true` on success, `false` otherwise
+  * `check.t    x, ...`—returns any kind of happy value on success, a sad value otherwise
+  # * `is.t       x, ...`—short for `not is_sad check.t x, ...` (???)
+
+  Distinguish between
+
+  * `isa.t x` with *single* argument: this tests for *constant* types (including `isa.even x` which tests
+    against remainder of constant `n = 2`). `isa` methods always return a boolean value.
+
+  * `check.t x, ...` with *variable* number of arguments (which may include previously obtained results for
+    better speed, consistency); this includes `check.multiple_of x, 2` which is equivalent to `isa.even x`
+    but parametrizes `n`. Checks return arbitrary values; this also holds for failed checks since even a
+    failed check may have collected some potentially expensive data. A check has failed when its return
+    value is sad (i.e. when `is_sad check.t x, ...` or equivalently `not is_happy check.t x, ...` is
+    `true`), and vice versa.
+
+  `sad` is the JS symbol `intertype.sad`; it has the property that it 'is sad', i.e. `is_sad intertype.sad`
+  returns `true`.
+
+  `is_sad x` is `true` for
+  * `sad` itself,
+  * instances of `Error`s
+  * all objects that have an attribute `x[ sad ]` whose value is `true`.
+
+  Conversely, `is_sad x` is `false`
+  * all primitive values except `sad` itself,
+  * for all objects `x` except those where `x[ sad ] === true`.
+
+  One should never use <strike>`r is sad`</strike> to test for a bad result, as that will only capture cases
+  where a checker returned the `sad` symbol; instead, always use `is_sad r`.
+
+  There is an equivalence (invariance) between checks, isa-tests and validations such that it is always
+  possible to express one in terms of the other, e.g.
+
+  ```
+  check_integer     = ( x ) -> return try x if ( validate.integer x ) catch error then error
+  isa_integer       = ( x ) -> is_happy check_integer x
+  validate_integer  = ( x ) -> if is_happy ( R = check_integer x ) then return R else throw R
+  ```
+
+  ###
+  is_sad    = ( x ) -> ( x is sad ) or ( x instanceof Error ) or ( ( isa.object x ) and ( x[ sad ] is true ) )
+  is_happy  = ( x ) -> not is_sad x
+  sadden    = ( x ) -> { [sad]: true, _: x, }
+  #.........................................................................................................
+  check_fso_exists   = ( path, stats = null ) ->
+    try ( stats ? FS.statSync path ) catch error then error
+  #.........................................................................................................
+  check_is_file      = ( path, stats = null ) ->
+    ### Checks if `path` exists, points to a file, is readable, and parses as a JSON file
+
+    Malfunction Risks:
+    * see `check_fso_exists()` &c.
+    * FS-related race conditions, including
+    * longish timeouts for paths pointing to non-local or otherwise misbehaving FS resources.
+    ###
+    #.......................................................................................................
+    ### in this case, `stats` is `sad` when `check_fso_exists()` fails; in the general case, it could be any
+    manner of object whose computation required effort, so we want to keep it; we document that fact by
+    aliasing it as `bad`: ###
+    return bad    if is_sad ( bad = stats = check_fso_exists path, stats )
+    return stats  if stats.isFile()
+    return sadden "not a file: #{path}"
+  #.........................................................................................................
+  check_is_json_file = ( path ) ->
+    ### Checks if `path` exists, points to a file, is readable, and is parsable as a JSON file; as a
+    side-effect, returns the result of parsing when successful.
+
+    Malfunction Risks:
+    * see `check_is_file()` &c.
+    * file will be read and parsed synchronously; as such, an arbitrary amount of time and space could be
+      required in case `path` points to a large file and/or is slow to parse
+    ###
+    # return bad if is_sad ( bad = stats = check_is_file path, stats )
+    return try ( JSON.parse FS.readFileSync path ) catch error then error
+  #.........................................................................................................
+  debug '^377332-1^', is_sad sad
+  debug '^377332-6^', is_sad { [sad]: true, }
+  debug '^377332-7^', is_sad new Error "wat"
+  debug '^377332-2^', is_sad 42
+  debug '^377332-3^', is_sad false
+  debug '^377332-4^', is_sad null
+  debug '^377332-5^', is_sad { [sad]: false, }
+  paths = [
+    PATH.resolve PATH.join __dirname, '../../package.json'
+    PATH.resolve PATH.join __dirname, '../../XXXXX'
+    ]
+  for path in paths
+    R     = null
+    loop
+      # break if ( R = check_fso_exists    path, R ) is sad
+      # break if ( R = check_is_file       path, R ) is sad
+      break if is_sad ( R = check_is_json_file  path, R )
+      break
+    if is_sad R then  warn "fails with", ( rpr R )[ ... 80 ]
+    else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
+  warn '^99282^', ( error = check_fso_exists   'XXXXX' ).code, CND.grey error.message
+  warn '^99282^', ( error = check_is_file      'XXXXX' ).code, CND.grey error.message
+  warn '^99282^', ( error = check_is_json_file 'XXXXX' ).code, CND.grey error.message
+  #.........................................................................................................
+  ### Turning a type declaration into a check ###
+  check_integer     = ( x ) -> return try x if ( validate.integer x ) catch error then error
+  isa_integer       = ( x ) -> is_happy check_integer x
+  validate_integer  = ( x ) -> if is_happy ( R = check_integer x ) then return R else throw R
+  #.........................................................................................................
+  debug '^333442^', check_integer 42
+  debug '^333442^', check_integer 42.5
+  debug '^333442^', isa_integer 42
+  debug '^333442^', isa_integer 42.5
+  # debug stats
+  # [ type, x, ] = probe
+  # result = validate_list_of type, x
+  # T.eq result, matcher
+  done()
+  return null
+
 
 
 ############################################################################################################
 unless module.parent?
   # test @
-  test @[ "vnr, int32" ]
+  test @[ "validation with intermediate results" ]
+  # test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]
   # test @[ "isa.list_of B" ]
