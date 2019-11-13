@@ -19,7 +19,7 @@
   "dependencies": {
     "cnd": "^4.6.0",
     "lodash.flattendeep": "^4.4.0",
-    "multimix": "^2.1.0"
+    "multimix": "^2.1.1"
   },
   "devDependencies": {
     "guy-test": "^1.4.1"
