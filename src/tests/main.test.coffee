@@ -710,33 +710,85 @@ later = ->
     is_sad
     is_happy
     sadden
-    declare }               = intertype.export()
-  debug '^3378^', intertype.is_happy
-  debug '^3378^', intertype.export().is_happy
-  debug '^3378^', intertype.export().is_happy 42
-  debug '^3378^', intertype.export().is_sad 42
-  debug '^3378^', intertype.export().sadden 42
+    type_of
+    types_of
+    declare
+    declare_check }         = intertype.export()
   #.........................................................................................................
-  intertype.checks.dvsbl_2_3 = ( x ) ->
+  declare_check 'dvsbl_2_3', ( x ) ->
     validate.even x
     return x %% 3 is 0
   #.........................................................................................................
   T.eq ( is_happy check 'integer',      42     ), true
-  T.eq ( is_happy check 'integer',      42.5   ), false
   T.eq ( is_happy check 'dvsbl_2_3',    42     ), true
-  T.eq ( is_happy check 'dvsbl_2_3',    43     ), false
   T.eq ( is_happy check 'dvsbl_2_3',    2 * 3  ), true
   T.eq ( is_happy check.integer         42     ), true
-  T.eq ( is_happy check.integer         42.5   ), false
   T.eq ( is_happy check.dvsbl_2_3       42     ), true
-  T.eq ( is_happy check.dvsbl_2_3       43     ), false
   T.eq ( is_happy check.dvsbl_2_3       2 * 3  ), true
-  # debug '^390-1^',          check.integer         42.5
-  # debug '^390-2^',         ( check.integer         42.5 ) is intertype.sad
-  # debug '^390-3^',         sad
-  # debug '^390-4^',         intertype.sad
-  # debug '^390-5^',         sad is intertype.sad
-  # debug '^390-6^', is_happy check.integer         42.5
+  #.........................................................................................................
+  T.eq (          check 'dvsbl_2_3',    42     ), true
+  T.eq (          check 'dvsbl_2_3',    2 * 3  ), true
+  #.........................................................................................................
+  T.eq (          check 'integer',      42     ), true
+  T.eq (          check.integer         42     ), true
+  #.........................................................................................................
+  T.eq (          check.dvsbl_2_3       42     ), true
+  T.eq (          check.dvsbl_2_3       2 * 3  ), true
+  #.........................................................................................................
+  T.eq ( is_happy check 'integer',      42.5   ), false
+  T.eq ( is_happy check.integer         42.5   ), false
+  T.eq ( is_happy check 'dvsbl_2_3',    43     ), false
+  T.eq ( is_happy check.dvsbl_2_3       43     ), false
+  #.........................................................................................................
+  T.eq (          check 'integer',      42.5   ), sad
+  T.eq (          check.integer         42.5   ), sad
+  #.........................................................................................................
+  T.ok isa.error ( check 'dvsbl_2_3',    43     )
+  T.ok isa.error ( check.dvsbl_2_3       43     )
+  #.........................................................................................................
+  declare 'fs_stats', tests:
+    'x is an object':         ( x ) -> @isa.object  x
+    'x.size is a count':      ( x ) -> @isa.count   x.size
+    'x.atimeMs is a number':  ( x ) -> @isa.number  x.atimeMs
+    'x.atime is a date':      ( x ) -> @isa.date    x.atime
+  #.........................................................................................................
+  ### NOTE: will throw error unless path exists, error is implicitly caught, represents sad path ###
+  declare_check 'fso_exists', ( path, stats = null ) -> FS.statSync path
+    # try ( stats ? FS.statSync path ) catch error then error
+  #.........................................................................................................
+  declare_check 'is_file', ( path, stats = null ) ->
+    return bad    if is_sad ( bad = stats = @check.fso_exists path, stats )
+    return stats  if stats.isFile()
+    return sadden "not a file: #{path}"
+  #.........................................................................................................
+  declare_check 'is_json_file', ( path ) ->
+    return try ( JSON.parse FS.readFileSync path ) catch error then error
+  #.........................................................................................................
+  ### overloading 'path' here, obviously ###
+  happy_path  = PATH.resolve PATH.join __dirname, '../../package.json'
+  sad_path    = 'xxxxx'
+  happy_fso_exists    = check.fso_exists    happy_path
+  happy_is_file       = check.is_file       happy_path
+  happy_is_json_file  = check.is_json_file  happy_path
+  sad_fso_exists      = check.fso_exists    sad_path
+  sad_is_file         = check.is_file       sad_path
+  sad_is_json_file    = check.is_json_file  sad_path
+  T.ok is_happy         happy_fso_exists
+  T.ok is_happy         happy_is_file
+  T.ok is_happy         happy_is_json_file
+  T.ok is_sad           sad_fso_exists
+  T.ok is_sad           sad_is_file
+  T.ok is_sad           sad_is_json_file
+  T.ok isa.fs_stats     happy_fso_exists
+  T.ok isa.fs_stats     happy_is_file
+  T.ok isa.object       happy_is_json_file
+  T.ok isa.error        sad_fso_exists
+  T.ok isa.error        sad_is_file
+  T.ok isa.error        sad_is_json_file
+  T.eq sad_fso_exists.code,     'ENOENT'
+  T.eq sad_is_file.code,        'ENOENT'
+  T.eq sad_is_json_file.code,   'ENOENT'
+  #.........................................................................................................
   done()
   return null
 
@@ -745,6 +797,7 @@ later = ->
 unless module.parent?
   # test @
   # test @[ "check(): validation with intermediate results (experiment)" ]
+  # test @[ "classes with MultiMix" ]
   test @[ "check(): validation with intermediate results (for reals)" ]
   # test @[ "vnr, int32" ]
   # test @[ "cast" ]
