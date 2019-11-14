@@ -23,7 +23,7 @@ Multimix                  = require 'multimix'
   js_type_of }            = require './helpers'
 #...........................................................................................................
 declarations              = require './declarations'
-sad                       = Symbol 'sad'
+sad                       = ( require './checks' ).sad
 
 #-----------------------------------------------------------------------------------------------------------
 isa               = ( type, xP... ) -> @_satisfies_all_aspects  type, xP...
