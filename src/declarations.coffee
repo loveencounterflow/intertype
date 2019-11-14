@@ -5,6 +5,7 @@
   flatten
   xrpr
   js_type_of }            = require './helpers'
+CHECKS                    = require './checks'
 
 
 #===========================================================================================================
@@ -14,6 +15,11 @@
   ### NOTE to be called as `( require './declarations' ).declare_types.apply instance` ###
   @declare 'null',                ( x ) => x is null
   @declare 'undefined',           ( x ) => x is undefined
+  #.........................................................................................................
+  @declare 'sad',                 ( x ) => CHECKS.is_sad      x
+  @declare 'happy',               ( x ) => CHECKS.is_happy    x
+  @declare 'saddened',            ( x ) => CHECKS.is_saddened x
+  @declare 'symbol',              ( x ) => typeof x is 'symbol'
   #.........................................................................................................
   @declare 'boolean',
     tests:

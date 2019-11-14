@@ -28,6 +28,7 @@ INTERTYPE                 = require '../..'
   jr
   flatten
   xrpr
+  intersection_of
   js_type_of }            = require '../helpers'
 
 
@@ -308,7 +309,6 @@ INTERTYPE                 = require '../..'
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "types_of" ] = ( T, done ) ->
-  intersection_of = ( a, b ) -> ( x for x in a when x in b ).sort()
   #.........................................................................................................
   intertype = new Intertype
   { isa
@@ -790,15 +790,87 @@ later = ->
   T.eq sad_is_json_file.code,   'ENOENT'
   #.........................................................................................................
   done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "types_of() includes happy, sad" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    sad
+    sadden
+    all_keys_of } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [ 123,                        [             'happy',    'number',     ],  null, ]
+    [ 124,                        [             'happy',    'number',     ],  null, ]
+    [ 0,                          [             'happy',    'number',     ],  null, ]
+    [ true,                       [ 'boolean',  'happy',                  ],  null, ]
+    [ null,                       [             'happy',    'null',       ],  null, ]
+    [ undefined,                  [             'happy',    'undefined',  ],  null, ]
+    [ {},                         [             'happy',    'object',     ],  null, ]
+    [ [],                         [             'happy',    'list',       ],  null, ]
+    [ sad,                        [             'sad',      'symbol',     ],  null, ]
+    [ new Error(),                [ 'error',    'sad',                    ],  null, ]
+    [ { [sad]: true, _: null, },  [ 'object',   'sad',      'saddened',   ],  null, ]
+    [ ( sadden null ),            [ 'object',   'sad',      'saddened',   ],  null, ]
+    ]
+  #.........................................................................................................
+  # debug intersection_of [ 1, 2, 3, ], [ 'a', 3, 1, ]
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      result = intersection_of matcher, types_of probe
+      # log jr [ probe, result, ]
+      # resolve result
+      resolve result
+      return null
+  #.........................................................................................................
+  done()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "unsadden" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    sad
+    sadden
+    unsadden
+    all_keys_of } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [ { [sad]: true, _: null, },  null,     null, ]
+    [ ( sadden 129282 ),          129282,   null, ]
+    [ 333,                        333,      null, ]
+    [ sad,                        null,     "not a valid saddened", ]
+    [ ( new Error() ),            null,     "not a valid saddened", ]
+    ]
+  #.........................................................................................................
+  # debug intersection_of [ 1, 2, 3, ], [ 'a', 3, 1, ]
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      resolve unsadden probe
+      return null
+  #.........................................................................................................
+  done()
   return null
 
 
 ############################################################################################################
 unless module.parent?
-  # test @
+  test @
+  # test @[ "types_of() includes happy, sad" ]
   # test @[ "check(): validation with intermediate results (experiment)" ]
-  # test @[ "classes with MultiMix" ]
-  test @[ "check(): validation with intermediate results (for reals)" ]
+  # test @[ "check(): validation with intermediate results (for reals)" ]
   # test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]

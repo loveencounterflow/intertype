@@ -65,7 +65,7 @@ class @Intertype extends Multimix
   @include require './cataloguing'
   @include require './sizing'
   @include require './declaring'
-
+  @include require './checks'
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( target = null ) ->
@@ -73,17 +73,6 @@ class @Intertype extends Multimix
     #.......................................................................................................
     ### TAINT bug in MultiMix, should be possible to declare methods in class, not the constructor,
     and still get a bound version with `export()`; declaring them here FTTB ###
-    @is_sad   = ( x ) -> ( x is sad ) or ( x instanceof Error ) or ( ( @isa.object x ) and ( x[ sad ] is true ) )
-    @is_happy = ( x ) -> not @is_sad x
-    @sadden   = ( x ) -> { [sad]: true, _: x, }
-    #.......................................................................................................
-    @declare_check = ( name, checker ) ->
-      @validate.nonempty_text name
-      @validate.function      checker
-      throw new Error "µ8032 type #{rpr name} already declared"   if @specs[  name ]?
-      throw new Error "µ8033 check #{rpr name} already declared"  if @checks[ name ]?
-      @checks[ name ] = checker
-      return null
     #.......................................................................................................
     @sad              = sad
     @specs            = {}
@@ -94,7 +83,6 @@ class @Intertype extends Multimix
     @validate         = Multimix.get_keymethod_proxy @, validate
     @validate_list_of = Multimix.get_keymethod_proxy @, validate_list_of
     @check            = Multimix.get_keymethod_proxy @, check
-    # @checks           = ( require './checks' ).provide.apply @
     declarations.declare_types.apply @
     @export target if target?
 

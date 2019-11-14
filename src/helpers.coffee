@@ -25,5 +25,5 @@ _xrpr         = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArr
     else ' ' + rpr_of_tprs
   return { rpr_of_tprs, srpr_of_tprs, }
 
-
-
+#-----------------------------------------------------------------------------------------------------------
+@intersection_of = ( a, b ) -> ( x for x in a when x in b ).sort()
