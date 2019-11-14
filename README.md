@@ -222,3 +222,7 @@ else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 
 * [ ] disallow extra arguments to `isa()`: all typechecks must use exactly one argument (`x`)
 
+* [ ] should `undefined` be an inherently sad (like errors) or happy (like `null`) value?
+
+
+
