@@ -220,4 +220,5 @@ else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 
 * [ ] Unify registration of checks and types; rename `declare()` to `declare_type()`
 
+* [ ] disallow extra arguments to `isa()`: all typechecks must use exactly one argument (`x`)
 
