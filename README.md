@@ -218,6 +218,6 @@ else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 
 * [ ] Allow to declare additional casts after type has been declared
 
-
+* [ ] Unify registration of checks and types; rename `declare()` to `declare_type()`
 
 
