@@ -42,13 +42,10 @@ cast = ( type_a, type_b, x, xP... ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 check = ( type, x, xP... ) ->
-  # debug '^33342^', { type: ( rpr type ), has_specs: @specs[ type ]?, }
-  # debug '^33342^', @specs
-  ### NOTE will not allow extra arguments to `isa` in upcoming version: ###
   if @specs[ type ]?
     return if ( @isa type, x, xP... ) then true else sad
   throw new Error "µ44521 unknown type or check #{rpr type}" unless ( check = @checks[ type ] )?
-  return try check x, xP... catch error then error
+  return try check.call @, x, xP... catch error then error
 
 #-----------------------------------------------------------------------------------------------------------
 validate = ( type, xP... ) ->
