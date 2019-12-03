@@ -224,5 +224,14 @@ else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 
 * [ ] should `undefined` be an inherently sad (like errors) or happy (like `null`) value?
 
+* [ ] implement generic checks like `equals()`
+
+* [ ] all checks should be usable with `validate`, `isa`
+
+* [ ] implement `panic()`-like function that throws on sad values (keeping exceptions as such, unwrapping
+  saddened values)
+
+
+
 
 
