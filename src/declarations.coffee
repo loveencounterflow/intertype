@@ -49,6 +49,9 @@ CHECKS                    = require './checks'
   @declare 'generator',           ( x ) => ( js_type_of x ) is 'generator'
   @declare 'date',                ( x ) => ( js_type_of x ) is 'date'
   @declare 'callable',            ( x ) => ( @type_of x ) in [ 'function', 'asyncfunction', 'generatorfunction', ]
+  @declare 'promise',             ( x ) => ( @isa.nativepromise x ) or ( @isa.thenable x )
+  @declare 'nativepromise',       ( x ) => x instanceof Promise
+  @declare 'thenable',            ( x ) => ( @type_of x?.then ) is 'function'
   #.........................................................................................................
   @declare 'truthy',              ( x ) => not not x
   @declare 'falsy',               ( x ) => not x
