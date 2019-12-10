@@ -219,6 +219,8 @@ INTERTYPE                 = require '../..'
     [ "type_of( new Float32Array(      5       )               )", 'float32array',        null, ]
     [ "type_of( new Float64Array(      5       )               )", 'float64array',        null, ]
     [ "type_of( new Promise( ( rslv, rjct ) => {} )            )", 'promise',             null, ]
+    [ "type_of( async function* () { await f(); yield 42; }       )", 'asyncgeneratorfunction', null, ]
+    [ "type_of( ( async function* () { await f(); yield 42; } )() )", 'asyncgenerator',         null, ]
     ]
   #.........................................................................................................
   for [ probe, matcher, error, ] in probes_and_matchers
@@ -749,24 +751,24 @@ later = ->
   #.........................................................................................................
   T.ok isa.error ( check 'dvsbl_2_3',    43     )
   T.ok isa.error ( check.dvsbl_2_3       43     )
-  #.........................................................................................................
-  declare 'fs_stats', tests:
-    'x is an object':         ( x ) -> @isa.object  x
-    'x.size is a count':      ( x ) -> @isa.count   x.size
-    'x.atimeMs is a number':  ( x ) -> @isa.number  x.atimeMs
-    'x.atime is a date':      ( x ) -> @isa.date    x.atime
-  #.........................................................................................................
-  ### NOTE: will throw error unless path exists, error is implicitly caught, represents sad path ###
-  declare_check 'fso_exists', ( path, stats = null ) -> FS.statSync path
-    # try ( stats ? FS.statSync path ) catch error then error
-  #.........................................................................................................
-  declare_check 'is_file', ( path, stats = null ) ->
-    return bad    if is_sad ( bad = stats = @check.fso_exists path, stats )
-    return stats  if stats.isFile()
-    return sadden "not a file: #{path}"
-  #.........................................................................................................
-  declare_check 'is_json_file', ( path ) ->
-    return try ( JSON.parse FS.readFileSync path ) catch error then error
+  # #.........................................................................................................
+  # declare 'fs_stats', tests:
+  #   'x is an object':         ( x ) -> @isa.object  x
+  #   'x.size is a count':      ( x ) -> @isa.count   x.size
+  #   'x.atimeMs is a number':  ( x ) -> @isa.number  x.atimeMs
+  #   'x.atime is a date':      ( x ) -> @isa.date    x.atime
+  # #.........................................................................................................
+  # ### NOTE: will throw error unless path exists, error is implicitly caught, represents sad path ###
+  # declare_check 'fso_exists', ( path, stats = null ) -> FS.statSync path
+  #   # try ( stats ? FS.statSync path ) catch error then error
+  # #.........................................................................................................
+  # declare_check 'is_file', ( path, stats = null ) ->
+  #   return bad    if is_sad ( bad = stats = @check.fso_exists path, stats )
+  #   return stats  if stats.isFile()
+  #   return sadden "not a file: #{path}"
+  # #.........................................................................................................
+  # declare_check 'is_json_file', ( path ) ->
+  #   return try ( JSON.parse FS.readFileSync path ) catch error then error
   #.........................................................................................................
   ### overloading 'path' here, obviously ###
   happy_path  = PATH.resolve PATH.join __dirname, '../../package.json'
