@@ -163,6 +163,33 @@ CHECKS                    = require './checks'
     list of integers or as an `Int32Array`. ###
     return ( @isa.int32array x ) or ( ( @isa_list_of.int32 x ) and ( x.length > 0 ) )
 
+  #.........................................................................................................
+  @declare 'fs_stats', tests:
+    'x is an object':         ( x ) -> @isa.object  x
+    'x.size is a count':      ( x ) -> @isa.count   x.size
+    'x.atimeMs is a number':  ( x ) -> @isa.number  x.atimeMs
+    'x.atime is a date':      ( x ) -> @isa.date    x.atime
+
+
+#===========================================================================================================
+# TYPE DECLARATIONS
+#-----------------------------------------------------------------------------------------------------------
+@declare_checks = ->
+  PATH                      = require 'path'
+  FS                        = require 'fs'
+  #.........................................................................................................
+  ### NOTE: will throw error unless path exists, error is implicitly caught, represents sad path ###
+  @declare_check 'fso_exists', ( path, stats = null ) -> FS.statSync path
+    # try ( stats ? FS.statSync path ) catch error then error
+  #.........................................................................................................
+  @declare_check 'is_file', ( path, stats = null ) ->
+    return bad    if @is_sad ( bad = stats = @check.fso_exists path, stats )
+    return stats  if stats.isFile()
+    return @sadden "not a file: #{path}"
+  #.........................................................................................................
+  @declare_check 'is_json_file', ( path ) ->
+    return try ( JSON.parse FS.readFileSync path ) catch error then error
+
 
   ### not supported until we figure out how to do it in strict mode: ###
   # @declare 'arguments',                     ( x ) -> ( js_type_of x ) is 'arguments'
