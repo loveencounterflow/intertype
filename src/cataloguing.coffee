@@ -14,7 +14,6 @@ urge                      = CND.get_logger 'urge',      badge
 info                      = CND.get_logger 'info',      badge
 { assign
   jr }                    = CND
-flatten                   = require 'lodash.flattendeep'
 #...........................................................................................................
 { inspect, }              = require 'util'
 # _xrpr                     = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArrayLength: Infinity, depth: Infinity, }
@@ -73,7 +72,7 @@ flatten                   = require 'lodash.flattendeep'
 @has_keys = ( x, P... ) ->
   ### Observe that `has_keys()` always considers `undefined` as 'not set' ###
   return false unless x? ### TAINT or throw error ###
-  for key in flatten P
+  for key in P.flat Infinity
     ### TAINT should use property descriptors to avoid possible side effects ###
     return false if x[ key ] is undefined
   return true
@@ -83,7 +82,7 @@ flatten                   = require 'lodash.flattendeep'
 
 #-----------------------------------------------------------------------------------------------------------
 @has_only_keys = ( x, P... ) ->
-  probes  = ( flatten P ).sort()
+  probes  = ( P.flat Infinity ).sort()
   keys    = ( @values_of @keys_of x ).sort()
   return CND.equals probes, keys
 
