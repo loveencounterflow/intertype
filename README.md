@@ -207,12 +207,22 @@ else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 For the purposes of InterType, **a 'type' is reified as (given by, defined by, represented as) a pure, named
 function `t = ( x ) -> ...` that accepts exactly one argument `x` and always returns `true` or `false`**.
 Then, the set of all `x` that are of type `t` are those where `t x` returns `true`, and the set of all `x`
-that are not of type `t` are those where `t x` returns `false`; this two sets will always be disjunct.
+that are not of type `t` are those where `t x` returns `false`; these two sets will always be disjunct
+(otherwise `t` cannot be pure, invalidating the premise).
 
 Two trivial functions are the set of all members of all types, `any = ( x ) -> true`, and the set of values
 (in the loose sense, but see [`value` and `nowait`](#value-and-nowait)) that have no type at all, `none = (
 x ) -> false`; the former set contains anything representable by the VM at all, while the latter is the
 empty set (i.e. all values have at least one type, `any`).
+
+Observe that the above definition implies that *any and all* JS pure functions of arity one that always
+return a boolean define a type, even if unintentionally so; for example `is_legal_input = ( d ) -> ( d is 42
+) or ( d is 'foo' )` implicitly defines a weird type with the weird name 'is_legal_input' that has exactly
+two members, an integer number and a three-character string. This, indeed, is a desirable property, because
+on the one hand it makes the decision whether 'that thing over there' 'is' a 'type' (in most all cases:
+trivially) testable; on the other, it also assures us that **all functions that are only composed of calls
+to type definitions and logical operators define a type, too** (even if some of those happen to be
+synonymous to existing types or be equivalent to trivial types like `any` or `all`).
 
 # `value` and `nowait`
 
