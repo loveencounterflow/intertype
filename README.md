@@ -14,6 +14,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [Typed Value Casting](#typed-value-casting)
 - [Checks](#checks)
   - [Concatenating Checks](#concatenating-checks)
+- [Formal Definition of the Type Concept](#formal-definition-of-the-type-concept)
+- [`value` and `nowait`](#value-and-nowait)
 - [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -200,6 +202,55 @@ if is_sad R then  warn "fails with", ( rpr R )[ ... 80 ]
 else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 ```
 
+# Formal Definition of the Type Concept
+
+For the purposes of InterType, **a 'type' is reified as (given by, defined by, represented as) a pure, named
+function `t = ( x ) -> ...` that accepts exactly one argument `x` and always returns `true` or `false`**.
+Then, the set of all `x` that are of type `t` are those where `t x` returns `true`, and the set of all `x`
+that are not of type `t` are those where `t x` returns `false`; this two sets will always be disjunct.
+
+Two trivial functions are the set of all members of all types, `any = ( x ) -> true`, and the set of values
+(in the loose sense, but see [`value` and `nowait`](#value-and-nowait)) that have no type at all, `none = (
+x ) -> false`; the former set contains anything representable by the VM at all, while the latter is the
+empty set (i.e. all values have at least one type, `any`).
+
+# `value` and `nowait`
+
+A maybe surprising type is `value` (in the strict sense), which is a type defined to contain all values `x`
+for which `isa.promise x` returns `false` (this includes all native promises and all 'thenables').
+
+The `value` type has been defined as a convenient way to ensure that a given synchronous function call was
+actually synchronous, i.e. did not return a promise; this may be done as
+
+```coffee
+validate.value r = my_sync_function 'foo', 'bar', 'baz'
+```
+
+Observe that 'values' in the strict sense do comprise `NaN`, `null`, `undefined`, `false` and anything else
+except for promises, so `x?` is distinct from `isa.value x`; therefore, even when `my_sync_function()`
+'doesn't return any value' (i.e. returns `undefined`), that is a value in this sense, too.
+
+Equivalently and more succinctly, the validation step can be written with `nowait()`:
+
+```coffee
+nowait r = my_sync_function 'foo', 'bar', 'baz'
+```
+
+`nowait x` will always either throw a validation error (when `x` is a promise) or else return `x` itself,
+which means that we can write equivalently:
+
+```coffee
+r = nowait my_sync_function 'foo', 'bar', 'baz'
+```
+
+At least in languages with optional parentheses like CoffeeScript, this looks exactly parallel to
+
+```coffee
+r = await my_async_function 'foo', 'bar', 'baz'
+```
+
+hence the name.
+
 
 # To Do
 
@@ -231,7 +282,16 @@ else              help "is JSON file; contents:", ( jr R )[ ... 100 ]
 * [ ] implement `panic()`-like function that throws on sad values (keeping exceptions as such, unwrapping
   saddened values)
 
+* [ ] consider whether to return type as intermediate happy value for type checks like `if is_happy ( type =
+  check.object x ) then ...`
 
+* [ ] implement custom error messages for types and/or hints what context should be provided on failure in
+  validations, checks; this in an attempt to cut down on the amount of individual error messages one has to
+  write (ex.: `validate.number 42, { name, foo, bar }` could quote second argument in error messages to
+  provide contextual values `name`, `foo`, `bar`)
+
+* [X] implement `validate.value x` to check `x` is anything but a promise; also offer as `nowait` method
+  (the counterpart to `await`)
 
 
 
