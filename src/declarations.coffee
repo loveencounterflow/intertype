@@ -112,6 +112,8 @@ CHECKS                    = require './checks'
   @declare 'error',                                     ( x ) -> ( js_type_of x ) is 'error'
   @declare 'regex',                                     ( x ) -> ( js_type_of x ) is 'regexp'
   #.........................................................................................................
+  @declare 'value',                                     ( x ) -> not @isa.promise x
+  #.........................................................................................................
   @declare 'object',
     tests:  ( x     ) => ( js_type_of x ) is 'object'
     size:   ( xP... ) => ( @keys_of     xP... ).length

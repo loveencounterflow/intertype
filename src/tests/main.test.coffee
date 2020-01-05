@@ -870,10 +870,45 @@ later = ->
   done()
   return null
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "isa.value, nowait" ] = ( T, done ) ->
+  intertype = new Intertype
+  { isa
+    types_of
+    type_of
+    validate
+    nowait } = intertype.export()
+  #.........................................................................................................
+  T.ok 'value'  not in  types_of new Promise ->
+  T.ok 'value'  not in  types_of { then: -> }
+  T.ok 'value'      in  types_of 42
+  error = null
+  T.eq ( isa.value null                 ), true
+  T.eq ( isa.value 12.34                ), true
+  T.eq ( isa.value undefined            ), true
+  T.eq ( isa.value new Promise ->       ), false
+  try
+    validate.value x = 42;        T.ok true
+    validate.value x = undefined; T.ok true
+    validate.value x = null;      T.ok true
+    validate.value x = 1 * '#';   T.ok true
+  catch error
+    throw error
+  try
+    validate.value x = ( new Promise -> ); T.ok false ### ^44452^ ###
+  catch error
+    urge "(ok)", CND.red error.message
+    T.ok true
+  T.ok false unless error? ### ^81112^ ###
+  f = ( x ) -> x ** 2
+  r = nowait f 5
+  T.eq r, 25
+  done()
 
 ############################################################################################################
 unless module.parent?
   test @
+  # test @[ "isa.value, nowait" ]
   # test @[ "types_of() includes happy, sad" ]
   # test @[ "check(): validation with intermediate results (experiment)" ]
   # test @[ "check(): validation with intermediate results (for reals)" ]
