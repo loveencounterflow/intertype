@@ -54,6 +54,7 @@ CHECKS                    = require './checks'
   @declare 'promise',                 ( x ) => ( @isa.nativepromise x ) or ( @isa.thenable x )
   @declare 'nativepromise',           ( x ) => x instanceof Promise
   @declare 'thenable',                ( x ) => ( @type_of x?.then ) is 'function'
+  @declare 'immediate',               ( x ) -> not @isa.promise x
   #.........................................................................................................
   @declare 'truthy',              ( x ) => not not x
   @declare 'falsy',               ( x ) => not x
@@ -111,8 +112,6 @@ CHECKS                    = require './checks'
   @declare 'weakset',                                   ( x ) -> ( js_type_of x ) is 'weakset'
   @declare 'error',                                     ( x ) -> ( js_type_of x ) is 'error'
   @declare 'regex',                                     ( x ) -> ( js_type_of x ) is 'regexp'
-  #.........................................................................................................
-  @declare 'value',                                     ( x ) -> not @isa.promise x
   #.........................................................................................................
   @declare 'object',
     tests:  ( x     ) => ( js_type_of x ) is 'object'

@@ -871,7 +871,7 @@ later = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "isa.value, nowait" ] = ( T, done ) ->
+@[ "isa.immediate, nowait" ] = ( T, done ) ->
   intertype = new Intertype
   { isa
     types_of
@@ -879,36 +879,30 @@ later = ->
     validate
     nowait } = intertype.export()
   #.........................................................................................................
-  T.ok 'value'  not in  types_of new Promise ->
-  T.ok 'value'  not in  types_of { then: -> }
-  T.ok 'value'      in  types_of 42
-  error = null
-  T.eq ( isa.value null                 ), true
-  T.eq ( isa.value 12.34                ), true
-  T.eq ( isa.value undefined            ), true
-  T.eq ( isa.value new Promise ->       ), false
-  try
-    validate.value x = 42;        T.ok true
-    validate.value x = undefined; T.ok true
-    validate.value x = null;      T.ok true
-    validate.value x = 1 * '#';   T.ok true
-  catch error
-    throw error
-  try
-    validate.value x = ( new Promise -> ); T.ok false ### ^44452^ ###
-  catch error
-    urge "(ok)", CND.red error.message
-    T.ok true
-  T.ok false unless error? ### ^81112^ ###
-  f = ( x ) -> x ** 2
-  r = nowait f 5
+  try T.ok 'immediate'  not in ( types_of new Promise ->  ) catch error then T.fail 'testcase-171615'
+  try T.ok 'immediate'  not in ( types_of { then: -> }    ) catch error then T.fail 'testcase-171616'
+  try T.ok 'immediate'      in ( types_of 42              ) catch error then T.fail 'testcase-171617'
+  #.........................................................................................................
+  try T.eq ( isa.immediate null                 ), true   catch error then T.fail 'testcase-171618'
+  try T.eq ( isa.immediate 12.34                ), true   catch error then T.fail 'testcase-171619'
+  try T.eq ( isa.immediate undefined            ), true   catch error then T.fail 'testcase-171620'
+  try T.eq ( isa.immediate new Promise ->       ), false  catch error then T.fail 'testcase-171621'
+  #.........................................................................................................
+  try ( validate.immediate 42         ) catch  error then T.fail 'testcase-171622'
+  try ( validate.immediate undefined  ) catch  error then T.fail 'testcase-171623'
+  try ( validate.immediate null       ) catch  error then T.fail 'testcase-171624'
+  try ( validate.immediate 1 * '#'    ) catch  error then T.fail 'testcase-171625'
+  #.........................................................................................................
+  T.throws /not a valid immediate/, -> validate.immediate x = ( new Promise -> )
+  try ( r = nowait ( ( x ) -> x ** 2 ) 5 ) catch error then T.fail 'testcase-171626'
   T.eq r, 25
+  T.throws /not a valid immediate/, -> r = nowait ( -> new Promise -> )()
   done()
 
 ############################################################################################################
 unless module.parent?
-  test @
-  # test @[ "isa.value, nowait" ]
+  # test @
+  test @[ "isa.immediate, nowait" ]
   # test @[ "types_of() includes happy, sad" ]
   # test @[ "check(): validation with intermediate results (experiment)" ]
   # test @[ "check(): validation with intermediate results (for reals)" ]

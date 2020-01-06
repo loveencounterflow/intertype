@@ -83,7 +83,7 @@ class @Intertype extends Multimix
     @validate         = Multimix.get_keymethod_proxy @, validate
     @validate_list_of = Multimix.get_keymethod_proxy @, validate_list_of
     @check            = Multimix.get_keymethod_proxy @, check
-    @nowait           = ( x ) -> @validate.value x; return x
+    @nowait           = ( x ) -> @validate.immediate x; return x
     declarations.declare_types.apply @
     declarations.declare_checks.apply @
     @export target if target?
