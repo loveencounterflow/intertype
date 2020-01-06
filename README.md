@@ -216,9 +216,23 @@ x ) -> false`; the former set contains anything representable by the VM at all, 
 empty set (i.e. all values have at least one type, `any`).
 
 Observe that the above definition implies that *any and all* JS pure functions of arity one that always
-return a boolean define a type, even if unintentionally so; for example `is_legal_input = ( d ) -> ( d is 42
-) or ( d is 'foo' )` implicitly defines a weird type with the weird name 'is_legal_input' that has exactly
-two members, an integer number and a three-character string.
+return a boolean define a type, even if unintentionally so; for example `is_legal_input = ( x ) -> ( x is 42
+) or ( x is 'foo' )` implicitly defines a weird type with the weird name 'is_legal_input' that has exactly
+two members, an integer number and a three-character string. Less weird and more commonly used are such
+types that include only a small, enumerable set of values, as in `traffic_light_color = ( x ) -> x in [
+'red', 'amber', 'green', ]`, otherwise known as 'enumerations', or a smallish set defined by pattern
+matching, as in `file_sequence_nr = ( x ) -> ( isa.text x ) and ( x.match /^nr[0-9]{3}$/ )?` (which allows
+`nr031` but prohibits `nr03x`).
+
+> Observe that in the last example, it is imperative to first test for `x` being a `text` before trying to
+> use the `String#match()` method, this to ensure no exception will ever occur. One *could* also just `try`
+> to call `x.match()` and then `catch` errors and return `false` instead; however, this will make arbitrary
+> objects like `{ match: ( -> true ), }` pass the test which is probably not intended. For a `x in [ ... ]`
+> check, such a safeguard is not needed, but observe that `( new String 'abc' ) in [ 'abc' ]` gives `false`
+> which probably does indeed do what you wanted (namely, exclude those problematic and vexing [boxed
+> (wrapped)
+> values](https://developer.mozilla.org/en-US/docs/Glossary/Primitive#Primitive_wrapper_objects_in_JavaScript))
+> that have no justification to be used, ever.
 
 That a 'type' 'is' a function of a certain kind is indeed a desirable property. First of all, it makes
 deciding whether a given thing is a type (in almost all cases: trivially) testable. Next, it specifies an
