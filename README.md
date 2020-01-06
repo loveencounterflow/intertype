@@ -218,13 +218,20 @@ empty set (i.e. all values have at least one type, `any`).
 Observe that the above definition implies that *any and all* JS pure functions of arity one that always
 return a boolean define a type, even if unintentionally so; for example `is_legal_input = ( d ) -> ( d is 42
 ) or ( d is 'foo' )` implicitly defines a weird type with the weird name 'is_legal_input' that has exactly
-two members, an integer number and a three-character string. This, indeed, is a desirable property, because
-on the one hand it makes the decision whether 'that thing over there' 'is' a 'type' (in most all cases:
-trivially) testable; on the other, it assures us that **all functions that are only composed of calls to
-type definitions and logical operators define a type, too** (even if some of those happen to be synonymous
-to existing types or equivalent to trivial types like `any` or `all`); in particular, this means that
-**unions (generalizations) of types** according to this definition are unequivocally types according to this
-definition, too, as are **intersections (refinements) of types**.
+two members, an integer number and a three-character string.
+
+That a 'type' 'is' a function of a certain kind is indeed a desirable property. First of all, it makes
+deciding whether a given thing is a type (in almost all cases: trivially) testable. Next, it specifies an
+unambiguous method how to construct types, and the method of construction is using first principles—unary,
+boolean pure functions, about the most elementary kind of callables. Not least, it assures us that **all
+functions that are only composed of calls to type definitions and logical operators define a type, too**
+(even if some of those happen to be synonymous to existing types or equivalent to trivial types like `any`
+or `all`); in particular, this means that **unions (generalizations) of types** according to this definition
+are unequivocally types according to this definition, too, as are **intersections (refinements) of types**.
+And, of course, some functions that go beyond combining function calls by means of `and`, `or`, `not` can
+shown to be materially types in the sense of this definition. Conversely, we can also be sure that any and
+all functions that at least for some inputs will call an impure function cannot be said to represent types
+(unless they `try`, `catch` and handle possible exceptions and turn them into a boolean).
 
 > As for whether one should encourage or discourage synonymous types—types with multiple names and
 > definitions but identical element sets—the policy is that unwarranted duplication is, of course, to be
