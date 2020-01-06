@@ -225,12 +225,18 @@ matching, as in `file_sequence_nr = ( x ) -> ( isa.text x ) and ( x.match /^nr[0
 `nr031` but prohibits `nr03x`).
 
 > Observe that in the last example, it is imperative to first test for `x` being a `text` before trying to
-> use the `String#match()` method, this to ensure no exception will ever occur. One *could* also just `try`
-> to call `x.match()` and then `catch` errors and return `false` instead; however, this will make arbitrary
-> objects like `{ match: ( -> true ), }` pass the test which is probably not intended. For a `x in [ ... ]`
-> check, such a safeguard is not needed, but observe that `( new String 'abc' ) in [ 'abc' ]` gives `false`
-> which probably does indeed do what you wanted (namely, exclude those problematic and vexing [boxed
-> (wrapped)
+> use the `String.prototype.match()` method, this to ensure no exception will ever occur. The alternatives
+> are clearly inferior:
+>
+> * One could `try` to call `x.match()` and then `catch` errors and return `false` instead; however, this
+>   will make arbitrary objects like `{ match: ( -> true ), }` pass the test which is probably not intended.
+>
+> * It is possible to `String::match.call x, pattern`, but that will throw for values like `null` and
+>   `undefined` so still needs to be guarded with `try` and `catch`.
+>
+> As for the `x in [ ... ]` check, such a safeguard is not needed, but observe that `( new String 'abc' ) in
+> [ 'abc' ]` gives `false` which probably does indeed do what you wanted (namely, exclude those problematic
+> and vexing [boxed (wrapped)
 > values](https://developer.mozilla.org/en-US/docs/Glossary/Primitive#Primitive_wrapper_objects_in_JavaScript))
 > that have no justification to be used, ever.
 
