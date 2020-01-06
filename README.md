@@ -15,7 +15,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [Checks](#checks)
   - [Concatenating Checks](#concatenating-checks)
 - [Formal Definition of the Type Concept](#formal-definition-of-the-type-concept)
-- [`value` and `nowait`](#value-and-nowait)
+- [`immediate` and `nowait`](#immediate-and-nowait)
 - [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -267,21 +267,21 @@ all functions that at least for some inputs will call an impure function cannot 
 > natural number), they count different things and may, in a software system, be subject to different
 > constraints.
 
-# `value` and `nowait`
+# `immediate` and `nowait`
 
-A maybe surprising type is `value` (in the strict sense), which is a type defined to contain all values `x`
-for which `isa.promise x` returns `false` (this includes all native promises and all 'thenables').
+The type `immediate` is defined as the complement of promises, that is, the set of all values `x` for which
+`isa.promise x` returns `false` (so neither native promises nor any 'thenables'—objects where `x.then` is a
+function).
 
-The `value` type has been defined as a convenient way to ensure that a given synchronous function call was
-actually synchronous, i.e. did not return a promise; this may be done as
+The `immediate` type has been defined as a convenient way to ensure that a given synchronous function call
+was actually synchronous, i.e. did not return a promise; this may be done as
 
 ```coffee
-validate.value r = my_sync_function 'foo', 'bar', 'baz'
+validate.immediate r = my_sync_function 'foo', 'bar', 'baz'
 ```
 
-Observe that 'values' in the strict sense do comprise `NaN`, `null`, `undefined`, `false` and anything else
-except for promises, so `x?` is distinct from `isa.value x`; therefore, even when `my_sync_function()`
-'doesn't return any value' (i.e. returns `undefined`), that is a value in this sense, too.
+Observe that immediates do comprise `NaN`, `null`, `undefined`, `false` and anything else
+except for promises, so `x?` is distinct from `isa.immediate x`.
 
 Equivalently and more succinctly, the validation step can be written with `nowait()`:
 
