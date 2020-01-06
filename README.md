@@ -343,8 +343,10 @@ hence the name.
   write (ex.: `validate.number 42, { name, foo, bar }` could quote second argument in error messages to
   provide contextual values `name`, `foo`, `bar`)
 
-* [X] implement `validate.value x` to check `x` is anything but a promise; also offer as `nowait` method
+* [X] implement `validate.immediate x` to check `x` is anything but a promise; also offer as `nowait` method
   (the counterpart to `await`)
 
-
+* [ ] **v4.x.x** type declarations should have keys `isa` (single test or list or object with tests),
+  `default` (a value that represents initial value of a given type), `check` (like `isa` but for checks),
+  `sample` (generate random values from the type's domain as done in Clojure `spec`)
 
