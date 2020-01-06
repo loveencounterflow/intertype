@@ -59,9 +59,11 @@ copy_if_original = ( x ) ->
       [ x, ] = xP
       unless Number.isFinite x
         R = if ( Number.isNaN x ) then 'nan' else 'infinity'
-    when 'regexp' then R = 'regex'
-    when 'string' then R = 'text'
-    when 'array'  then R = 'list'
+    when 'regexp'         then R = 'regex'
+    when 'string'         then R = 'text'
+    when 'array'          then R = 'list'
+    when 'arrayiterator'  then R = 'listiterator'
+    when 'stringiterator' then R = 'textiterator'
   ### Refuse to answer question in case type found is not in specs: ###
   # debug 'µ33332', R, ( k for k of @specs )
   throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
