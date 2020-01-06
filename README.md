@@ -222,18 +222,23 @@ two members, an integer number and a three-character string. This, indeed, is a 
 on the one hand it makes the decision whether 'that thing over there' 'is' a 'type' (in most all cases:
 trivially) testable; on the other, it assures us that **all functions that are only composed of calls to
 type definitions and logical operators define a type, too** (even if some of those happen to be synonymous
-to existing types or be equivalent to trivial types like `any` or `all`); in particular, this means that
+to existing types or equivalent to trivial types like `any` or `all`); in particular, this means that
 **unions (generalizations) of types** according to this definition are unequivocally types according to this
 definition, too, as are **intersections (refinements) of types**.
 
 > As for whether one should encourage or discourage synonymous types—types with multiple names and
 > definitions but identical element sets—the policy is that unwarranted duplication is, of course, to be
 > avoided, but clarity and specificity are desirable. In other words, when you find yourself writing
-> `validate.integer x` a lot in one module, chances are that you should really declare a custom type
+> `validate.integer x` a lot in a single module, chances are that you should really declare a custom type
 > `declare mytype = ( x ) -> isa.integer x` *even if that at the moment is nothing more than replicating an
 > existing definition*. If you find yourself writing things like `validate.positive_integer x; validate.even
 > x` then you should almost certainly define a type that checks for `( isa.positive_integer x ) and ( isa.
-> even x)`.
+> even x)`. Also observe that while the body of a type declaration as such are *extensional*—that is,
+> stating the material tests a given value must pass in order to conform to a given type—the names and the
+> usage of types should tend to be *intentional*, that is, express fitness for a purpose. Thus, one may want
+> to separately define, say, `file_count` and `line_count`: while both are counts (zero or a positive
+> natural number), they count different things and may, in a software system, be subject to different
+> constraints.
 
 # `value` and `nowait`
 
