@@ -350,3 +350,7 @@ hence the name.
   `default` (a value that represents initial value of a given type), `check` (like `isa` but for checks),
   `sample` (generate random values from the type's domain as done in Clojure `spec`)
 
+* [ ] implement hierarchical types, namespaces such that `isa.text.empty x` becomes possible; assign a
+  special namespace, call it `x`, for all custom userland namespaces, so one can always rely on
+  `isa.x.${npm_package_name}.foo()` to be available and free of naming conflicts.
+
