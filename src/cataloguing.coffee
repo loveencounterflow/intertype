@@ -41,7 +41,7 @@ info                      = CND.get_logger 'info',      badge
 #-----------------------------------------------------------------------------------------------------------
 @walk_all_keys_of = ( x, settings ) ->
   defaults = { skip_object: true, skip_undefined: true, }
-  settings = if settings? then ( assign {}, settings, defaults ) else defaults
+  settings = { defaults..., settings..., }
   return @_walk_all_keys_of x, new Set(), settings
 
 #-----------------------------------------------------------------------------------------------------------
