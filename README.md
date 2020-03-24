@@ -354,3 +354,10 @@ hence the name.
   special namespace, call it `x`, for all custom userland namespaces, so one can always rely on
   `isa.x.${npm_package_name}.foo()` to be available and free of naming conflicts.
 
+* [ ] introduce `test` as superset of `isa/validate` and `check` such that `test.chk x, ...` returns `true`
+  or false depending on `check.chk x, ...` returns a happy or sad value (and `test.tp x` is equivalent to
+  `isa.tp x`). This is just to make it so that one can use available checks w/out being forced to add
+  `is_happy()` clauses in one's code.
+
+* [ ] fix bug as commented in first version of `@[ "equality checks" ]` test case
+
