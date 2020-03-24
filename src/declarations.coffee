@@ -1,5 +1,6 @@
 
 #...........................................................................................................
+# { equals, }               = require 'cnd'
 { assign
   jr
   flatten
@@ -194,6 +195,14 @@ CHECKS                    = require './checks'
   #.........................................................................................................
   @declare_check 'is_json_file', ( path ) ->
     return try ( JSON.parse FS.readFileSync path ) catch error then error
+  # #.........................................................................................................
+  # @declare_check 'equals', ( a, P... ) ->
+  #   for b in P
+  #     return CHECKS.sad unless equals a, b
+  #   return true
+
+
+
 
 
   ### not supported until we figure out how to do it in strict mode: ###

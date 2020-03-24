@@ -899,10 +899,37 @@ later = ->
   T.throws /not a valid immediate/, -> r = nowait ( -> new Promise -> )()
   done()
 
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "equality checks" ] = ( T, done ) ->
+#   ### TAINT bug: when this test runs as only one, no problem; when run after some of the above,
+#     `equals` check throws error `Error: ENOENT: no such file or directory, open 'equals'` (!!!) ###
+#   intertype = new Intertype()
+#   { isa
+#     check } = intertype.export()
+#   urge '^8873^', jr ( k for k of intertype.export() )
+#   debug '^22231^', check.equals 3, 3
+#   debug '^22231^', check.equals 3, 4
+#   done() if done?
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "equals" ] = ( T, done ) ->
+  ### TAINT bug: when this test runs as only one, no problem; when run after some of the above,
+    `equals` check throws error `Error: ENOENT: no such file or directory, open 'equals'` (!!!) ###
+  intertype = new Intertype()
+  { isa
+    check
+    equals } = intertype.export()
+  T.eq ( equals 3, 3 ), true
+  T.eq ( equals 3, 4 ), false
+  done() if done?
+
+
 ############################################################################################################
 unless module.parent?
-  # test @
-  test @[ "isa.immediate, nowait" ]
+  test @
+  # test @[ "equality checks" ]
+  # @[ "equality checks" ]()
+  # test @[ "isa.immediate, nowait" ]
   # test @[ "types_of() includes happy, sad" ]
   # test @[ "check(): validation with intermediate results (experiment)" ]
   # test @[ "check(): validation with intermediate results (for reals)" ]
@@ -917,7 +944,7 @@ unless module.parent?
 
   # do -> debug ( require '../helpers' ).js_type_of arguments
 demo = ->
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of

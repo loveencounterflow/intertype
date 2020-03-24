@@ -24,6 +24,8 @@ Multimix                  = require 'multimix'
 #...........................................................................................................
 declarations              = require './declarations'
 sad                       = ( require './checks' ).sad
+{ equals, }               = CND
+
 
 #-----------------------------------------------------------------------------------------------------------
 isa               = ( type, xP... ) -> @_satisfies_all_aspects  type, xP...
@@ -88,5 +90,12 @@ class @Intertype extends Multimix
     declarations.declare_checks.apply @
     @export target if target?
 
+  #---------------------------------------------------------------------------------------------------------
+  equals: ( a, P... ) ->
+    ### TAINT FTTB we are opting to use `CND.equals()`; in the future, possibly use direct (and maybe
+    updated) dependency on underlying module (which is `cnd/src/jkroso-equals.coffee` ATM) ###
+    for b in P
+      return false unless equals a, b
+    return true
 
 
