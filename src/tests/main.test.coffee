@@ -84,7 +84,7 @@ INTERTYPE                 = require '../..'
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "isa" ] = ( T, done ) ->
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -166,7 +166,7 @@ INTERTYPE                 = require '../..'
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "type_of" ] = ( T, done ) ->
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -235,7 +235,7 @@ INTERTYPE                 = require '../..'
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "validate" ] = ( T, done ) ->
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -314,7 +314,7 @@ INTERTYPE                 = require '../..'
 #-----------------------------------------------------------------------------------------------------------
 @[ "types_of" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -356,7 +356,7 @@ INTERTYPE                 = require '../..'
   ### TAINT re-implement types object, pod ###
   # T.eq ( isa.size_of { '~isa': 'XYZ/yadda', 'foo': 42, 'bar': 108, 'baz': 3, }      ), 4
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -400,7 +400,7 @@ INTERTYPE                 = require '../..'
 @[ "export to target" ] = ( T, done ) ->
   #.........................................................................................................
   target        = {}
-  intertype     = new Intertype
+  intertype     = new Intertype()
   return_value  = intertype.export target
   T.ok return_value is target
   target.declare 'sometype', ( x ) -> ( @isa.text x ) and ( x.startsWith ':' )
@@ -436,7 +436,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "cast" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -487,7 +487,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "isa.list_of A" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate } = intertype.export()
   #.........................................................................................................
@@ -509,7 +509,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "isa.list_of B" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     isa_list_of
     validate } = intertype.export()
@@ -532,7 +532,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "validate.list_of A" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate } = intertype.export()
   #.........................................................................................................
@@ -554,7 +554,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "validate.list_of B" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     isa_list_of
@@ -578,7 +578,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "vnr, int32" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     declare
     validate
@@ -610,7 +610,7 @@ later = ->
   #.........................................................................................................
   PATH                      = require 'path'
   FS                        = require 'fs'
-  intertype                 = new Intertype
+  intertype                 = new Intertype()
   { isa
     validate
     declare }               = intertype.export()
@@ -708,7 +708,7 @@ later = ->
   #.........................................................................................................
   PATH                      = require 'path'
   FS                        = require 'fs'
-  intertype                 = new Intertype
+  intertype                 = new Intertype()
   { isa
     validate
     check
@@ -800,7 +800,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "types_of() includes happy, sad" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -841,7 +841,7 @@ later = ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "unsadden" ] = ( T, done ) ->
   #.........................................................................................................
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     validate
     type_of
@@ -872,7 +872,7 @@ later = ->
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "isa.immediate, nowait" ] = ( T, done ) ->
-  intertype = new Intertype
+  intertype = new Intertype()
   { isa
     types_of
     type_of
