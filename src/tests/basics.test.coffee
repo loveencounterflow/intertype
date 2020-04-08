@@ -591,17 +591,15 @@ later = ->
   T.ok isa.vnr [ -1234, ]
   T.ok isa_list_of.int32 [ -1234, ]
   T.ok isa_list_of.int32 []
-  T.ok not isa.vnr [ -1234, 7e20, ]
-  T.ok isa.vnr Int32Array.from [ -1234, ]
-  d = []
-  d.push Int32Array.from [ 10,      ]
-  d.push Int32Array.from [ 10,  0,  ]
-  d.push Int32Array.from [ 10, -1,  ]
-  d.push Int32Array.from [ 10,  2,  ]
-  d.push Int32Array.from [ 10,  20,  ]
-  d.push Int32Array.from [ 10,  1,  ]
-  d.push Int32Array.from [ 10,  10,  ]
-  debug 'µ43222', d.sort()
+  T.ok isa.vnr [ -1234, 7e20, ]
+  T.ok isa.vnr [ -Infinity, ]
+  T.ok isa.vnr [ +Infinity, ]
+  T.ok isa.vnr [ +Infinity, 1, ]
+  T.ok isa.infnumber +1234567.665553
+  T.ok isa.infnumber -1234567.665553
+  T.ok isa.infnumber +Infinity
+  T.ok isa.infnumber -Infinity
+  T.ok not isa.vnr Int32Array.from [ -1234, ]
   done()
   return null
 
@@ -925,14 +923,14 @@ later = ->
 
 ############################################################################################################
 unless module.parent?
-  test @
+  # test @
   # test @[ "equality checks" ]
   # @[ "equality checks" ]()
   # test @[ "isa.immediate, nowait" ]
   # test @[ "types_of() includes happy, sad" ]
   # test @[ "check(): validation with intermediate results (experiment)" ]
   # test @[ "check(): validation with intermediate results (for reals)" ]
-  # test @[ "vnr, int32" ]
+  test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]
   # test @[ "isa.list_of B" ]

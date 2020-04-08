@@ -86,6 +86,7 @@ jsidentifier_pattern = /// ^
   @declare 'negative_integer',    ( x ) => ( @isa.integer x ) and ( x < 0 )
   @declare 'zero',                ( x ) => x is 0
   @declare 'infinity',            ( x ) => ( x is +Infinity ) or ( x is -Infinity )
+  @declare 'infnumber',           ( x ) => ( @isa.number x ) or ( x is Infinity ) or ( x is -Infinity )
   @declare 'nonpositive',         ( x ) => ( @isa.number x ) and ( x <= 0 )
   @declare 'negative',            ( x ) => ( @isa.number x ) and ( x < 0 )
   @declare 'multiple_of',         ( x, n ) => ( @isa.number x ) and ( x %% n ) is 0
@@ -178,9 +179,8 @@ jsidentifier_pattern = /// ^
 
   #.........................................................................................................
   @declare 'vnr', ( x ) ->
-    ### A vectorial number (VNR) is a non-empty array of integers. It can be expressed as an ordinary
-    list of integers or as an `Int32Array`. ###
-    return ( @isa.int32array x ) or ( ( @isa_list_of.int32 x ) and ( x.length > 0 ) )
+    ### A vectorial number (VNR) is a non-empty array of numbers, including infinity. ###
+    return ( ( @isa_list_of.infnumber x ) and ( x.length > 0 ) )
 
   #.........................................................................................................
   @declare 'fs_stats', tests:
