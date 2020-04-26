@@ -361,3 +361,4 @@ hence the name.
 
 * [ ] fix bug as commented in first version of `@[ "equality checks" ]` test case
 
+* [ ] implement type `given` as `( x ) -> not [ null, undefined, NaN, '', ].includes x`
