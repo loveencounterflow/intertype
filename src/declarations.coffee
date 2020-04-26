@@ -108,6 +108,7 @@ jsidentifier_pattern = /// ^
   @declare 'empty_object',        ( x ) -> ( @isa.object  x ) and ( @isa.empty x )
   @declare 'empty_set',           ( x ) -> ( @isa.set     x ) and ( @isa.empty x )
   @declare 'empty_map',           ( x ) -> ( @isa.map     x ) and ( @isa.empty x )
+  # is_given                  = ( x ) -> not [ null, undefined, NaN, '', ].includes x
   #.........................................................................................................
   @declare 'buffer',              { size: 'length', },  ( x ) => Buffer.isBuffer x
   @declare 'arraybuffer',         { size: 'length', },  ( x ) => ( js_type_of x ) is 'arraybuffer'
