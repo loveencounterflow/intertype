@@ -38,9 +38,9 @@ jsidentifier_pattern = /// ^
       number:                     ( x ) => if x then 1 else 0
   #.........................................................................................................
   @declare 'nan',                 ( x ) => Number.isNaN         x
-  @declare 'finite',              ( x ) => Number.isFinite      x
-  @declare 'integer',             ( x ) => Number.isInteger     x
-  @declare 'safeinteger',         ( x ) => Number.isSafeInteger x
+  @declare 'finite',              ( x ) => Number.isFinite      x ### TAINT make sure no non-numbers slip through ###
+  @declare 'integer',             ( x ) => Number.isInteger     x ### TAINT make sure no non-numbers slip through ###
+  @declare 'safeinteger',         ( x ) => Number.isSafeInteger x ### TAINT make sure no non-numbers slip through ###
   #.........................................................................................................
   @declare 'number',
     tests:                        ( x ) => Number.isFinite      x
@@ -77,8 +77,8 @@ jsidentifier_pattern = /// ^
   @declare 'unset',               ( x ) => not x?
   @declare 'notunset',            ( x ) => x?
   #.........................................................................................................
-  @declare 'even',                ( x ) => @isa.multiple_of x, 2
-  @declare 'odd',                 ( x ) => not @isa.even x
+  @declare 'even',                ( x ) => @isa.multiple_of x, 2 ### TAINT test finite or safeinteger, then use `%` ###
+  @declare 'odd',                 ( x ) => not @isa.even x ### TAINT test directly, faster ###
   @declare 'count',               ( x ) -> ( @isa.safeinteger x ) and ( @isa.nonnegative x )
   @declare 'nonnegative',         ( x ) => ( @isa.number x ) and ( x >= 0 )
   @declare 'positive',            ( x ) => ( @isa.number x ) and ( x > 0 )
