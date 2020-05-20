@@ -16,7 +16,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Concatenating Checks](#concatenating-checks)
 - [Formal Definition of the Type Concept](#formal-definition-of-the-type-concept)
 - [`immediate` and `nowait`](#immediate-and-nowait)
-    - [ECMAScript6 Classes and Type Checking](#ecmascript6-classes-and-type-checking)
+  - [ECMAScript6 Classes and Type Checking](#ecmascript6-classes-and-type-checking)
       - [Segue on The Miller Device](#segue-on-the-miller-device)
 - [To Do](#to-do)
 
@@ -307,7 +307,7 @@ r = await my_async_function 'foo', 'bar', 'baz'
 hence the name.
 
 
-### ECMAScript6 Classes and Type Checking
+## ECMAScript6 Classes and Type Checking
 
 > this text first appeared in [jsEq](https://github.com/loveencounterflow/jseq#ecmascript6-classes-and-type-checking)
 
