@@ -388,7 +388,7 @@ A code comment from 2010 ([CND Types module]()):
 > It is outright incredible, some would think frightening, how much manpower has gone into reliable
 > JavaScript type checking. Here is the latest and greatest for a language that can claim to be second
 > to none when it comes to things that should be easy but aren’t: the ‘Miller Device’ by Mark Miller of
-> Google (http://www.caplet.com), popularized by James Crockford of Yahoo!.*
+> Google (http://www.caplet.com), popularized by James Crockford of Yahoo!.
 >
 > As per https://groups.google.com/d/msg/nodejs/P_RzSyPkjkI/NvP28SXvf24J, now also called the 'Flanagan
 > Device'
