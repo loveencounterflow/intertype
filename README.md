@@ -309,6 +309,8 @@ hence the name.
 
 ### ECMAScript6 Classes and Type Checking
 
+> this text first appeared in [jsEq](https://github.com/loveencounterflow/jseq#ecmascript6-classes-and-type-checking)
+
 Whenever one thinks one has tamed the utter madness that is JavaScript's type system, one can be reasonably
 sure another one of the Hydra's ugly heads is waiting right behind the corner. This happens with ECMAScript6
 Classes.
