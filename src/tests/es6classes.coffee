@@ -61,18 +61,22 @@ INTERTYPE                 = require '../..'
   { domenic_denicola_device, mark_miller_device, } = require '../helpers'
   #.........................................................................................................
   dddx = ( x ) ->
-    mm_name = mark_miller_device      x
-    dd_name = domenic_denicola_device x
+    return 'null'       if x is null
+    return 'undefined'  if x is undefined
+    return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
+    return 'boolean'    if ( x is true      ) or  ( x is false      )
+    return 'nan'        if ( Number.isNaN x )
+    #.......................................................................................................
     # https://stackoverflow.com/questions/3905144/how-to-retrieve-the-constructors-name-in-javascript#3905265
+    dd_name = x.constructor.name                      # Domenic Denicola Device
+    mm_name = ( Object::toString.call x ).slice 8, -1 # Mark Miller Device
+    return 'buffer' if ( dd_name is 'Buffer' ) and ( mm_name is 'Uint8Array' )
     dd_name = mm_name if ( not dd_name ) or ( dd_name is '' )
     return dd_name if dd_name isnt mm_name
     dd_name = dd_name.toLowerCase()
-    if dd_name is 'number'
-      return 'nan'      if Number.isNaN     x
-      return 'infinity' unless Number.isFinite  x
-      return 'number'
-    else if dd_name is 'regexp' then dd_name = 'regex'
-    else if dd_name is 'array'  then dd_name = 'list'
+    #.......................................................................................................
+    if      ( dd_name is 'regexp' ) then return 'regex'
+    else if ( dd_name is 'array'  ) then return 'list'
     return dd_name
   #.........................................................................................................
   class MyBareClass
@@ -108,6 +112,8 @@ INTERTYPE                 = require '../..'
     [ ( Symbol                  ), 'function',              ]
     [ ( Symbol 'abc'            ), 'symbol',                ]
     [ ( Symbol.for 'abc'        ), 'symbol',                ]
+    [ ( new Uint8Array [ 42, ]  ), 'uint8array',            ]
+    [ ( Buffer.from [ 42, ]     ), 'buffer',                ]
     ]
   #.........................................................................................................
   debug()
