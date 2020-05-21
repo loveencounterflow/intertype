@@ -404,9 +404,9 @@ INTERTYPE                 = require '../..'
   return_value  = intertype.export target
   T.ok return_value is target
   target.declare 'sometype', ( x ) -> ( @isa.text x ) and ( x.startsWith ':' )
-  debug 'µ44333', target
-  debug 'µ44333', target.isa.sometype 'sometext'
-  debug 'µ44333', target.isa.sometype ':sometext'
+  # debug 'µ44333', target
+  # debug 'µ44333', target.isa.sometype 'sometext'
+  # debug 'µ44333', target.isa.sometype ':sometext'
   done()
   return null
 
