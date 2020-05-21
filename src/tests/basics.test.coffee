@@ -221,6 +221,9 @@ INTERTYPE                 = require '../..'
     [ "type_of( new Promise( ( rslv, rjct ) => {} )            )", 'promise',             null, ]
     [ "type_of( async function* () { await f(); yield 42; }       )", 'asyncgeneratorfunction', null, ]
     [ "type_of( ( async function* () { await f(); yield 42; } )() )", 'asyncgenerator',         null, ]
+    [ "type_of( new Number(  42   )                            )", "number",   ]
+    [ "type_of( new String(  '42' )                            )", "text",     ]
+    [ "type_of( new Boolean( true )                            )", "boolean",  ]
     ]
   #.........................................................................................................
   for [ probe, matcher, error, ] in probes_and_matchers
