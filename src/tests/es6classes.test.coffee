@@ -84,6 +84,12 @@ INTERTYPE                 = require '../..'
   class MyArrayClass  extends Array
   SomeConstructor = ->
   #.........................................................................................................
+  # ths to https://www.reddit.com/r/javascript/comments/gnbqoy/askjs_is_objectprototypetostringcall_the_best/fra7fg9?utm_source=share&utm_medium=web2x
+  toString  = Function.prototype.call.bind Object.prototype.toString
+  obj       = {}
+  obj[ Symbol.toStringTag ] = 'Foo'
+  # console.log(toString(obj)) // [object Foo]
+  #.........................................................................................................
   probes_and_matchers = [
     [ ( MyBareClass             ), 'function',              ] ### TAINT should ES6 classes get own type? ###
     [ ( MyObjectClass           ), 'function',              ] ### TAINT should ES6 classes get own type? ###
@@ -114,19 +120,29 @@ INTERTYPE                 = require '../..'
     [ ( Symbol.for 'abc'        ), 'symbol',                ]
     [ ( new Uint8Array [ 42, ]  ), 'uint8array',            ]
     [ ( Buffer.from [ 42, ]     ), 'buffer',                ]
+    [ ( 12345678912345678912345n ), 'bigint',                   ]
+    [ ( obj                     ), 'Foo',                   ]
+    # [ ( class X extends NaN       ), '', ]
+    # [ ( class X extends null      ), '', ]
+    # [ ( class X extends undefined ), '', ]
+    # [ ( class X extends 1         ), '', ]
+    # [ ( class X extends {}        ), '', ]
     ]
   #.........................................................................................................
   debug()
   column_width  = 17
   for [ probe, matcher, ] in probes_and_matchers
+    type_of_type  = try type_of_type = type_of probe catch error then "***ERROR: #{error.message}***"
+    # type_of_type = try type_of_type = type_of probe catch error then throw error # "***ERROR: #{error.message}***"
+    dddx_type     = dddx probe
     raw_results = [
       ( rpr probe )[ ... column_width ]
       mark_miller_device      probe
       ( mark_miller_device      probe ).toLowerCase()
-      type_of                 probe
+      type_of_type
       domenic_denicola_device probe
       ( domenic_denicola_device probe ).toLowerCase()
-      dddx                    probe
+      dddx_type
       matcher
       ]
     results   = []
@@ -137,10 +153,11 @@ INTERTYPE                 = require '../..'
       else
         if raw_result is matcher then color = CND.green
         else                          color = CND.red
-      results.push color ( raw_result.padEnd column_width )
+      results.push color ( raw_result[ ... column_width ].padEnd column_width )
     echo results.join ' | '
-  debug rpr ( ( -> yield 42 )()       ).constructor
-  debug rpr ( ( -> yield 42 )()       ).constructor.name
+    T.eq dddx_type, matcher
+  # debug rpr ( ( -> yield 42 )()       ).constructor
+  # debug rpr ( ( -> yield 42 )()       ).constructor.name
   # debug '^338-10^', mmd MyBareClass           # Function
   # debug '^338-11^', mmd MyObjectClass         # Function
   # debug '^338-12^', mmd MyArrayClass          # Function
@@ -170,9 +187,13 @@ INTERTYPE                 = require '../..'
 
 ############################################################################################################
 unless module.parent?
-  # test @
-  test @[ "es6classes type detection devices" ]
-
+  test @
+  # test @[ "es6classes type detection devices" ]
+  # intertype = new Intertype()
+  # { isa
+  #   validate
+  #   type_of } = intertype.export()
+  # debug type_of 1n
 
 
 
