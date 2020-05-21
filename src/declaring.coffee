@@ -66,7 +66,7 @@ copy_if_original = ( x ) ->
     when 'stringiterator' then R = 'textiterator'
   ### Refuse to answer question in case type found is not in specs: ###
   # debug 'µ33332', R, ( k for k of @specs )
-  throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
+  # throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
   return R
 
 #-----------------------------------------------------------------------------------------------------------
