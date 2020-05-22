@@ -457,3 +457,8 @@ A code comment from 2010 ([CND Types module]()):
 * [ ] fix bug as commented in first version of `@[ "equality checks" ]` test case
 
 * [ ] implement type `given` as `( x ) -> not [ null, undefined, NaN, '', ].includes x`
+
+* [ ] include remark on `float` vs. `number`: "FTTB we are retaining `number` as a less-preferred synonym
+  for `float`; in the future, `number` may be removed because it conflicts with JS usage (where it includes
+  `NaN` and `+/-Infinity`) and, moreover, is not truthful (because it is a poor representation of what the
+  modern understanding of 'number' in the mathematical sense would imply)."
