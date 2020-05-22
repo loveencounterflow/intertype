@@ -87,8 +87,8 @@ get_probes_and_matchers = ->
     [ ( Object                                ), 'function',                ]
     [ ( Array                                 ), 'function',                ]
     [ ( {}                                    ), 'object',                  ]
-    [ ( []                                    ), 'array',                   ]
-    [ ( '42'                                  ), 'string',                  ]
+    [ ( []                                    ), 'list',                    ]
+    [ ( '42'                                  ), 'text',                    ]
     [ ( 42                                    ), 'float',                   ]
     [ ( NaN                                   ), 'nan',                     ]
     [ ( Infinity                              ), 'infinity',                ]
@@ -116,7 +116,7 @@ get_probes_and_matchers = ->
     [ ( [].keys()                             ), 'arrayiterator',           ]
     [ ( ( new Set [] ).keys()                 ), 'setiterator',             ]
     [ ( ( new Map [] ).keys()                 ), 'mapiterator',             ]
-    [ ( new Array()                           ), 'array',                   ]
+    [ ( new Array()                           ), 'list',                    ]
     [ ( ( 'x' )[ Symbol.iterator ]()          ), 'stringiterator',          ]
     ]
 
@@ -124,7 +124,7 @@ get_probes_and_matchers = ->
 #-----------------------------------------------------------------------------------------------------------
 type_of_v3 = ( xP... ) ->
   ### TAINT this should be generalized for all Intertype types that split up / rename a JS type: ###
-  throw new Error "^7746^ expected 1 argumnt got #{arity}" unless xP.length is 1
+  throw new Error "^7746^ expected 1 argument, got #{arity}" unless xP.length is 1
   switch R = js_type_of xP...
     when 'uint8array'
       R = 'buffer' if Buffer.isBuffer xP...
@@ -142,46 +142,47 @@ type_of_v3 = ( xP... ) ->
   # throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
   return R
 
-#-----------------------------------------------------------------------------------------------------------
-### TAINT move constants to module ###
-Generator       = ( ( -> yield 42 )() ).constructor
-#-----------------------------------------------------------------------------------------------------------
-type_of_v4 = ( x ) ->
-  return 'null'       if x is null
-  return 'undefined'  if x is undefined
-  return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
-  return 'boolean'    if ( x is true      ) or  ( x is false      )
-  return 'nan'        if ( Number.isNaN     x )
-  return 'buffer'     if ( Buffer.isBuffer  x )
-  #.........................................................................................................
-  if ( tagname = x[ Symbol.toStringTag ] )?
-    return 'arrayiterator'  if tagname is 'Array Iterator'
-    return 'stringiterator' if tagname is 'String Iterator'
-    return 'mapiterator'    if tagname is 'Map Iterator'
-    return 'setiterator'    if tagname is 'Set Iterator'
-    return tagname.toLowerCase()
-  #.........................................................................................................
-  ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
-  return 'nullobject' if ( c = x.constructor ) is undefined
-  return 'object'     if ( typeof c ) isnt 'function'
-  if ( R = c.name.toLowerCase() ) is ''
-    return 'generator' if x.constructor is Generator
-    ### NOTE: throw error since this should never happen ###
-    return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
-  #.........................................................................................................
-  return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
-  return 'float'    if R is 'number'
-  return 'regex'    if R is 'regexp'
-  ### thx to https://stackoverflow.com/a/29094209 ###
-  ### TAINT may produce an arbitrarily long throwaway string ###
-  return 'class'    if R is 'function' and x.toString().startsWith 'class '
-  return R
+# #-----------------------------------------------------------------------------------------------------------
+# ### TAINT move constants to module ###
+# Generator       = ( ( -> yield 42 )() ).constructor
+# #-----------------------------------------------------------------------------------------------------------
+# type_of_v4 = ( x ) ->
+#   return 'null'       if x is null
+#   return 'undefined'  if x is undefined
+#   return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
+#   return 'boolean'    if ( x is true      ) or  ( x is false      )
+#   return 'nan'        if ( Number.isNaN     x )
+#   return 'buffer'     if ( Buffer.isBuffer  x )
+#   #.........................................................................................................
+#   if ( tagname = x[ Symbol.toStringTag ] )?
+#     return 'arrayiterator'  if tagname is 'Array Iterator'
+#     return 'stringiterator' if tagname is 'String Iterator'
+#     return 'mapiterator'    if tagname is 'Map Iterator'
+#     return 'setiterator'    if tagname is 'Set Iterator'
+#     return tagname.toLowerCase()
+#   #.........................................................................................................
+#   ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
+#   return 'nullobject' if ( c = x.constructor ) is undefined
+#   return 'object'     if ( typeof c ) isnt 'function'
+#   if ( R = c.name.toLowerCase() ) is ''
+#     return 'generator' if x.constructor is Generator
+#     ### NOTE: throw error since this should never happen ###
+#     return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
+#   #.........................................................................................................
+#   return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
+#   return 'float'    if R is 'number'
+#   return 'regex'    if R is 'regexp'
+#   ### thx to https://stackoverflow.com/a/29094209 ###
+#   ### TAINT may produce an arbitrarily long throwaway string ###
+#   return 'class'    if R is 'function' and x.toString().startsWith 'class '
+#   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "es6classes type detection devices (prototype)" ] = ( T, done ) ->
   intertype = new Intertype()
   { isa
     validate }  = intertype.export()
+  type_of_v4    = intertype.export().type_of
   { domenic_denicola_device, mark_miller_device, } = require '../helpers'
   #.........................................................................................................
   debug()
@@ -331,5 +332,5 @@ if module is require.main then do =>
   info Object.hasOwnProperty ( ( ( x ) -> ):: ), 'arguments'
   urge Object.getOwnPropertyNames X
   urge Object.getOwnPropertyNames ( -> )
-
+  info new Array()
 
