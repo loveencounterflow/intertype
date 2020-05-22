@@ -52,6 +52,7 @@ copy_if_original = ( x ) ->
 #-----------------------------------------------------------------------------------------------------------
 @type_of = ( xP... ) ->
   ### TAINT this should be generalized for all Intertype types that split up / rename a JS type: ###
+  throw new Error "^7746^ expected 1 argumnt got #{arity}" unless xP.length is 1
   switch R = js_type_of xP...
     when 'uint8array'
       R = 'buffer' if Buffer.isBuffer xP...
