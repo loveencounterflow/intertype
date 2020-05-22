@@ -70,6 +70,7 @@ INTERTYPE                 = require '../..'
     return 'boolean'    if ( x is true      ) or  ( x is false      )
     return 'nan'        if ( Number.isNaN     x )
     return 'buffer'     if ( Buffer.isBuffer  x )
+    #.......................................................................................................
     if ( tagname = x[ Symbol.toStringTag ] )?
       return 'arrayiterator'  if tagname is 'Array Iterator'
       return 'stringiterator' if tagname is 'String Iterator'
@@ -77,22 +78,28 @@ INTERTYPE                 = require '../..'
       return 'setiterator'    if tagname is 'Set Iterator'
       return tagname.toLowerCase()
     #.......................................................................................................
-    R = x.constructor.name.toLowerCase() ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
-    if R is ''
+    ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
+    return 'nullobject' if ( c = x.constructor ) is undefined
+    return 'object'     if ( typeof c ) isnt 'function'
+    if ( R = c.name.toLowerCase() ) is ''
       return 'generator' if x.constructor is Generator
       ### NOTE: throw error since this should never happen ###
       return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
     #.......................................................................................................
     return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
-    return 'float'  if R is 'number'
-    return 'regex'  if R is 'regexp'
-    # return 'list'   if R is 'array'
+    return 'float'    if R is 'number'
+    return 'regex'    if R is 'regexp'
+    ### thx to https://stackoverflow.com/a/29094209 ###
+    ### TAINT may produce an arbitrarily long throwaway string ###
+    return 'class'    if R is 'function' and x.toString().startsWith 'class '
     return R
   #.........................................................................................................
+  # class Array
   class MyBareClass
   class MyObjectClass extends Object
   class MyArrayClass  extends Array
   SomeConstructor = ->
+  OtherConstructor = -> 42
   #.........................................................................................................
   # thx to https://www.reddit.com/r/javascript/comments/gnbqoy/askjs_is_objectprototypetostringcall_the_best/fra7fg9?utm_source=share&utm_medium=web2x
   # toString  = Function.prototype.call.bind Object.prototype.toString
@@ -101,53 +108,55 @@ INTERTYPE                 = require '../..'
   # console.log(toString(FooObject)) // [object Foo]
   #.........................................................................................................
   probes_and_matchers = [
-    [ ( MyBareClass                           ), 'function',              ] ### TAINT should ES6 classes get own type? ###
-    [ ( MyObjectClass                         ), 'function',              ] ### TAINT should ES6 classes get own type? ###
-    [ ( MyArrayClass                          ), 'function',              ] ### TAINT should ES6 classes get own type? ###
-    [ ( SomeConstructor                       ), 'function',              ]
-    [ ( new MyBareClass()                     ), 'mybareclass',           ]
-    [ ( new MyObjectClass()                   ), 'myobjectclass',         ]
-    [ ( new MyArrayClass()                    ), 'myarrayclass',          ]
-    [ ( new SomeConstructor()                 ), 'someconstructor',       ]
-    [ ( null                                  ), 'null',                  ]
-    [ ( undefined                             ), 'undefined',             ]
-    [ ( Object                                ), 'function',              ]
-    [ ( Array                                 ), 'function',              ]
-    [ ( {}                                    ), 'object',                ]
-    [ ( []                                    ), 'array',                 ]
-    [ ( '42'                                  ), 'string',                ]
-    [ ( 42                                    ), 'float',                 ]
-    [ ( NaN                                   ), 'nan',                   ]
-    [ ( Infinity                              ), 'infinity',              ]
-    [ ( -> await f()                          ), 'asyncfunction',         ]
-    [ ( -> yield 42                           ), 'generatorfunction',     ]
-    [ ( ( -> yield 42 )()                     ), 'generator',             ]
-    [ ( /x/                                   ), 'regex',                 ]
-    [ ( new Date()                            ), 'date',                  ]
-    [ ( Set                                   ), 'function',              ]
-    [ ( new Set()                             ), 'set',                   ]
-    [ ( Symbol                                ), 'function',              ]
-    [ ( Symbol 'abc'                          ), 'symbol',                ]
-    [ ( Symbol.for 'abc'                      ), 'symbol',                ]
-    [ ( new Uint8Array [ 42, ]                ), 'uint8array',            ]
-    [ ( Buffer.from [ 42, ]                   ), 'buffer',                ]
-    [ ( 12345678912345678912345n              ), 'bigint',                ]
-    [ ( FooObject                             ), 'foo',                   ]
-    [ ( new Promise ( resolve ) ->            ), 'promise',               ]
-    [ ( new Number 42                         ), 'wrapper',               ]
-    [ ( new String '42'                       ), 'wrapper',               ]
-    [ ( new Boolean true                      ), 'wrapper',               ]
-    [ ( new RegExp 'x*'                       ), 'regex',                 ] ### NOTE not functionally different ###
-    [ ( new Function 'a', 'b', 'return a + b' ), 'function',              ] ### NOTE not functionally different ###
-    [ ( [].keys()                             ), 'arrayiterator',         ]
-    [ ( ( new Set [] ).keys()                 ), 'setiterator',           ]
-    [ ( ( new Map [] ).keys()                 ), 'mapiterator',           ]
-    [ ( ( 'x' )[ Symbol.iterator ]()          ), 'stringiterator',        ]
-    # [ ( class X extends NaN       ), '', ]
-    # [ ( class X extends null      ), '', ]
-    # [ ( class X extends undefined ), '', ]
-    # [ ( class X extends 1         ), '', ]
-    # [ ( class X extends {}        ), '', ]
+    [ ( Object.create null                    ), 'nullobject',              ]
+    [ ( { constructor: 'Bob', }               ), 'object',                  ]
+    [ ( { CONSTRUCTOR: 'Bob', }               ), 'object',                  ]
+    [ ( MyBareClass                           ), 'class',                   ]
+    [ ( MyObjectClass                         ), 'class',                   ]
+    [ ( MyArrayClass                          ), 'class',                   ]
+    [ ( Array                                 ), 'function',                ]
+    [ ( SomeConstructor                       ), 'function',                ]
+    [ ( new MyBareClass()                     ), 'mybareclass',             ]
+    [ ( new MyObjectClass()                   ), 'myobjectclass',           ]
+    [ ( new MyArrayClass()                    ), 'myarrayclass',            ]
+    [ ( new SomeConstructor()                 ), 'someconstructor',         ]
+    [ ( new OtherConstructor()                ), 'otherconstructor',        ]
+    [ ( null                                  ), 'null',                    ]
+    [ ( undefined                             ), 'undefined',               ]
+    [ ( Object                                ), 'function',                ]
+    [ ( Array                                 ), 'function',                ]
+    [ ( {}                                    ), 'object',                  ]
+    [ ( []                                    ), 'array',                   ]
+    [ ( '42'                                  ), 'string',                  ]
+    [ ( 42                                    ), 'float',                   ]
+    [ ( NaN                                   ), 'nan',                     ]
+    [ ( Infinity                              ), 'infinity',                ]
+    [ ( -> await f()                          ), 'asyncfunction',           ]
+    [ ( -> yield from await f()               ), 'asyncgeneratorfunction',  ]
+    [ ( -> yield 42                           ), 'generatorfunction',       ]
+    [ ( ( -> yield 42 )()                     ), 'generator',               ]
+    [ ( /x/                                   ), 'regex',                   ]
+    [ ( new Date()                            ), 'date',                    ]
+    [ ( Set                                   ), 'function',                ]
+    [ ( new Set()                             ), 'set',                     ]
+    [ ( Symbol                                ), 'function',                ]
+    [ ( Symbol 'abc'                          ), 'symbol',                  ]
+    [ ( Symbol.for 'abc'                      ), 'symbol',                  ]
+    [ ( new Uint8Array [ 42, ]                ), 'uint8array',              ]
+    [ ( Buffer.from [ 42, ]                   ), 'buffer',                  ]
+    [ ( 12345678912345678912345n              ), 'bigint',                  ]
+    [ ( FooObject                             ), 'foo',                     ]
+    [ ( new Promise ( resolve ) ->            ), 'promise',                 ]
+    [ ( new Number 42                         ), 'wrapper',                 ]
+    [ ( new String '42'                       ), 'wrapper',                 ]
+    [ ( new Boolean true                      ), 'wrapper',                 ]
+    [ ( new RegExp 'x*'                       ), 'regex',                   ] ### NOTE not functionally different ###
+    [ ( new Function 'a', 'b', 'return a + b' ), 'function',                ] ### NOTE not functionally different ###
+    [ ( [].keys()                             ), 'arrayiterator',           ]
+    [ ( ( new Set [] ).keys()                 ), 'setiterator',             ]
+    [ ( ( new Map [] ).keys()                 ), 'mapiterator',             ]
+    [ ( new Array()                           ), 'array',                   ]
+    [ ( ( 'x' )[ Symbol.iterator ]()          ), 'stringiterator',          ]
     ]
   #.........................................................................................................
   debug()
@@ -156,6 +165,7 @@ INTERTYPE                 = require '../..'
   headers = [
     'probe'
     'typeof'
+    # 'toString()'
     'string_tag'
     'miller'
     'old type_of'
@@ -167,10 +177,12 @@ INTERTYPE                 = require '../..'
   #.........................................................................................................
   for [ probe, matcher, ] in probes_and_matchers
     dddx_v2_type  = dddx_v2 probe
-    string_tag    = if probe? then probe[ Symbol.toStringTag ] else './.'
+    string_tag    = if probe? then probe[ Symbol.toStringTag ]  else './.'
+    # toString      = if probe? then probe.toString?() ? './.'    else './.'
     raw_results   = [
       rpr                     probe
       typeof                  probe
+      # toString
       string_tag
       mark_miller_device      probe
       type_of                 probe
@@ -181,6 +193,7 @@ INTERTYPE                 = require '../..'
     last_idx  = raw_results.length - 1
     for raw_result, idx in raw_results
       if isa.text raw_result
+        raw_result  = raw_result.replace /\n/g, '⏎'
         lc_result   = raw_result.toLowerCase().replace /\s/g, ''
       else
         raw_result  = ''
@@ -265,8 +278,33 @@ if module is require.main then do =>
   info mapiterator    = ( new Map [] ).keys().constructor
   info stringiterator = ( 'x' )[ Symbol.iterator ]().constructor
   types = new Intertype()
-  debug types.all_keys_of Buffer.alloc 10
-  debug types.all_keys_of new Uint8Array 10
+  # debug types.all_keys_of Buffer.alloc 10
+  # debug types.all_keys_of new Uint8Array 10
 
+  # class X extends NaN
+  # class X extends null
+  # class X extends undefined
+  # class X extends 1
+  # class X extends {}
+  myfunction = ->
+  class X
+  class O extends Object
+
+  info '^87-1^', rpr ( myfunction:: )
+  info '^87-2^', rpr ( myfunction:: ).constructor
+  info '^87-3^', rpr ( myfunction:: ).constructor.name
+  info '^87-4^', rpr ( X:: )
+  info '^87-5^', rpr ( X:: ).constructor
+  info '^87-6^', rpr ( X:: ).constructor.name
+  info '^87-7^', rpr ( O:: )
+  info '^87-8^', rpr ( O:: ).constructor
+  info '^87-9^', rpr ( O:: ).constructor.name
+  info Object.hasOwnProperty X, 'arguments'
+  info Object.hasOwnProperty ( -> ), 'arguments'
+  info Object.hasOwnProperty ( ( x ) -> ), 'arguments'
+  info Object.hasOwnProperty ( ( -> ):: ), 'arguments'
+  info Object.hasOwnProperty ( ( ( x ) -> ):: ), 'arguments'
+  urge Object.getOwnPropertyNames X
+  urge Object.getOwnPropertyNames ( -> )
 
 
