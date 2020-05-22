@@ -29,28 +29,32 @@ INTERTYPE                 = require '../..'
   js_type_of }            = require '../helpers'
 
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "es6classes type detection devices" ] = ( T, done ) ->
-#   #.........................................................................................................
-#   intertype = new Intertype()
-#   { isa
-#     validate
-#     type_of
-#     types_of
-#     size_of
-#     declare
-#     all_keys_of } = intertype.export()
-#   #.........................................................................................................
-#   probes_and_matchers = [
-#     [[ [ 1, 2, 3, 4, ]                                 ], 4,                                          null, ]
-#     ]
-#   #.........................................................................................................
-#   for [ probe, matcher, error, ] in probes_and_matchers
-#     await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
-#       resolve result
-#       return null
-#   done()
-#   return null
+#-----------------------------------------------------------------------------------------------------------
+@[ "undeclared types can be used if known to `type_of()`" ] = ( T, done ) ->
+  #.........................................................................................................
+  intertype = new Intertype()
+  { isa
+    validate
+    type_of
+    types_of
+    size_of
+    declare
+    all_keys_of } = intertype.export()
+  #.........................................................................................................
+  probes_and_matchers = [
+    [ [ 1n, 'bigint', ], true, null, ]
+    [ [ 1n, 'XXXX',   ], false, "not a valid XXXX", ]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, error, ] in probes_and_matchers
+    await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
+      [ value, type, ] = probe
+      result = isa[ type ] value
+      validate[ type ] value
+      T.ok true
+      resolve result
+  done()
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
 get_probes_and_matchers = ->
@@ -141,41 +145,6 @@ type_of_v3 = ( xP... ) ->
   # debug 'µ33332', R, ( k for k of @specs )
   # throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
   return R
-
-# #-----------------------------------------------------------------------------------------------------------
-# ### TAINT move constants to module ###
-# Generator       = ( ( -> yield 42 )() ).constructor
-# #-----------------------------------------------------------------------------------------------------------
-# type_of_v4 = ( x ) ->
-#   return 'null'       if x is null
-#   return 'undefined'  if x is undefined
-#   return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
-#   return 'boolean'    if ( x is true      ) or  ( x is false      )
-#   return 'nan'        if ( Number.isNaN     x )
-#   return 'buffer'     if ( Buffer.isBuffer  x )
-#   #.........................................................................................................
-#   if ( tagname = x[ Symbol.toStringTag ] )?
-#     return 'arrayiterator'  if tagname is 'Array Iterator'
-#     return 'stringiterator' if tagname is 'String Iterator'
-#     return 'mapiterator'    if tagname is 'Map Iterator'
-#     return 'setiterator'    if tagname is 'Set Iterator'
-#     return tagname.toLowerCase()
-#   #.........................................................................................................
-#   ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
-#   return 'nullobject' if ( c = x.constructor ) is undefined
-#   return 'object'     if ( typeof c ) isnt 'function'
-#   if ( R = c.name.toLowerCase() ) is ''
-#     return 'generator' if x.constructor is Generator
-#     ### NOTE: throw error since this should never happen ###
-#     return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
-#   #.........................................................................................................
-#   return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
-#   return 'float'    if R is 'number'
-#   return 'regex'    if R is 'regexp'
-#   ### thx to https://stackoverflow.com/a/29094209 ###
-#   ### TAINT may produce an arbitrarily long throwaway string ###
-#   return 'class'    if R is 'function' and x.toString().startsWith 'class '
-#   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "es6classes type detection devices (prototype)" ] = ( T, done ) ->
@@ -272,12 +241,8 @@ demo_test_for_generator = ->
   debug ( ( -> yield 42 )()             ).constructor is GeneratorFunction
   debug ( ( -> yield 42 )()             ).constructor is Generator
 
-############################################################################################################
-if module is require.main then do =>
-  # demo_test_for_generator()
-  test @
-
-
+#-----------------------------------------------------------------------------------------------------------
+demo = ->
   # ```
   # echo( 'helo' );
   # echo( rpr(
@@ -333,4 +298,11 @@ if module is require.main then do =>
   urge Object.getOwnPropertyNames X
   urge Object.getOwnPropertyNames ( -> )
   info new Array()
+
+
+############################################################################################################
+if module is require.main then do =>
+  # demo_test_for_generator()
+  # test @
+  test @[ "undeclared but implement types can be used" ]
 

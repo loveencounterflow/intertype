@@ -44,8 +44,11 @@ copy_if_original = ( x ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_get_unsatisfied_aspect = ( type, xP... ) ->
+  ### Check with `type_of()` if type not in spec: ###
+  unless ( spec = @specs[ type ] )?
+    return null if ( factual_type = @type_of xP... ) is type
+    return "expected #{rpr type} for `type_of x` but got #{rpr factual_type}"
   ### Check all constraints in spec: ###
-  throw new Error "µ6500 unknown type #{rpr type}" unless ( spec = @specs[ type ] )?
   for aspect, test of spec.tests
     return aspect unless test.apply @, xP
   return null
