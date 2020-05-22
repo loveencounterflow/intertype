@@ -17,10 +17,10 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "cnd": "^6.0.0",
+    "cnd": "^7.0.0",
     "multimix": "^2.2.1"
   },
   "devDependencies": {
-    "guy-test": "^2.0.1"
+    "guy-test": "^2.0.2"
   }
 }
