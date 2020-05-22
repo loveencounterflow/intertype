@@ -15,9 +15,9 @@ _xrpr         = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArr
 #===========================================================================================================
 # TYPE_OF FLAVORS
 #-----------------------------------------------------------------------------------------------------------
-@domenic_denicola_device 	= ( x ) -> x?.constructor?.name ? './.'
-@mark_miller_device   		= ( x ) -> ( Object::toString.call x ).slice 8, -1
-# @mark_miller_device   		= ( x ) -> ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
+@domenic_denicola_device  = ( x ) -> x?.constructor?.name ? './.'
+@mark_miller_device       = ( x ) -> ( Object::toString.call x ).slice 8, -1
+# @mark_miller_device       = ( x ) -> ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
 @js_type_of   = ( x ) -> ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
 
 
@@ -36,4 +36,7 @@ _xrpr         = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArr
   return { rpr_of_tprs, srpr_of_tprs, }
 
 #-----------------------------------------------------------------------------------------------------------
-@intersection_of = ( a, b ) -> ( x for x in a when x in b ).sort()
+@intersection_of = ( a, b ) ->
+  a = [ a..., ].sort()
+  b = [ b..., ].sort()
+  return ( x for x in a when x in b ).sort()
