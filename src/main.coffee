@@ -24,7 +24,7 @@ Multimix                  = require 'multimix'
 #...........................................................................................................
 declarations              = require './declarations'
 sad                       = ( require './checks' ).sad
-{ equals, }               = CND
+jk_equals                 = require '../deps/jkroso-equals'
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -61,6 +61,8 @@ validate = ( type, xP... ) ->
   throw new Error message
 
 
+
+
 #===========================================================================================================
 class @Intertype extends Multimix
   # @extend   object_with_class_properties
@@ -94,8 +96,11 @@ class @Intertype extends Multimix
   equals: ( a, P... ) ->
     ### TAINT FTTB we are opting to use `CND.equals()`; in the future, possibly use direct (and maybe
     updated) dependency on underlying module (which is `cnd/src/jkroso-equals.coffee` ATM) ###
+    type_of_a = @type_of a
     for b in P
-      return false unless equals a, b
+      return false unless type_of_a is @type_of b
+      ### TAINT this call involves its own typechecking code and thus may mysteriously fail ###
+      return false unless jk_equals a, b
     return true
 
 
