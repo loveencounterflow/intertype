@@ -95,7 +95,6 @@ jsidentifier_pattern = /// ^
   @declare 'nonpositive',         ( x ) => ( @isa.number x ) and ( x <= 0 )
   @declare 'negative',            ( x ) => ( @isa.number x ) and ( x < 0 )
   ### TAINT this is a check, not a type: ###
-  @declare 'multiple_of',         ( x, n ) => ( @isa.number x ) and ( x %% n ) is 0
   #.........................................................................................................
   @declare 'empty',               ( x ) -> ( @has_size    x ) and ( @size_of x ) == 0
   @declare 'singular',            ( x ) -> ( @has_size    x ) and ( @size_of x ) == 1

@@ -121,10 +121,6 @@ INTERTYPE                 = require '../..'
     [ "isa.finite(           123                               )", true,                  null, ]
     [ "isa.integer(          123                               )", true,                  null, ]
     [ "isa.integer(          42                                )", true,                  null, ]
-    [ "isa.multiple_of(      42, 2                             )", true,                  null, ]
-    [ "isa.multiple_of(      5, 2.5                            )", true,                  null, ]
-    [ "isa.multiple_of(      5, 2                              )", false,                 null, ]
-    [ "isa[ 'multiple_of' ]( 42, 2                             )", true,                  null, ]
     [ "isa.weakmap(           new WeakMap()                    )", true,                  null, ]
     [ "isa.map(               new Map()                        )", true,                  null, ]
     [ "isa.set(               new Set()                        )", true,                  null, ]
@@ -257,7 +253,6 @@ INTERTYPE                 = require '../..'
     [ "validate( 'number',        NaN                                   )", false, 'not a valid number',      ]
     [ "validate( 'number',        NaN                                   )", false, 'not a valid number',      ]
     [ "validate( 'text',          NaN                                   )", false, 'not a valid text',        ]
-    [ "validate.multiple_of(      5, 2                                  )", false, 'not a valid multiple_of', ]
     [ "validate( 'callable', function () {}                             )", true,                  null, ]
     [ "validate( 'callable', async function () { await 42 }             )", true,                  null, ]
     [ "validate( 'callable', function* () { yield 42 }                  )", true,                  null, ]
@@ -274,11 +269,8 @@ INTERTYPE                 = require '../..'
     [ "validate.finite(           123                                   )", true,                  null, ]
     [ "validate.integer(          123                                   )", true,                  null, ]
     [ "validate.integer(          42                                    )", true,                  null, ]
-    [ "validate.multiple_of(      42, 2                                 )", true,                  null, ]
-    [ "validate.multiple_of(      5, 2.5                                )", true,                  null, ]
     [ "validate.number(           123                                   )", true,                  null, ]
     [ "validate.safeinteger(      123                                   )", true,                  null, ]
-    [ "validate[ 'multiple_of' ]( 42, 2                                 )", true,                  null, ]
     [ "validate.weakmap(           new WeakMap()                        )", true,                  null, ]
     [ "validate.map(               new Map()                            )", true,                  null, ]
     [ "validate.set(               new Set()                            )", true,                  null, ]
@@ -1008,7 +1000,6 @@ demo = ->
   help isa.number new Number 42
   help types_of 42
   help types_of new Number 42
-  # help validate.multiple_of 3, 4
   debug 'µ12233', types_of []
 
 
