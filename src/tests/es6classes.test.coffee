@@ -53,46 +53,7 @@ INTERTYPE                 = require '../..'
 #   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "es6classes type detection devices (prototype)" ] = ( T, done ) ->
-  intertype = new Intertype()
-  { isa
-    validate
-    type_of } = intertype.export()
-  { domenic_denicola_device, mark_miller_device, } = require '../helpers'
-  #.........................................................................................................
-  ### TAINT move constants to module ###
-  Generator       = ( ( -> yield 42 )() ).constructor
-  #.........................................................................................................
-  dddx_v2 = ( x ) ->
-    return 'null'       if x is null
-    return 'undefined'  if x is undefined
-    return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
-    return 'boolean'    if ( x is true      ) or  ( x is false      )
-    return 'nan'        if ( Number.isNaN     x )
-    return 'buffer'     if ( Buffer.isBuffer  x )
-    #.......................................................................................................
-    if ( tagname = x[ Symbol.toStringTag ] )?
-      return 'arrayiterator'  if tagname is 'Array Iterator'
-      return 'stringiterator' if tagname is 'String Iterator'
-      return 'mapiterator'    if tagname is 'Map Iterator'
-      return 'setiterator'    if tagname is 'Set Iterator'
-      return tagname.toLowerCase()
-    #.......................................................................................................
-    ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
-    return 'nullobject' if ( c = x.constructor ) is undefined
-    return 'object'     if ( typeof c ) isnt 'function'
-    if ( R = c.name.toLowerCase() ) is ''
-      return 'generator' if x.constructor is Generator
-      ### NOTE: throw error since this should never happen ###
-      return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
-    #.......................................................................................................
-    return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
-    return 'float'    if R is 'number'
-    return 'regex'    if R is 'regexp'
-    ### thx to https://stackoverflow.com/a/29094209 ###
-    ### TAINT may produce an arbitrarily long throwaway string ###
-    return 'class'    if R is 'function' and x.toString().startsWith 'class '
-    return R
+get_probes_and_matchers = ->
   #.........................................................................................................
   # class Array
   class MyBareClass
@@ -158,6 +119,70 @@ INTERTYPE                 = require '../..'
     [ ( new Array()                           ), 'array',                   ]
     [ ( ( 'x' )[ Symbol.iterator ]()          ), 'stringiterator',          ]
     ]
+
+
+#-----------------------------------------------------------------------------------------------------------
+type_of_v3 = ( xP... ) ->
+  ### TAINT this should be generalized for all Intertype types that split up / rename a JS type: ###
+  throw new Error "^7746^ expected 1 argumnt got #{arity}" unless xP.length is 1
+  switch R = js_type_of xP...
+    when 'uint8array'
+      R = 'buffer' if Buffer.isBuffer xP...
+    when 'number'
+      [ x, ] = xP
+      unless Number.isFinite x
+        R = if ( Number.isNaN x ) then 'nan' else 'infinity'
+    when 'regexp'         then R = 'regex'
+    when 'string'         then R = 'text'
+    when 'array'          then R = 'list'
+    when 'arrayiterator'  then R = 'listiterator'
+    when 'stringiterator' then R = 'textiterator'
+  ### Refuse to answer question in case type found is not in specs: ###
+  # debug 'µ33332', R, ( k for k of @specs )
+  # throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+### TAINT move constants to module ###
+Generator       = ( ( -> yield 42 )() ).constructor
+#-----------------------------------------------------------------------------------------------------------
+type_of_v4 = ( x ) ->
+  return 'null'       if x is null
+  return 'undefined'  if x is undefined
+  return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
+  return 'boolean'    if ( x is true      ) or  ( x is false      )
+  return 'nan'        if ( Number.isNaN     x )
+  return 'buffer'     if ( Buffer.isBuffer  x )
+  #.........................................................................................................
+  if ( tagname = x[ Symbol.toStringTag ] )?
+    return 'arrayiterator'  if tagname is 'Array Iterator'
+    return 'stringiterator' if tagname is 'String Iterator'
+    return 'mapiterator'    if tagname is 'Map Iterator'
+    return 'setiterator'    if tagname is 'Set Iterator'
+    return tagname.toLowerCase()
+  #.........................................................................................................
+  ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
+  return 'nullobject' if ( c = x.constructor ) is undefined
+  return 'object'     if ( typeof c ) isnt 'function'
+  if ( R = c.name.toLowerCase() ) is ''
+    return 'generator' if x.constructor is Generator
+    ### NOTE: throw error since this should never happen ###
+    return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
+  #.........................................................................................................
+  return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
+  return 'float'    if R is 'number'
+  return 'regex'    if R is 'regexp'
+  ### thx to https://stackoverflow.com/a/29094209 ###
+  ### TAINT may produce an arbitrarily long throwaway string ###
+  return 'class'    if R is 'function' and x.toString().startsWith 'class '
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "es6classes type detection devices (prototype)" ] = ( T, done ) ->
+  intertype = new Intertype()
+  { isa
+    validate }  = intertype.export()
+  { domenic_denicola_device, mark_miller_device, } = require '../helpers'
   #.........................................................................................................
   debug()
   column_width  = 25
@@ -168,26 +193,26 @@ INTERTYPE                 = require '../..'
     # 'toString()'
     'string_tag'
     'miller'
-    'old type_of'
+    'type_of_v3'
     'denicola'
-    'dddx_v2'
+    'type_of_v4'
     'expected' ]
   headers = ( h[ ... column_width ].padEnd column_width for h in headers ).join '|'
   echo headers
   #.........................................................................................................
-  for [ probe, matcher, ] in probes_and_matchers
-    dddx_v2_type  = dddx_v2 probe
-    string_tag    = if probe? then probe[ Symbol.toStringTag ]  else './.'
-    # toString      = if probe? then probe.toString?() ? './.'    else './.'
-    raw_results   = [
+  for [ probe, matcher, ] in get_probes_and_matchers()
+    type_of_v4_type = type_of_v4 probe
+    string_tag      = if probe? then probe[ Symbol.toStringTag ]  else './.'
+    # toString        = if probe? then probe.toString?() ? './.'    else './.'
+    raw_results     = [
       rpr                     probe
       typeof                  probe
       # toString
       string_tag
       mark_miller_device      probe
-      type_of                 probe
+      type_of_v3              probe
       domenic_denicola_device probe
-      dddx_v2_type
+      type_of_v4_type
       matcher ]
     results   = []
     last_idx  = raw_results.length - 1
@@ -206,7 +231,7 @@ INTERTYPE                 = require '../..'
         else                                              color = CND.red
       results.push color ( raw_result[ ... column_width ].padEnd column_width )
     echo results.join '|'
-    T.eq dddx_v2_type, matcher
+    T.eq type_of_v4_type, matcher
   # debug rpr ( ( -> yield 42 )()       ).constructor
   # debug rpr ( ( -> yield 42 )()       ).constructor.name
   # debug '^338-10^', mmd MyBareClass           # Function
