@@ -320,23 +320,26 @@ INTERTYPE                 = require '../..'
   #.........................................................................................................
   prms = new Promise ( rslv, rjct ) => return
   probes_and_matchers = [
-    [123,       ["count","finite","frozen","integer","nonnegative","notunset","number","numeric","odd","positive","safeinteger","sealed","truthy"],null]
-    [124,       ["count","even","finite","frozen","integer","nonnegative","notunset","number","numeric","positive","safeinteger","sealed","truthy"],null]
-    [0,         ["count","even","falsy","finite","frozen","integer","nonnegative","nonpositive","notunset","number","numeric","safeinteger","sealed","zero"],null]
-    [true,      ["boolean","frozen","notunset","odd","sealed","truthy"],null]
-    [null,      ["falsy","frozen","null","odd","sealed","unset"],null]
-    [undefined, ["falsy","frozen","odd","sealed","undefined","unset"],null]
-    [{},        ["empty","extensible","notunset","object","odd","truthy"],null]
-    [[],        ["empty","extensible","list","notunset","odd","truthy"],null]
+    [123,       ["count","finite","frozen","integer","nonnegative","notunset","float","number","numeric","odd","positive","safeinteger","sealed","truthy"],null]
+    [124,       ["count","even","finite","frozen","integer","nonnegative","notunset","float","number","numeric","positive","safeinteger","sealed","truthy"],null]
+    [0,         ["count","even","falsy","finite","frozen","integer","nonnegative","nonpositive","notunset","float","number","numeric","safeinteger","sealed","zero"],null]
+    [true,      ["boolean","frozen","notunset","sealed","truthy"],null]
+    [null,      ["falsy","frozen","null","sealed","unset"],null]
+    [undefined, ["falsy","frozen","sealed","undefined","unset"],null]
+    [{},        ["empty","extensible","notunset","object","truthy"],null]
+    [[],        ["empty","extensible","list","notunset","truthy"],null]
     [ prms,     ["nativepromise","promise","thenable"], null ]
     ]
   #.........................................................................................................
   # debug intersection_of [ 1, 2, 3, ], [ 'a', 3, 1, ]
   for [ probe, matcher, error, ] in probes_and_matchers
+    matcher = matcher.sort()
     await T.perform probe, matcher, error, -> return new Promise ( resolve, reject ) ->
-      result = intersection_of matcher, types_of probe
-      # log jr [ probe, result, ]
-      # resolve result
+      result = types_of probe
+      result = intersection_of matcher, result
+      # help '^334^', matcher.sort()
+      # urge '^334^', intersection_of matcher, result
+      # urge '^334^', result
       resolve result
       return null
   done()
@@ -925,7 +928,8 @@ unless module.parent?
   # test @[ "types_of() includes happy, sad" ]
   # test @[ "check(): validation with intermediate results (experiment)" ]
   # test @[ "check(): validation with intermediate results (for reals)" ]
-  test @[ "vnr, int32" ]
+  test @[ "types_of" ]
+  # test @[ "vnr, int32" ]
   # test @[ "cast" ]
   # test @[ "isa.list_of A" ]
   # test @[ "isa.list_of B" ]
