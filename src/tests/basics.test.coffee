@@ -110,8 +110,10 @@ INTERTYPE                 = require '../..'
     [ "isa( 'integer',       42                                )", true,                  null, ]
     [ "isa( 'number',        123                               )", true,                  null, ]
     [ "isa( 'number',        42                                )", true,                  null, ]
+    [ "isa( 'float',         123                               )", true,                  null, ]
+    [ "isa( 'float',         42                                )", true,                  null, ]
     [ "isa( 'number',        NaN                               )", false,                 null, ]
-    [ "isa( 'number',        NaN                               )", false,                 null, ]
+    [ "isa( 'float',         NaN                               )", false,                 null, ]
     [ "isa( 'safeinteger',   123                               )", true,                  null, ]
     [ "isa( 'text',          'x'                               )", true,                  null, ]
     [ "isa( 'text',          NaN                               )", false,                 null, ]
@@ -122,8 +124,6 @@ INTERTYPE                 = require '../..'
     [ "isa.multiple_of(      42, 2                             )", true,                  null, ]
     [ "isa.multiple_of(      5, 2.5                            )", true,                  null, ]
     [ "isa.multiple_of(      5, 2                              )", false,                 null, ]
-    [ "isa.number(           123                               )", true,                  null, ]
-    [ "isa.safeinteger(      123                               )", true,                  null, ]
     [ "isa[ 'multiple_of' ]( 42, 2                             )", true,                  null, ]
     [ "isa.weakmap(           new WeakMap()                    )", true,                  null, ]
     [ "isa.map(               new Map()                        )", true,                  null, ]
@@ -960,24 +960,26 @@ demo = ->
       '? is an object':   ( x ) -> @isa.object x
       '?.x is set':       ( x ) -> @has_key    x, 'x'
       '?.y is set':       ( x ) -> @has_key    x, 'y'
-      '?.x is a number':  ( x ) -> @isa.number x.x
-      '?.y is a number':  ( x ) -> @isa.number x.x
+      '?.x is a float':   ( x ) -> @isa.float  x.x
+      '?.y is a float':   ( x ) -> @isa.float  x.x
   intertype.declare 'vector',
     size:   2
     tests:
       '? is a list':        ( x ) -> @isa.list   x
       'size of ? is 2':     ( x ) -> ( @size_of x ) is 2
-      '?[ 0 ] is a number': ( x ) -> @isa.number x[ 0 ]
-      '?[ 1 ] is a number': ( x ) -> @isa.number x[ 1 ]
+      '?[ 0 ] is a float':  ( x ) -> @isa.float x[ 0 ]
+      '?[ 1 ] is a float':  ( x ) -> @isa.float x[ 1 ]
   info isa.point 42
   info isa.point { x: 42, y: 108, }
   info isa.point { x: Infinity, y: 108, }
 
   tests = [
     [ 1,  ( -> validate.number    42                         ), ]
+    [ 1,  ( -> validate.float     42                         ), ]
     [ 2,  ( -> validate.integer   42                         ), ]
     [ 3,  ( -> validate.even      42                         ), ]
     [ 4,  ( -> validate.number    42.5                       ), ]
+    [ 4,  ( -> validate.float     42.5                       ), ]
     [ 5,  ( -> validate.integer   42.5                       ), ]
     [ 6,  ( -> validate.even      42.5                       ), ]
     [ 7,  ( -> validate.point     42                         ), ]

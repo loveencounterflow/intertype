@@ -42,11 +42,16 @@ jsidentifier_pattern = /// ^
   @declare 'integer',             ( x ) => Number.isInteger     x ### TAINT make sure no non-numbers slip through ###
   @declare 'safeinteger',         ( x ) => Number.isSafeInteger x ### TAINT make sure no non-numbers slip through ###
   #.........................................................................................................
-  @declare 'number',
+  ### FTTB we are retaining `number` as a less-preferred synonym for `float`; in the future, `number` may
+  be removed because it conflicts with JS usage (where it includes `NaN` and `+/-Infinity`) and, moreover,
+  is not truthful (because it is a poor representation of what the modern understanding of 'number' in the
+  mathematical sense would imply). ###
+  @declare 'float',
     tests:                        ( x ) => Number.isFinite      x
     casts:
       boolean:                    ( x ) => if x is 0 then false else true
       integer:                    ( x ) => Math.round x
+  @specs.number = @specs.float
   #.........................................................................................................
   @declare 'frozen',              ( x ) => Object.isFrozen      x
   @declare 'sealed',              ( x ) => Object.isSealed      x
