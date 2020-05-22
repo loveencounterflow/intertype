@@ -53,7 +53,7 @@ INTERTYPE                 = require '../..'
 #   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "es6classes type detection devices" ] = ( T, done ) ->
+@[ "es6classes type detection devices (prototype)" ] = ( T, done ) ->
   intertype = new Intertype()
   { isa
     validate
