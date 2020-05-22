@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "cnd": "^5.3.2",
+    "cnd": "^6.0.0",
     "multimix": "^2.2.1"
   },
   "devDependencies": {
