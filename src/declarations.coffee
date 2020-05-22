@@ -82,8 +82,8 @@ jsidentifier_pattern = /// ^
   @declare 'unset',               ( x ) => not x?
   @declare 'notunset',            ( x ) => x?
   #.........................................................................................................
-  @declare 'even',                ( x ) => @isa.multiple_of x, 2 ### TAINT test finite or safeinteger, then use `%` ###
-  @declare 'odd',                 ( x ) => not @isa.even x ### TAINT test directly, faster ###
+  @declare 'even',                ( x ) => ( @isa.safeinteger x ) and ( x %% 2 ) is 0
+  @declare 'odd',                 ( x ) => ( @isa.safeinteger x ) and ( x %% 2 ) is 1
   @declare 'count',               ( x ) -> ( @isa.safeinteger x ) and ( @isa.nonnegative x )
   @declare 'nonnegative',         ( x ) => ( @isa.number x ) and ( x >= 0 )
   @declare 'positive',            ( x ) => ( @isa.number x ) and ( x > 0 )
