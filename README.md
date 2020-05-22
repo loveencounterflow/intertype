@@ -462,3 +462,4 @@ A code comment from 2010 ([CND Types module]()):
   for `float`; in the future, `number` may be removed because it conflicts with JS usage (where it includes
   `NaN` and `+/-Infinity`) and, moreover, is not truthful (because it is a poor representation of what the
   modern understanding of 'number' in the mathematical sense would imply)."
+* [ ] include screenshot of `es6classes.test.coffee` `[ "es6classes type detection devices (prototype)" ]`
