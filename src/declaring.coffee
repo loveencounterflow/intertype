@@ -19,6 +19,7 @@ info                      = CND.get_logger 'info',      badge
   xrpr
   js_type_of }            = require './helpers'
 isa_copy                  = Symbol 'isa_copy'
+constructor_of_generators = ( ( -> yield 42 )() ).constructor
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT make catalog of all 'deep JS' names that must never be used as types, b/c e.g a type 'bind'
@@ -50,25 +51,40 @@ copy_if_original = ( x ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@type_of = ( xP... ) ->
-  ### TAINT this should be generalized for all Intertype types that split up / rename a JS type: ###
-  throw new Error "^7746^ expected 1 argumnt got #{arity}" unless xP.length is 1
-  switch R = js_type_of xP...
-    when 'uint8array'
-      R = 'buffer' if Buffer.isBuffer xP...
-    when 'number'
-      [ x, ] = xP
-      unless Number.isFinite x
-        R = if ( Number.isNaN x ) then 'nan' else 'infinity'
-    when 'regexp'         then R = 'regex'
-    when 'string'         then R = 'text'
-    when 'array'          then R = 'list'
-    when 'arrayiterator'  then R = 'listiterator'
-    when 'stringiterator' then R = 'textiterator'
-  ### Refuse to answer question in case type found is not in specs: ###
-  # debug 'µ33332', R, ( k for k of @specs )
-  # throw new Error "µ6623 unknown type #{rpr R}" unless R of @specs
+@type_of = ( x ) ->
+  throw new Error "^7746^ expected 1 argument, got #{arity}" unless arguments.length is 1
+  return 'null'       if x is null
+  return 'undefined'  if x is undefined
+  return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
+  return 'boolean'    if ( x is true      ) or  ( x is false      )
+  return 'nan'        if ( Number.isNaN     x )
+  return 'buffer'     if ( Buffer.isBuffer  x )
+  #.........................................................................................................
+  if ( tagname = x[ Symbol.toStringTag ] )?
+    return 'arrayiterator'  if tagname is 'Array Iterator'
+    return 'stringiterator' if tagname is 'String Iterator'
+    return 'mapiterator'    if tagname is 'Map Iterator'
+    return 'setiterator'    if tagname is 'Set Iterator'
+    return tagname.toLowerCase()
+  #.........................................................................................................
+  ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
+  return 'nullobject' if ( c = x.constructor ) is undefined
+  return 'object'     if ( typeof c ) isnt 'function'
+  if ( R = c.name.toLowerCase() ) is ''
+    return 'generator' if x.constructor is constructor_of_generators
+    ### NOTE: throw error since this should never happen ###
+    return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
+  #.........................................................................................................
+  return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
+  return 'float'    if R is 'number'
+  return 'regex'    if R is 'regexp'
+  return 'text'     if R is 'string'
+  return 'list'     if R is 'array'
+  ### thx to https://stackoverflow.com/a/29094209 ###
+  ### TAINT may produce an arbitrarily long throwaway string ###
+  return 'class'    if R is 'function' and x.toString().startsWith 'class '
   return R
+
 
 #-----------------------------------------------------------------------------------------------------------
 @types_of = ( xP... ) ->
