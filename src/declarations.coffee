@@ -136,11 +136,11 @@ jsidentifier_pattern = /// ^
   #.........................................................................................................
   @declare 'object',
     tests:  ( x     ) => ( js_type_of x ) is 'object'
-    size:   ( xP... ) => ( @keys_of     xP... ).length
+    size:   ( x     ) => ( Object.keys x ).length
   #.........................................................................................................
   @declare 'global',
     tests:  ( x     ) => ( js_type_of x ) is 'global'
-    size:   ( xP... ) => ( @all_keys_of xP... ).length
+    size:   ( x     ) => ( Object.keys x ).length
   #.........................................................................................................
   @declare 'text',
     tests:  ( x ) => ( js_type_of x ) is 'string'
