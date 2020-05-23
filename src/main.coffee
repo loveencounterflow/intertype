@@ -66,7 +66,6 @@ validate = ( type, xP... ) ->
 #===========================================================================================================
 class @Intertype extends Multimix
   # @extend   object_with_class_properties
-  @include require './cataloguing'
   @include require './sizing'
   @include require './declaring'
   @include require './checks'
