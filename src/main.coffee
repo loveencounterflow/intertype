@@ -93,8 +93,8 @@ class @Intertype extends Multimix
 
   #---------------------------------------------------------------------------------------------------------
   equals: ( a, P... ) ->
-    ### TAINT FTTB we are opting to use `CND.equals()`; in the future, possibly use direct (and maybe
-    updated) dependency on underlying module (which is `cnd/src/jkroso-equals.coffee` ATM) ###
+    if ( arity = arguments.length ) < 2
+      throw new Error "^intertype/equals@3489^ expected at least 2 arguments, got #{arity}"
     type_of_a = @type_of a
     for b in P
       return false unless type_of_a is @type_of b
