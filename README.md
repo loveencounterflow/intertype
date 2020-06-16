@@ -18,6 +18,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [`immediate` and `nowait`](#immediate-and-nowait)
 - [ECMAScript6 Classes and Type Checking](#ecmascript6-classes-and-type-checking)
   - [Segue on The Miller Device](#segue-on-the-miller-device)
+- [Related](#related)
 - [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -399,6 +400,11 @@ A code comment from 2010 ([CND Types module]()):
 > * http://zaa.ch/post/918977126/the-miller-device-on-null-and-other-lowly-unvalues
 
 
+# Related
+
+* https://github.com/sindresorhus/ow
+* https://github.com/sindresorhus/is
+* Clojure `spec`
 
 # To Do
 
@@ -407,11 +413,22 @@ A code comment from 2010 ([CND Types module]()):
 
 * [x] Rename `export_modules()` to `export()`, allow target object (e.g. `module.exports`) to be passed in.
 
+* [ ] in the browser, `µ.types.types_of(document)` returns `["happy", "extensible", "immediate", "truthy",
+  "notunset"]`, missing out the (undeclared) value `htmldocument`; this is probably the case with all
+  undeclared types. Fix by adding result of `tyep_of x` to returned set.
+
+* [ ] implement 'fast mode' where validations are just `( x ) -> true` (?)
+
 * [ ] Add types `empty`, `nonempty`, ...
 
 * [ ] Implement method to iterate over type names, specs.
 
 * [ ] Catch errors that originate in type checking clauses
+
+* [ ] make it illegal to re-declare an existing type
+
+* [ ] remove ANSI codes from error messages as they interfere with usage in non-terminal based
+  applications (e.g. in the browser)
 
 * [ ] Trace cause for failure in recursive type checks
 
@@ -463,3 +480,31 @@ A code comment from 2010 ([CND Types module]()):
   `NaN` and `+/-Infinity`) and, moreover, is not truthful (because it is a poor representation of what the
   modern understanding of 'number' in the mathematical sense would imply)."
 * [ ] include screenshot of `es6classes.test.coffee` `[ "es6classes type detection devices (prototype)" ]`
+
+* [ ] idea:
+  * `validate()` is a (special) type test that throws unless its only argument is `true`; `isa()` is a
+    special test that either throws if its only argument is not either `true` or `false`, otherwise
+    returns its argument;
+  * type testers are proxies whose properties name refinement type testers, so `validate.text x`
+    really tests that the output of `text x` is `true`; `validate.text.empty x` throws unless both `text x`
+    and `empty x` hold; result is the same as `validate.empty.text x`. Both `isa.even.integer x` and
+    `isa.integer.even x` return the same result, but observe that `even` only makes sense with `integer`s,
+    so we would like to test for that condition only once, so
+    * we could use a `check()` as defined above; maybe all checks should return a standardized value that
+      can have a number of attributes, like `{ type, value, types, ..., }` where `type` is the return value
+      of `type_of x`, `value` (`probe`?) is `x` itself, `types` is a set of all types so far ascertained
+      (could be `set( 'float', 'integer', 'even' )` in this case).
+    * i.e. check objects acting as caches to prevent duplication of efforts;
+  * namespaces become union types of everything defined under them; there could be a namespace `Url` that
+    covers URLs in textual form and analyzed into an object, `Url.text` and `Url.object`, and `isa.Url x`
+    then tests for `( isa.Url.text ) or ( isa.Url.object x )`
+    * observe that `isa.Url.text x` is *not* the same as `isa.text.Url`, as the global `text` could be
+      totally unrelated from the one defined under `Url`
+    * namespaces do not inherit the names of the global namespace
+
+
+
+
+
+
+
