@@ -9,8 +9,7 @@ rpr           = CND.rpr.bind CND
 @assign       = Object.assign
 @jr           = JSON.stringify
 @flatten      = CND.flatten
-_xrpr         = ( x ) -> inspect x, { colors: yes, breakLength: Infinity, maxArrayLength: Infinity, depth: Infinity, }
-@xrpr         = ( x ) -> ( _xrpr x )[ .. 1024 ]
+@xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 
 #===========================================================================================================
 # TYPE_OF FLAVORS
