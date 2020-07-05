@@ -35,7 +35,7 @@ jsidentifier_pattern = /// ^
     tests:
       "x is true or false":       ( x ) => ( x is true ) or ( x is false )
     casts:
-      number:                     ( x ) => if x then 1 else 0
+      float:                      ( x ) => if x then 1 else 0
   #.........................................................................................................
   @declare 'nan',                 ( x ) => Number.isNaN         x
   @declare 'finite',              ( x ) => Number.isFinite      x ### TAINT make sure no non-numbers slip through ###
@@ -46,12 +46,13 @@ jsidentifier_pattern = /// ^
   be removed because it conflicts with JS usage (where it includes `NaN` and `+/-Infinity`) and, moreover,
   is not truthful (because it is a poor representation of what the modern understanding of 'number' in the
   mathematical sense would imply). ###
+  ### NOTE removed in v8: `@specs.number = @specs.float` ###
+  @declare 'number',              ( x ) => false # throw new Error "^intertype@84744^ type 'number' is deprecated"
   @declare 'float',
     tests:                        ( x ) => Number.isFinite      x
     casts:
       boolean:                    ( x ) => if x is 0 then false else true
       integer:                    ( x ) => Math.round x
-  @specs.number = @specs.float
   #.........................................................................................................
   @declare 'frozen',              ( x ) => Object.isFrozen      x
   @declare 'sealed',              ( x ) => Object.isSealed      x
@@ -85,16 +86,17 @@ jsidentifier_pattern = /// ^
   @declare 'even',                ( x ) => ( @isa.safeinteger x ) and ( x %% 2 ) is 0
   @declare 'odd',                 ( x ) => ( @isa.safeinteger x ) and ( x %% 2 ) is 1
   @declare 'count',               ( x ) -> ( @isa.safeinteger x ) and ( @isa.nonnegative x )
-  @declare 'nonnegative',         ( x ) => ( @isa.number x ) and ( x >= 0 )
-  @declare 'positive',            ( x ) => ( @isa.number x ) and ( x > 0 )
+  @declare 'nonnegative',         ( x ) => ( @isa.infloat x ) and ( x >= 0 )
+  @declare 'positive',            ( x ) => ( @isa.infloat x ) and ( x > 0 )
+  @declare 'positive_float',      ( x ) => ( @isa.float x ) and ( x > 0 )
   @declare 'positive_integer',    ( x ) => ( @isa.integer x ) and ( x > 0 )
   @declare 'negative_integer',    ( x ) => ( @isa.integer x ) and ( x < 0 )
   @declare 'zero',                ( x ) => x is 0
   @declare 'infinity',            ( x ) => ( x is +Infinity ) or ( x is -Infinity )
-  @declare 'infnumber',           ( x ) => ( @isa.number x ) or ( x is Infinity ) or ( x is -Infinity )
-  @declare 'nonpositive',         ( x ) => ( @isa.number x ) and ( x <= 0 )
-  @declare 'negative',            ( x ) => ( @isa.number x ) and ( x < 0 )
-  ### TAINT this is a check, not a type: ###
+  @declare 'infloat',             ( x ) => ( @isa.float x ) or ( x is Infinity ) or ( x is -Infinity )
+  @declare 'nonpositive',         ( x ) => ( @isa.infloat x ) and ( x <= 0 )
+  @declare 'negative',            ( x ) => ( @isa.infloat x ) and ( x < 0 )
+  @declare 'negative_float',      ( x ) => ( @isa.float x ) and ( x < 0 )
   #.........................................................................................................
   @declare 'empty',               ( x ) -> ( @has_size    x ) and ( @size_of x ) == 0
   @declare 'singular',            ( x ) -> ( @has_size    x ) and ( @size_of x ) == 1
@@ -167,17 +169,17 @@ jsidentifier_pattern = /// ^
   @declare 'int2text',
     tests: ( x ) => ( @isa.text x ) and ( x.match /^[01]+$/ )?
     casts:
-      number: ( x ) => parseInt x, 2
+      float:  ( x ) => parseInt x, 2
   #.........................................................................................................
   @declare 'int10text',
     tests: ( x ) => ( @isa.text x ) and ( x.match /^[0-9]+$/ )?
     casts:
-      number: ( x ) => parseInt x, 10
+      float:  ( x ) => parseInt x, 10
   #.........................................................................................................
   @declare 'int16text',
     tests: ( x ) => ( @isa.text x ) and ( x.match /^[0-9a-fA-F]+$/ )?
     casts:
-      number:   ( x ) => parseInt x, 16
+      float:    ( x ) => parseInt x, 16
       int2text: ( x ) => ( parseInt x, 16 ).toString 2 ### TAINT could use `cast()` API ###
 
   #.........................................................................................................
@@ -186,13 +188,13 @@ jsidentifier_pattern = /// ^
   #.........................................................................................................
   @declare 'vnr', ( x ) ->
     ### A vectorial number (VNR) is a non-empty array of numbers, including infinity. ###
-    return ( ( @isa_list_of.infnumber x ) and ( x.length > 0 ) )
+    return ( ( @isa_list_of.infloat x ) and ( x.length > 0 ) )
 
   #.........................................................................................................
   @declare 'fs_stats', tests:
     'x is an object':         ( x ) -> @isa.object  x
     'x.size is a count':      ( x ) -> @isa.count   x.size
-    'x.atimeMs is a number':  ( x ) -> @isa.number  x.atimeMs
+    'x.atimeMs is a float':   ( x ) -> @isa.float   x.atimeMs
     'x.atime is a date':      ( x ) -> @isa.date    x.atime
 
 
