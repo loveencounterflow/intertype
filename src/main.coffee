@@ -40,13 +40,13 @@ cast = ( type_a, type_b, x, xP... ) ->
   if ( casts = @specs[ type_a ].casts )?
     return ( converter.call @, x, xP... ) if ( converter = casts[ type_b ] )?
   return "#{x}" if type_b is 'text' ### TAINT use better method like util.inspect ###
-  throw new Error "µ30981 unable to cast a #{type_a} as #{type_b}"
+  throw new Error "^intertype/cast@1234^ unable to cast a #{type_a} as #{type_b}"
 
 #-----------------------------------------------------------------------------------------------------------
 check = ( type, x, xP... ) ->
   if @specs[ type ]?
     return if ( @isa type, x, xP... ) then true else sad
-  throw new Error "µ44521 unknown type or check #{rpr type}" unless ( check = @checks[ type ] )?
+  throw new Error "^intertype/check@1345^ unknown type or check #{rpr type}" unless ( check = @checks[ type ] )?
   return try check.call @, x, xP... catch error then error
 
 #-----------------------------------------------------------------------------------------------------------
@@ -55,9 +55,9 @@ validate = ( type, xP... ) ->
   [ x, P..., ] = xP
   { rpr_of_tprs, srpr_of_tprs, } = get_rprs_of_tprs P
   message = if aspect is 'main'
-    "µ3093 not a valid #{type}: #{xrpr x}#{srpr_of_tprs}"
+    "^intertype/validate@1456^ not a valid #{type}: #{xrpr x}#{srpr_of_tprs}"
   else
-    "µ3093 not a valid #{type} (violates #{rpr aspect}): #{xrpr x}#{srpr_of_tprs}"
+    "^intertype/validate@1567^ not a valid #{type} (violates #{rpr aspect}): #{xrpr x}#{srpr_of_tprs}"
   throw new Error message
 
 

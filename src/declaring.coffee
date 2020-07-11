@@ -47,7 +47,7 @@ copy_if_original = ( x ) ->
   ### Check with `type_of()` if type not in spec: ###
   unless ( spec = @specs[ type ] )?
     return null if ( factual_type = @type_of xP... ) is type
-    return "expected #{rpr type} for `type_of x` but got #{rpr factual_type}"
+    return "#{rpr type} is a known type"
   ### Check all constraints in spec: ###
   for aspect, test of spec.tests
     return aspect unless test.apply @, xP
