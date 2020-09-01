@@ -502,8 +502,9 @@ A code comment from 2010 ([CND Types module]()):
       totally unrelated from the one defined under `Url`
     * namespaces do not inherit the names of the global namespace
 
-
-
+* [X] rename `count` to `cardinal` (as Wirth did in Modula-2)
+* [X] implement `isa_optional()`, `validate_optional()` (these will in a future version be rewritten such
+  that one can write `isa.optional.integer x` and so on, see above)
 
 
 
