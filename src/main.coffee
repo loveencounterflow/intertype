@@ -31,6 +31,8 @@ jk_equals                 = require '../deps/jkroso-equals'
 isa               = ( type, xP... ) -> @_satisfies_all_aspects  type, xP...
 isa_list_of       = ( type, xP... ) -> @isa.list_of             type, xP...
 validate_list_of  = ( type, xP... ) -> @validate.list_of        type, xP...
+isa_optional      = ( type, xP... ) -> ( not xP[ 0 ] ) or @_satisfies_all_aspects   type, xP...
+validate_optional = ( type, xP... ) -> ( not xP[ 0 ] ) or @validate                 type, xP...
 
 #-----------------------------------------------------------------------------------------------------------
 cast = ( type_a, type_b, x, xP... ) ->
@@ -77,16 +79,18 @@ class @Intertype extends Multimix
     ### TAINT bug in MultiMix, should be possible to declare methods in class, not the constructor,
     and still get a bound version with `export()`; declaring them here FTTB ###
     #.......................................................................................................
-    @sad              = sad
-    @specs            = {}
-    @checks           = {}
-    @isa              = Multimix.get_keymethod_proxy @, isa
-    @isa_list_of      = Multimix.get_keymethod_proxy @, isa_list_of
-    @cast             = Multimix.get_keymethod_proxy @, cast
-    @validate         = Multimix.get_keymethod_proxy @, validate
-    @validate_list_of = Multimix.get_keymethod_proxy @, validate_list_of
-    @check            = Multimix.get_keymethod_proxy @, check
-    @nowait           = ( x ) -> @validate.immediate x; return x
+    @sad                = sad
+    @specs              = {}
+    @checks             = {}
+    @isa                = Multimix.get_keymethod_proxy @, isa
+    @isa_optional       = Multimix.get_keymethod_proxy @, isa_optional
+    @isa_list_of        = Multimix.get_keymethod_proxy @, isa_list_of
+    @cast               = Multimix.get_keymethod_proxy @, cast
+    @validate           = Multimix.get_keymethod_proxy @, validate
+    @validate_optional  = Multimix.get_keymethod_proxy @, validate_optional
+    @validate_list_of   = Multimix.get_keymethod_proxy @, validate_list_of
+    @check              = Multimix.get_keymethod_proxy @, check
+    @nowait             = ( x ) -> @validate.immediate x; return x
     declarations.declare_types.apply @
     declarations.declare_checks.apply @
     @export target if target?
