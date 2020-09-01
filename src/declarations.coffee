@@ -85,7 +85,7 @@ jsidentifier_pattern = /// ^
   #.........................................................................................................
   @declare 'even',                ( x ) => ( @isa.safeinteger x ) and ( x %% 2 ) is 0
   @declare 'odd',                 ( x ) => ( @isa.safeinteger x ) and ( x %% 2 ) is 1
-  @declare 'count',               ( x ) -> ( @isa.safeinteger x ) and ( @isa.nonnegative x )
+  @declare 'cardinal',            ( x ) -> ( @isa.safeinteger x ) and ( @isa.nonnegative x )
   @declare 'nonnegative',         ( x ) => ( @isa.infloat x ) and ( x >= 0 )
   @declare 'positive',            ( x ) => ( @isa.infloat x ) and ( x > 0 )
   @declare 'positive_float',      ( x ) => ( @isa.float x ) and ( x > 0 )
@@ -192,10 +192,10 @@ jsidentifier_pattern = /// ^
 
   #.........................................................................................................
   @declare 'fs_stats', tests:
-    'x is an object':         ( x ) -> @isa.object  x
-    'x.size is a count':      ( x ) -> @isa.count   x.size
-    'x.atimeMs is a float':   ( x ) -> @isa.float   x.atimeMs
-    'x.atime is a date':      ( x ) -> @isa.date    x.atime
+    'x is an object':         ( x ) -> @isa.object    x
+    'x.size is a cardinal':   ( x ) -> @isa.cardinal  x.size
+    'x.atimeMs is a float':   ( x ) -> @isa.float     x.atimeMs
+    'x.atime is a date':      ( x ) -> @isa.date      x.atime
 
 
 #===========================================================================================================
