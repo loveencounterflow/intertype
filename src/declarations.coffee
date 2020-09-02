@@ -162,6 +162,17 @@ jsidentifier_pattern = /// ^
       "all elements pass test":   ( type, x, xP... ) => x.every ( xx ) => @isa type, xx, xP...
 
   #.........................................................................................................
+  @declare 'object_of',
+    tests:
+      "x is a object":            ( type, x, xP... ) => @isa.object x
+      ### TAINT should check for `@isa.type type` ###
+      "type is nonempty_text":    ( type, x, xP... ) => @isa.nonempty_text type
+      "all elements pass test":   ( type, x, xP... ) =>
+        for _, xx of x
+          return false unless @isa type, xx, xP...
+        return true
+
+  #.........................................................................................................
   @declare 'jsidentifier',
     tests: ( x ) => ( @isa.text x ) and jsidentifier_pattern.test x
 
