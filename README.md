@@ -508,17 +508,17 @@ A code comment from 2010 ([CND Types module]()):
 
 
 * [ ] implement `has_only_keys()` to check for an object not to have any undeclared key/value pairs
-* [ ] make a version of `_get_unsatisfied_aspect()` part of API, so users can probe values for causes of
-  type checking failure
-* [ ] consider to store trace of failed assertions in instance such that user may check directly after type
-  checking for causes; this is a safe operation as InterType works synchronously
-* [ ] in chained type declarations (e.g. where one type is an object whose fields are declared to have some
-  specific types, possibly through a longer chain of declarations), only the top violated aspect makes it
-  into the error message, obscuring the true underlying cause of failure. Fix that by collecting the entire
-  chain of failed aspects.
-  * **implementation**: avoid to throw exceptions anywhere; instead, return a sad value where an aspect has
-    not been fulfilled. Exceptions always indicate a 'rogue' path: a buggy or incomplete implementation;
-    regular control flow should use 'blessed' happy/sad values (that can still be 'bogus').
+* [ ] **`TD:ETRACE@1`**—make a version of `_get_unsatisfied_aspect()` part of API, so users can probe values
+  for causes of type checking failure
+  * [ ] **`TD:ETRACE@2`**—consider to store trace of failed assertions in instance such that user may check
+    directly after type checking for causes; this is a safe operation as InterType works synchronously
+* [ ] **`TD:ETRACE@3`**—in chained type declarations (e.g. where one type is an object whose fields are
+  declared to have some specific types, possibly through a longer chain of declarations), only the top
+  violated aspect makes it into the error message, obscuring the true underlying cause of failure. Fix that
+  by collecting the entire chain of failed aspects.
+  * **`TD:ETRACE@4`**—**implementation**: avoid to throw exceptions anywhere; instead, return a sad value
+    where an aspect has not been fulfilled. Exceptions always indicate a 'rogue' path: a buggy or incomplete
+    implementation; regular control flow should use 'blessed' happy/sad values (that can still be 'bogus').
 
 
 
