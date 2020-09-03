@@ -50,7 +50,10 @@ copy_if_original = ( x ) ->
     return "#{rpr type} is a known type"
   ### Check all constraints in spec: ###
   for aspect, test of spec.tests
-    return aspect unless test.apply @, xP
+    unless test.apply @, xP
+      # @_XXX_stack ?= []
+      # @_XXX_stack.push aspect
+      return aspect
   return null
 
 #-----------------------------------------------------------------------------------------------------------
