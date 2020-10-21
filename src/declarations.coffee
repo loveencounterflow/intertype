@@ -97,6 +97,7 @@ jsidentifier_pattern = /// ^
   @declare 'nonpositive',         ( x ) => ( @isa.infloat x ) and ( x <= 0 )
   @declare 'negative',            ( x ) => ( @isa.infloat x ) and ( x < 0 )
   @declare 'negative_float',      ( x ) => ( @isa.float x ) and ( x < 0 )
+  @declare 'proper_fraction',     ( x ) => ( @isa.float x ) and ( 0 <= x <= 1 )
   #.........................................................................................................
   @declare 'empty',               ( x ) -> ( @has_size    x ) and ( @size_of x ) == 0
   @declare 'singular',            ( x ) -> ( @has_size    x ) and ( @size_of x ) == 1
