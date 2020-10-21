@@ -103,14 +103,14 @@ to three arguments. The three argument types are:
   ordering of the properties of `spec.tests`* (which corresponds to the ordering in which those tests got
   attached to `spec.tests`). The `spec` may also have further attributes, for which see below.
 
-* `test` is an optional boolean function that accepts one or more arguments (a value `x` to be tested and
-  any number of additional parameters `P` where applicable; together these are symbolized as `xP`) and
-  returns whether its arguments satisfy a certain condition. The `test` argument, where present, will be
-  registered as the 'main' (and only) test for the new type, `spec.tests.main`. The rule of thumb is that
-  when one wants to declare a type that can be characterized by a single, concise test, then giving a single
-  anonymous one-liner (typically an arrow function) is OK; conversely, when a complex type (think:
-  structured objects) needs a number of tests, then it will be better to write a suite of named tests (most
-  of them typically one-liners) and pass them in as properties of `spec.tests`.
+* `test` is a boolean function—a predicate—that accepts exactly one argument, the value `x` to be tested.
+  The boolean return value indicates whether `x` satisfies a certain condition. The `test` argument, where
+  present, will be registered as the 'main' (and only) test for the new type, `spec.tests.main`.
+
+The rule of thumb is that when one wants to declare a type that can be characterized by a single, concise
+test, then giving a single anonymous one-liner (typically an arrow function) is OK; conversely, when a
+complex type (think: structured objects) needs a number of tests, then it will be better to write a suite of
+named tests (most of them typically one-liners) and pass them in as properties of `spec.tests`.
 
 The call signatures are:
 
@@ -507,7 +507,10 @@ A code comment from 2010 ([CND Types module]()):
   that one can write `isa.optional.integer x` and so on, see above)
 
 
-* [ ] implement `has_only_keys()` to check for an object not to have any undeclared key/value pairs
+* [ ] **`TD:ONLYKEYS@1`**—provide an easy way to declare objects that should only have a given set of
+  attributes
+  * [ ] **`TD:ONLYKEYS@2`**—??? implement `has_only_keys()` to check for an object not to have any
+    undeclared key/value pairs ???
 * [ ] **`TD:ETRACE@1`**—make a version of `_get_unsatisfied_aspect()` part of API, so users can probe values
   for causes of type checking failure
   * [ ] **`TD:ETRACE@2`**—consider to store trace of failed assertions in instance such that user may check
@@ -520,5 +523,18 @@ A code comment from 2010 ([CND Types module]()):
     where an aspect has not been fulfilled. Exceptions always indicate a 'rogue' path: a buggy or incomplete
     implementation; regular control flow should use 'blessed' happy/sad values (that can still be 'bogus').
 
+* [ ] **`TD:SORRY@1`**—introduce a type `result`, an object with fields `?ok` for the happy field and
+  `?error` for the error, as the case may be
+* [ ] **`TD:ERROR@1`**—introduce a type named `fault` or similar with fields being roughly `code`
+  (`integer`), `tag` (`text`), `message` (`text`) to give details on what went wrong with an attempted
+  computation (`code` is meant to hold a process exit code, but admittedly the name clashes with usage
+  in V8? / NodeJS? `Error` object's field `code`)
+* [ ] **`TD:SORRY@2`**—introduce a type `sorry` as a generalized variant of `sad`; a `sorry` value is either
+  `sad` or is an object with an (existent/non-null) attribute `error`. Knowing one's data this makes
+  processing of `result`-type objects simpler and avoids using symbols; however, it may also match objects
+  that only accidentally have an attribute `error`.
+
+* [ ] consider to use internal `WeakMap` to cache results of `validate()`, `isa()` (in conjunction w/
+  freezing the argument?)
 
 
