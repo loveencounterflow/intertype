@@ -51,6 +51,7 @@ copy_if_original = ( x ) ->
   ### Check all constraints in spec: ###
   for aspect, test of spec.tests
     unless test.apply @, xP
+      # debug '^33442^', aspect
       # @_XXX_stack ?= []
       # @_XXX_stack.push aspect
       return aspect
