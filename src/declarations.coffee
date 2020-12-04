@@ -3,7 +3,6 @@
 # { equals, }               = require 'cnd'
 { assign
   jr
-  flatten
   xrpr
   js_type_of }            = require './helpers'
 CHECKS                    = require './checks'

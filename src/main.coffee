@@ -4,20 +4,11 @@
 ############################################################################################################
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'INTERTYPE/MAIN'
-debug                     = CND.get_logger 'debug',     badge
-alert                     = CND.get_logger 'alert',     badge
-whisper                   = CND.get_logger 'whisper',   badge
-warn                      = CND.get_logger 'warn',      badge
-help                      = CND.get_logger 'help',      badge
-urge                      = CND.get_logger 'urge',      badge
-info                      = CND.get_logger 'info',      badge
 #...........................................................................................................
 Multimix                  = require 'multimix'
 #...........................................................................................................
 { assign
   jr
-  flatten
   xrpr
   get_rprs_of_tprs
   js_type_of }            = require './helpers'

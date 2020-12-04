@@ -8,7 +8,6 @@ rpr           = CND.rpr.bind CND
 { inspect, }  = require 'util'
 @assign       = Object.assign
 @jr           = JSON.stringify
-@flatten      = CND.flatten
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 
 #===========================================================================================================
