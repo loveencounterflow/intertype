@@ -3,11 +3,10 @@
 'use strict'
 
 #-----------------------------------------------------------------------------------------------------------
-CND           = require 'cnd'
-rpr           = CND.rpr.bind CND
 { inspect, }  = require 'util'
 @assign       = Object.assign
-@jr           = JSON.stringify
+# @jr           = JSON.stringify
+@rpr          = rpr = ( require '../loupe.js' ).inspect
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 
 #===========================================================================================================
