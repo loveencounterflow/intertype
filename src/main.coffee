@@ -46,10 +46,7 @@ check = ( type, x, xP... ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 validate = ( type, xP... ) ->
-  # @_XXX_stack ?= []
-  # @_XXX_stack.length = 0
   return true unless ( aspect = @_get_unsatisfied_aspect type, xP... )?
-  # urge '^34344^', ( ( CND.yellow a ) for a in @_XXX_stack.reverse() ).join ( CND.grey '\n')
   [ x, P..., ] = xP
   { rpr_of_tprs, srpr_of_tprs, } = get_rprs_of_tprs P
   message = if aspect is 'main'

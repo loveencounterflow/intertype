@@ -26,7 +26,6 @@
   such methodology may permit or necessitate passing additional arguments (such as `size_of text`, which
   comes in several flavors depending on whether bytes or codepoints are to be counted). As such, it is a
   model for how to implement Go-like method dispatching. ###
-  # debug 'µ44744', [ x, P, ]
   type = @type_of x
   unless ( @isa.function ( getter = @specs[ type ]?.size ) )
     throw new Error "µ88793 unable to get size of a #{type}"
