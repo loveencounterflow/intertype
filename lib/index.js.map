@@ -6,8 +6,8 @@
     "../src/index.coffee"
   ],
   "names": [],
-  "mappings": "AAAA;EAAA;EAEG,CAAA,CAAA,CAAA,GAAA;AACH,QAAA;IAAE,SAAA,GAAY,OAAA,CAAQ,WAAR;IACZ,IAAG,yBAAH;MACE,UAAU,CAAC,SAAX,GAAuB,UADzB;KAAA,MAAA;MAGE,MAAM,CAAC,OAAP,GAAiB,UAHnB;;AAIA,WAAO;EANN,CAAA;AAFH",
+  "mappings": "AAAA;EAAA;EAEG,CAAA,CAAA,CAAA,GAAA;AACH,QAAA;IAAE,SAAA,GAAY,OAAA,CAAQ,WAAR;IACZ,IAAG,yBAAH;MACE,UAAU,CAAC,SAAX,GAAuB,SAAS,CAAC,UADnC;KAAA,MAAA;MAGE,MAAM,CAAC,OAAP,GAAiB,UAHnB;;AAIA,WAAO;EANN,CAAA;AAFH",
   "sourcesContent": [
-    "'use strict'\n\ndo =>\n  Intertype = require './main.js'\n  if globalThis.window?\n    globalThis.Intertype = Intertype\n  else\n    module.exports = Intertype\n  return null\n\n"
+    "'use strict'\n\ndo =>\n  INTERTYPE = require './main.js'\n  if globalThis.window?\n    globalThis.Intertype = INTERTYPE.Intertype\n  else\n    module.exports = INTERTYPE\n  return null\n\n"
   ]
 }
