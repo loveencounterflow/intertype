@@ -2,7 +2,7 @@
   "name": "intertype",
   "version": "7.6.0",
   "description": "A JavaScript typechecker",
-  "main": "./index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo use https://github.com/loveencounterflow/hengist"
   },
