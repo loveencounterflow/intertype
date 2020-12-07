@@ -1,10 +1,10 @@
 'use strict'
 
 do =>
-  Intertype = require './main.js'
+  INTERTYPE = require './main.js'
   if globalThis.window?
-    globalThis.Intertype = Intertype
+    globalThis.Intertype = INTERTYPE.Intertype
   else
-    module.exports = Intertype
+    module.exports = INTERTYPE
   return null
 
