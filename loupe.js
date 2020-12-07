@@ -809,6 +809,8 @@
 	}; // eslint-disable-line no-self-compare
 
 
+	function inspectBigInt(number, options) { return number.toString() + 'n'; };
+
 	function inspectNumber(number, options) {
 	  if (isNaN(number)) {
 	    return options.stylize('NaN', 'number');
@@ -1059,6 +1061,8 @@
 	  },
 	  number: inspectNumber,
 	  Number: inspectNumber,
+	  BigInt: inspectBigInt,
+	  bigint: inspectBigInt,
 	  string: inspectString,
 	  String: inspectString,
 	  function: inspectFunction,
