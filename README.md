@@ -536,5 +536,5 @@ A code comment from 2010 ([CND Types module]()):
 
 * [ ] consider to use internal `WeakMap` to cache results of `validate()`, `isa()` (in conjunction w/
   freezing the argument?)
-
+* [ ] remove `index.*` as those files are no longer needed
 
