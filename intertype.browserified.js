@@ -187,24 +187,6 @@ var types = exports.types = {
 },{}],3:[function(require,module,exports){
 (function() {
   'use strict';
-  (() => {
-    var INTERTYPE;
-    INTERTYPE = require('./main.js');
-    console.log('^3334^', INTERTYPE);
-    if (globalThis.window != null) {
-      globalThis.Intertype = INTERTYPE.Intertype;
-    } else {
-      module.exports = INTERTYPE;
-    }
-    return null;
-  })();
-
-}).call(this);
-
-
-},{"./main.js":8}],4:[function(require,module,exports){
-(function() {
-  'use strict';
   var js_type_of, rpr, sad;
 
   //###########################################################################################################
@@ -258,7 +240,7 @@ var types = exports.types = {
 }).call(this);
 
 
-},{"./helpers":7}],5:[function(require,module,exports){
+},{"./helpers":6}],4:[function(require,module,exports){
 (function (Buffer){
 (function() {
   //...........................................................................................................
@@ -837,7 +819,7 @@ var types = exports.types = {
 
 
 }).call(this,require("buffer").Buffer)
-},{"./checks":4,"./helpers":7,"buffer":15,"fs":13,"path":18}],6:[function(require,module,exports){
+},{"./checks":3,"./helpers":6,"buffer":15,"fs":13,"path":18}],5:[function(require,module,exports){
 (function (Buffer){
 (function() {
   'use strict';
@@ -1123,7 +1105,7 @@ var types = exports.types = {
 
 
 }).call(this,{"isBuffer":require("../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":17,"./helpers":7}],7:[function(require,module,exports){
+},{"../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":17,"./helpers":6}],6:[function(require,module,exports){
 (function() {
   'use strict';
   var inspect, rpr,
@@ -1206,7 +1188,22 @@ var types = exports.types = {
 }).call(this);
 
 
-},{"../loupe.js":10,"util":22}],8:[function(require,module,exports){
+},{"../loupe.js":10,"util":22}],7:[function(require,module,exports){
+(function() {
+  'use strict';
+  // do =>
+  //   INTERTYPE = require './main.js'
+  //   if globalThis.window?
+  //     globalThis.Intertype = INTERTYPE.Intertype
+  //   else
+  //     module.exports = INTERTYPE
+  //   return null
+  module.exports = require('./main.js');
+
+}).call(this);
+
+
+},{"./main.js":8}],8:[function(require,module,exports){
 (function() {
   'use strict';
   var Multimix, assign, cast, check, declarations, get_rprs_of_tprs, isa, isa_list_of, isa_object_of, isa_optional, jk_equals, jr, js_type_of, rpr, sad, validate, validate_list_of, validate_object_of, validate_optional, xrpr;
@@ -1377,7 +1374,7 @@ var types = exports.types = {
 }).call(this);
 
 
-},{"../deps/jkroso-equals":1,"./checks":4,"./declarations":5,"./declaring":6,"./helpers":7,"./sizing":9,"multimix":12}],9:[function(require,module,exports){
+},{"../deps/jkroso-equals":1,"./checks":3,"./declarations":4,"./declaring":5,"./helpers":6,"./sizing":9,"multimix":12}],9:[function(require,module,exports){
 (function() {
   'use strict';
   var assign, jr, js_type_of, xrpr;
@@ -1456,7 +1453,7 @@ var types = exports.types = {
 }).call(this);
 
 
-},{"./helpers":7}],10:[function(require,module,exports){
+},{"./helpers":6}],10:[function(require,module,exports){
 (function (process,global,Buffer){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -6091,4 +6088,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":21,"_process":19,"inherits":20}]},{},[3]);
+},{"./support/isBuffer":21,"_process":19,"inherits":20}]},{},[7]);
