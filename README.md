@@ -405,6 +405,8 @@ A code comment from 2010 ([CND Types module]()):
 * https://github.com/sindresorhus/ow
 * https://github.com/sindresorhus/is
 * Clojure `spec`
+* https://github.com/lukeed/superstruct
+
 
 # To Do
 
@@ -537,4 +539,6 @@ A code comment from 2010 ([CND Types module]()):
 * [ ] consider to use internal `WeakMap` to cache results of `validate()`, `isa()` (in conjunction w/
   freezing the argument?)
 * [ ] remove `index.*` as those files are no longer needed
+
+* [ ] introduce `assert()`; `validate.type value` then becomes `assert isa.type value`
 
