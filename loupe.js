@@ -1,13 +1,14 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(global = global || self, factory(global.loupe = {}));
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.loupe = {}));
 }(this, (function (exports) { 'use strict';
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-	function createCommonjsModule(fn, module) {
-		return module = { exports: {} }, fn(module, module.exports), module.exports;
+	function createCommonjsModule(fn) {
+	  var module = { exports: {} };
+		return fn(module, module.exports), module.exports;
 	}
 
 	var typeDetect = createCommonjsModule(function (module, exports) {
@@ -438,7 +439,7 @@
 	  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
 	  var n = Object.prototype.toString.call(o).slice(8, -1);
 	  if (n === "Object" && o.constructor) n = o.constructor.name;
-	  if (n === "Map" || n === "Set") return Array.from(n);
+	  if (n === "Map" || n === "Set") return Array.from(o);
 	  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
 	}
 
@@ -697,16 +698,14 @@
 
 	var getFuncName_1 = getFuncName;
 
-	var toStringTag = typeof Symbol !== 'undefined' && Symbol.toStringTag ? Symbol.toStringTag : false;
-
 	var getArrayName = function getArrayName(array) {
 	  // We need to special case Node.js' Buffers, which report to be Uint8Array
 	  if (typeof Buffer === 'function' && array instanceof Buffer) {
 	    return 'Buffer';
 	  }
 
-	  if (toStringTag && toStringTag in array) {
-	    return array[toStringTag];
+	  if (array[Symbol.toStringTag]) {
+	    return array[Symbol.toStringTag];
 	  }
 
 	  return getFuncName_1(array.constructor);
@@ -724,7 +723,7 @@
 	  var output = '';
 
 	  for (var i = 0; i < array.length; i++) {
-	    var string = "".concat(options.stylize(truncate(array[i], options.truncate), 'number')).concat(array[i] === array.length ? '' : ', ');
+	    var string = "".concat(options.stylize(truncate(array[i], options.truncate), 'number')).concat(i === array.length - 1 ? '' : ', ');
 	    options.truncate -= string.length;
 
 	    if (array[i] !== array.length && options.truncate <= 3) {
@@ -809,8 +808,6 @@
 	}; // eslint-disable-line no-self-compare
 
 
-	function inspectBigInt(number, options) { return number.toString() + 'n'; };
-
 	function inspectNumber(number, options) {
 	  if (isNaN(number)) {
 	    return options.stylize('NaN', 'number');
@@ -879,7 +876,7 @@
 
 	function inspectSymbol(value) {
 	  if ('description' in Symbol.prototype) {
-	    return "Symbol(".concat(value.description, ")");
+	    return value.description ? "Symbol(".concat(value.description, ")") : 'Symbol()';
 	  }
 
 	  return value.toString();
@@ -937,12 +934,12 @@
 	  return "{ ".concat(propertyContents).concat(sep).concat(symbolContents, " }");
 	}
 
-	var toStringTag$1 = typeof Symbol !== 'undefined' && Symbol.toStringTag ? Symbol.toStringTag : false;
+	var toStringTag = typeof Symbol !== 'undefined' && Symbol.toStringTag ? Symbol.toStringTag : false;
 	function inspectClass(value, options) {
 	  var name = '';
 
-	  if (toStringTag$1 && toStringTag$1 in value) {
-	    name = value[toStringTag$1];
+	  if (toStringTag && toStringTag in value) {
+	    name = value[toStringTag];
 	  }
 
 	  name = name || getFuncName_1(value.constructor); // Babel transforms anonymous classes to the name `_class`
@@ -1061,8 +1058,6 @@
 	  },
 	  number: inspectNumber,
 	  Number: inspectNumber,
-	  BigInt: inspectBigInt,
-	  bigint: inspectBigInt,
 	  string: inspectString,
 	  String: inspectString,
 	  function: inspectFunction,
@@ -1138,9 +1133,14 @@
 	  var _options = options,
 	      customInspect = _options.customInspect;
 	  var type = typeDetect(value); // If it is a base value that we already support, then use Loupe's inspector
-
 	  if (baseTypesMap[type]) {
 	    return baseTypesMap[type](value, options);
+	  } // If `options.customInspect` is set to true then try to use the custom inspector
+
+
+	  if (customInspect && value) {
+	    var output = inspectCustom(value, options, type);
+	    if (output) return inspect(output, options);
 	  }
 
 	  var proto = value ? Object.getPrototypeOf(value) : false; // If it's a plain Object then use Loupe's inspector
@@ -1153,12 +1153,6 @@
 
 	  if (value && typeof HTMLElement === 'function' && value instanceof HTMLElement) {
 	    return inspectHTML(value, options);
-	  } // If `options.customInspect` is set to true then try to use the custom inspector
-
-
-	  if (customInspect && value) {
-	    var output = inspectCustom(value, options, type);
-	    if (output) return output;
 	  } // If it is a class, inspect it like an object but add the constructor name
 
 
