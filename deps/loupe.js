@@ -757,7 +757,9 @@
 	var getFunctionName = function(fn) {
 	  if (toString$1.call(fn) !== '[object Function]') return null
 	  if (fn.name) return fn.name
-	  var name = /^\s*function\s*([^\(]*)/im.exec(fn.toString())[1];
+	  try {
+		  var name = /^\s*function\s*([^\(]*)/im.exec(fn.toString())[1];
+	  } catch ( e ) { return 'anonymous' };
 	  return name || 'anonymous'
 	};
 
