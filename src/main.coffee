@@ -4,12 +4,13 @@
 ############################################################################################################
 Multimix                  = require 'multimix'
 #...........................................................................................................
+HELPERS                   = require './helpers'
 { assign
   jr
   rpr
   xrpr
   get_rprs_of_tprs
-  js_type_of }            = require './helpers'
+  js_type_of }            = HELPERS
 #...........................................................................................................
 declarations              = require './declarations'
 sad                       = ( require './checks' ).sad
@@ -84,6 +85,7 @@ class @Intertype extends Multimix
     @validate_object_of = Multimix.get_keymethod_proxy @, validate_object_of
     @check              = Multimix.get_keymethod_proxy @, check
     @nowait             = ( x ) -> @validate.immediate x; return x
+    @_helpers           = HELPERS
     declarations.declare_types.apply @
     declarations.declare_checks.apply @
     @export target if target?
