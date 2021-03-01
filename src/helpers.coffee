@@ -6,7 +6,8 @@
 { inspect, }  = require 'util'
 @assign       = Object.assign
 # @jr           = JSON.stringify
-@rpr          = rpr = ( require '../loupe.js' ).inspect
+LOUPE         = require '../loupe.js'
+@rpr          = rpr = ( x ) => LOUPE.inspect x, { customInspect: false, }
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 
 #===========================================================================================================

@@ -1058,6 +1058,8 @@
 	  },
 	  number: inspectNumber,
 	  Number: inspectNumber,
+	  BigInt: inspectNumber,
+	  bigint: inspectNumber,
 	  string: inspectString,
 	  String: inspectString,
 	  function: inspectFunction,
