@@ -45,7 +45,7 @@ copy_if_original = ( x ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @type_of = ( x ) ->
-  throw new Error "^7746^ expected 1 argument, got #{arity}" unless arguments.length is 1
+  throw new Error "^7746^ expected 1 argument, got #{arity}" unless ( arity = arguments.length ) is 1
   return 'null'       if x is null
   return 'undefined'  if x is undefined
   return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
