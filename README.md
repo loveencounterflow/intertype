@@ -542,3 +542,14 @@ A code comment from 2010 ([CND Types module]()):
 
 * [ ] introduce `assert()`; `validate.type value` then becomes `assert isa.type value`
 
+* [ ] while a type should be defined as a function that takes exactly one argument, there are cases where
+  types (or something akin to types) are not defined globally but only in reference to a given set of
+  givens. For example if my set of horses is `h = new Set [ 'Aladdin', 'Bespoke', 'Whizz', ]` then a
+  `horse_name` might be defined as a `nonempty_text` that also *is an element of the set of horse names*,
+  whatever that set may contain at the relevant point in time. IOW `isa.horse_name 'Whizz'` is `true` with
+  respect to `h` but after deleting `Whizz` from `h`, `isa.horse_name 'Whizz'` becomes `false`. Possible way
+  to model: pass in object containing context, so `isa.horse_name { x: 'Whizz', wrt: h, }`. May want to use
+  conventional prefix (`ctx_` maybe) for types that require contextual data.
+
+
+
