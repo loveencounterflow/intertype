@@ -551,5 +551,23 @@ A code comment from 2010 ([CND Types module]()):
   to model: pass in object containing context, so `isa.horse_name { x: 'Whizz', wrt: h, }`. May want to use
   conventional prefix (`ctx_` maybe) for types that require contextual data.
 
+* [ ] switch to compilation-based instantiation, i.e. all function chains (such as `isa.text()`,
+  `isa.optional.text()`, `validate.nonempty.list_of.nonempty.text()`) should be *prepared* (reified) at
+  instantion time instead of generated on-the-fly at method call time.
+
+* [ ] type combinations include:
+  * `isa.list_of.my_type`
+  * `isa.nonempty.list_of.my_type`
+  * `isa.nonempty.list`
+  * `isa.optional.list_of.my_type`
+  * `isa.optional.my_type`
+  * `isa.my_type`
+  * `validate.list_of.my_type`
+  * `validate.nonempty.list_of.my_type`
+  * `validate.nonempty.list`
+  * `validate.optional.list_of.my_type`
+  * `validate.optional.my_type`
+  * `validate.my_type`
+
 
 
