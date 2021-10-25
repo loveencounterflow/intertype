@@ -888,27 +888,27 @@
 	  return 'Promise{…}';
 	};
 
-	try {
-	  var _process$binding = process.binding('util'),
-	      getPromiseDetails = _process$binding.getPromiseDetails,
-	      kPending = _process$binding.kPending,
-	      kRejected = _process$binding.kRejected;
+	// try {
+	//   var _process$binding = process.binding('util'),
+	//       getPromiseDetails = _process$binding.getPromiseDetails,
+	//       kPending = _process$binding.kPending,
+	//       kRejected = _process$binding.kRejected;
 
-	  getPromiseValue = function getPromiseValue(value, options) {
-	    var _getPromiseDetails = getPromiseDetails(value),
-	        _getPromiseDetails2 = _slicedToArray(_getPromiseDetails, 2),
-	        state = _getPromiseDetails2[0],
-	        innerValue = _getPromiseDetails2[1];
+	//   getPromiseValue = function getPromiseValue(value, options) {
+	//     var _getPromiseDetails = getPromiseDetails(value),
+	//         _getPromiseDetails2 = _slicedToArray(_getPromiseDetails, 2),
+	//         state = _getPromiseDetails2[0],
+	//         innerValue = _getPromiseDetails2[1];
 
-	    if (state === kPending) {
-	      return 'Promise{<pending>}';
-	    }
+	//     if (state === kPending) {
+	//       return 'Promise{<pending>}';
+	//     }
 
-	    return "Promise".concat(state === kRejected ? '!' : '', "{").concat(options.inspect(innerValue, options), "}");
-	  };
-	} catch (notNode) {
-	  /* ignore */
-	}
+	//     return "Promise".concat(state === kRejected ? '!' : '', "{").concat(options.inspect(innerValue, options), "}");
+	//   };
+	// } catch (notNode) {
+	//   /* ignore */
+	// }
 
 	var inspectPromise = getPromiseValue;
 
