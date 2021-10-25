@@ -97,8 +97,8 @@ class @Intertype extends Multimix
     type_of_a = @type_of a
     for b in P
       return false unless type_of_a is @type_of b
+      return true if type_of_a in [ 'set', 'map', ] and @equals [ a..., ], [ b..., ]
       ### TAINT this call involves its own typechecking code and thus may mysteriously fail ###
       return false unless jk_equals a, b
     return true
-
 
