@@ -569,5 +569,5 @@ A code comment from 2010 ([CND Types module]()):
   * `validate.optional.my_type`
   * `validate.my_type`
 
-
+* [ ] rename `notunset`, `unset` to `something`, `nothing`
 
