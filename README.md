@@ -570,4 +570,16 @@ A code comment from 2010 ([CND Types module]()):
   * `validate.my_type`
 
 * [ ] rename `notunset`, `unset` to `something`, `nothing`
+* [ ] implement `iterable` for anything that is allowed in a `for _ from x` loop:
+  ```coffee
+  @types.declare 'iterable', tests:
+    "( @isa.list x ) or ( x? and @isa.function x[ Symbol.iterator ] )": ( x ) ->
+      return ( @isa.list x ) or ( x? and @isa.function x[ Symbol.iterator ] )
+  ```
+* [ ] implement `iterable_no_text` for anything that is allowed in a `for _ from x` loop, *except* strings
+  which is a frequent requirement and a common pitfall causing unsightly errors (e.g. when accidentally
+  passing in a text where a list was expected, function may end up iterating over Unicode codeunits and do
+  all sorts of funny stuff before failing loudly, if ever)
+* [ ] ensure that when `validate()` fails, the entire chains of reasons will be printed out
+
 
