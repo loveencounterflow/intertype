@@ -53,7 +53,7 @@ copy_if_original = ( x ) ->
   return 'nan'        if ( Number.isNaN     x )
   return 'buffer'     if ( Buffer.isBuffer  x )
   #.........................................................................................................
-  if ( tagname = x[ Symbol.toStringTag ] )?
+  if ( tagname = x[ Symbol.toStringTag ] )? and ( typeof tagname ) is 'string'
     return 'arrayiterator'  if tagname is 'Array Iterator'
     return 'stringiterator' if tagname is 'String Iterator'
     return 'mapiterator'    if tagname is 'Map Iterator'
