@@ -101,12 +101,22 @@ class @Intertype extends Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  declare: ( type, descriptor ) =>
-    test            = descriptor.test.bind @
-    @_types[ type ] = { descriptor..., test, }
+  declare: ( hedges..., type, descriptor ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
     ### TAINT ensure descriptor does not contain type, name ###
+    defaults    = { numeric: false, collection: false, }
+    descriptor  = { defaults..., descriptor..., }
+    hedges.push type
+    if hedges[ 0 ] is 'optional'
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "'optional' cannot be a hedge in declarations, got #{rpr hedges}"
+    mandatory_name                = ( hedges.join '_' )
+    mandatory_test                = descriptor.test.bind @
+    optional_name                 = "optional_#{mandatory_name}"
+    optional_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_test x ) ).bind @
+    # debug '^4234^', { mandatory_name, mandatory_test, optional_name, optional_test, }
+    @_types[ mandatory_name     ] = { descriptor..., name: mandatory_name, type, test: mandatory_test, }
+    @_types[ optional_name      ] = { descriptor..., name: optional_name,  type, test: optional_test,  }
     return null
 
   #---------------------------------------------------------------------------------------------------------
