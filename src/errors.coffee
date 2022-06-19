@@ -39,4 +39,5 @@ class @Intertype_wrong_type                extends @Intertype_error
   constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
 class @Intertype_wrong_arity               extends @Intertype_error
   constructor: ( ref, name, min, max, found ) -> super ref, "#{name} expected between #{min} and #{max} arguments, got #{found}"
-
+#-----------------------------------------------------------------------------------------------------------
+class @Intertype_ETEMPTBD extends @Intertype_error
