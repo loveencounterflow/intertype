@@ -104,10 +104,14 @@ class @Intertype extends Intertype_abc
   declare: ( type, descriptor ) =>
     test            = descriptor.test.bind @
     @_types[ type ] = { descriptor..., test, }
+    ### TAINT code duplication ###
+    ### TAINT find better name for `name` ###
+    ### TAINT ensure descriptor does not contain type, name ###
     return null
 
   #---------------------------------------------------------------------------------------------------------
   isa: ( hedges..., type, x ) =>
+    ### TAINT code duplication ###
     hedges.push type
     name = ( hedges.join '_' )
     debug '^4563^', name
