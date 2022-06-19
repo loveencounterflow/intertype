@@ -583,3 +583,20 @@ A code comment from 2010 ([CND Types module]()):
 * [ ] ensure that when `validate()` fails, the entire chains of reasons will be printed out
 
 
+<!--
+
+* Type names all (conceptually) derived by the *Miller Device*:
+
+  ```coffee
+  jto = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
+  ```
+
+* Exceptions:
+  * `list` is the preferred synonym for `array`
+  * `text` is the preferred synonym for `string`
+  * `regex` is the preferred synonym for `regexp`
+  * `number` is not used at all because in JavaScript, `+Infinity`, `-Infinity`, `NaN` and unsafe integers
+    are all considered numbers; instead, the preferred name for all values `x` that satisfy `Number.isFinite
+    x` is `float`
+
+-->
