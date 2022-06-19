@@ -22,7 +22,7 @@ praise                    = CND.get_logger 'praise',    badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
 GUY                       = require 'guy'
-
+E                         = require './errors'
 
 
 #===========================================================================================================
@@ -113,7 +113,7 @@ class @Intertype extends Intertype_abc
     debug '^4563^', name
     # throw new Error '^534-1^' if hedges.length isnt 1
     unless ( test = @_types[ name ]?.test )?
-      throw new Error '^534-2^'
+      throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
     return test x
 
   #---------------------------------------------------------------------------------------------------------
