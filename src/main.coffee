@@ -105,8 +105,10 @@ class @Intertype extends Intertype_abc
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
     ### TAINT ensure descriptor does not contain type, name ###
-    defaults    = { numeric: false, collection: false, }
-    descriptor  = { defaults..., descriptor..., }
+    defaults          = { numeric: false, collection: false, }
+    descriptor        = { defaults..., descriptor..., }
+    descriptor.size   = 'length' if descriptor.collection and not descriptor.size?
+    descriptor.size  ?= null
     hedges.push type
     if hedges[ 0 ] is 'optional'
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "'optional' cannot be a hedge in declarations, got #{rpr hedges}"
@@ -117,7 +119,34 @@ class @Intertype extends Intertype_abc
     # debug '^4234^', { mandatory_name, mandatory_test, optional_name, optional_test, }
     @_types[ mandatory_name     ] = { descriptor..., name: mandatory_name, type, test: mandatory_test, }
     @_types[ optional_name      ] = { descriptor..., name: optional_name,  type, test: optional_test,  }
+    #.......................................................................................................
+    if descriptor.collection
+      mandatory_empty_name                = "empty_#{mandatory_name}"
+      mandatory_empty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_empty descriptor, x ) ).bind @
+      optional_empty_name                 = "optional_#{mandatory_empty_name}"
+      optional_empty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_empty_test x ) ).bind @
+      debug '^3345^', { mandatory_empty_name, optional_empty_name, }
+      @_types[ mandatory_empty_name     ] = { descriptor..., name: mandatory_empty_name, type, test: mandatory_empty_test, }
+      @_types[ optional_empty_name      ] = { descriptor..., name: optional_empty_name,  type, test: optional_empty_test,  }
+      mandatory_nonempty_name                = "nonempty_#{mandatory_name}"
+      mandatory_nonempty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_nonempty descriptor, x ) ).bind @
+      optional_nonempty_name                 = "optional_#{mandatory_nonempty_name}"
+      optional_nonempty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_nonempty_test x ) ).bind @
+      debug '^3345^', { mandatory_nonempty_name, optional_nonempty_name, }
+      @_types[ mandatory_nonempty_name     ] = { descriptor..., name: mandatory_nonempty_name, type, test: mandatory_nonempty_test, }
+      @_types[ optional_nonempty_name      ] = { descriptor..., name: optional_nonempty_name,  type, test: optional_nonempty_test,  }
     return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _size_of:     ( descriptor, x ) ->
+    unless descriptor.size?
+      throw new Error E.Intertype_ETEMPTBD '^intertype@1^', ""
+    return ( Object.keys x ).length if descriptor.size is 'keys'
+    return x[ descriptor.size ]
+
+  #---------------------------------------------------------------------------------------------------------
+  _is_empty:    ( descriptor, x ) -> ( @_size_of descriptor, x ) is 0
+  _is_nonempty: ( descriptor, x ) -> ( @_size_of descriptor, x ) > 0
 
   #---------------------------------------------------------------------------------------------------------
   isa: ( hedges..., type, x ) =>
