@@ -1,12 +1,43 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
-  multimix: ^5.0.0
+  cnd: ^9.2.2
+  guy: ^5.0.1
 
 dependencies:
-  multimix: 5.0.0
+  cnd: 9.2.2
+  guy: 5.0.1
 
 packages:
+
+  /cnd/9.2.2:
+    resolution: {integrity: sha512-F+/H+7luk4fZkvN0+MT0I2nwn80YM/EtfMttNUFxENR50XJH4g0KgQevzeyEJ8B6t6l8Tb4Xti6QAksa8DmePA==}
+    hasBin: true
+    dependencies:
+      jsx-number-format: 0.1.5
+    dev: false
+
+  /guy/5.0.1:
+    resolution: {integrity: sha512-enDYlbj0eD6GdzUoCen7qhKB3FQCqYCZ6SV75XF0GB+HA0Ux5LyOWUEAbgjhzqsw4zTvv+8lDSUORktWP0PKmg==}
+    dependencies:
+      cnd: 9.2.2
+      intertype: 7.7.1
+      letsfreezethat: 3.1.0
+    dev: false
+
+  /intertype/7.7.1:
+    resolution: {integrity: sha512-GgGJYdbHaZ5AM4TvxzXSfkgFwAIEl6w3yIFiDY15uc85W41YfSRL0vNuO68tjNQ3gNIJ+U+xOYA8cw9NN8j0JQ==}
+    dependencies:
+      multimix: 5.0.0
+    dev: false
+
+  /jsx-number-format/0.1.5:
+    resolution: {integrity: sha512-eS1SvW5Lm+UQOrpxqtTF6NgPDupYlCV1GXJr+f/1yp+nwQH/4qW6XarwCcdphQjNHrJFC4ko2MgRyRDS/ypqZw==}
+    dev: false
+
+  /letsfreezethat/3.1.0:
+    resolution: {integrity: sha512-jJ1nvvQi6unW0WifjNPMIb64Byom0EXzSKWFYA++EpyjK3qv1J2pqeSoEJ61tGJoNG0GoNjPoeLYhxW16riZaA==}
+    dev: false
 
   /multimix/5.0.0:
     resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
