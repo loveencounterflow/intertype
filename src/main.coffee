@@ -21,14 +21,8 @@ urge                      = CND.get_logger 'urge',      badge
 praise                    = CND.get_logger 'praise',    badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-test                      = require 'guy-test'
-GUY                       = require '../../../apps/guy'
-_types                    = new ( require '../../../apps/intertype' ).Intertype
+GUY                       = require 'guy'
 
-_types.defaults = {}
-_types.declare 'ityp_constructor_cfg', tests:
-  "@isa.object x":    ( x ) -> @isa.object x
-# _types.
 
 
 #===========================================================================================================
