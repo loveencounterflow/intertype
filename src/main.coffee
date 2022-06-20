@@ -89,6 +89,7 @@ class Validate extends Intertype_abc
   nonempty:   new Validate_nonempty()
   list_of:    new Validate_list_of()
 
+
 #===========================================================================================================
 class @Type_cfg extends Intertype_abc
 
@@ -153,8 +154,6 @@ class @Intertype extends Intertype_abc
     # debug '^4234^', { mandatory_name, mandatory_test, optional_name, optional_test, }
     @_types[ mandatory_name     ] = { type_cfg..., name: mandatory_name, type, test: mandatory_test, }
     @_types[ optional_name      ] = { type_cfg..., name: optional_name,  type, test: optional_test,  }
-    debug '^675-1^', mandatory_name
-    debug '^675-1^', optional_name
     #.......................................................................................................
     if type_cfg.isa_collection
       mandatory_empty_name                   = "empty#{@cfg.sep}#{mandatory_name}"
@@ -169,10 +168,6 @@ class @Intertype extends Intertype_abc
       optional_nonempty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_nonempty_test x ) ).bind @
       @_types[ mandatory_nonempty_name     ] = { type_cfg..., name: mandatory_nonempty_name, type, test: mandatory_nonempty_test, }
       @_types[ optional_nonempty_name      ] = { type_cfg..., name: optional_nonempty_name,  type, test: optional_nonempty_test,  }
-      debug '^675-1^', mandatory_empty_name
-      debug '^675-1^', mandatory_nonempty_name
-      debug '^675-1^', optional_empty_name
-      debug '^675-1^', optional_nonempty_name
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -293,13 +288,12 @@ types.isa.optional.empty.list_of.negative0.integer          0
 types.isa.optional.empty.list_of.positive1.integer          42
 types.isa.optional.empty.list_of.positive0.integer          0
 
-[all]     [all]     [collections]   [collections]   [numerical]   [numerical]   [mandatory]
-————————————————————————————————————————————————————————————————————————————————————————————
-isa       optional  empty           list_of         even          negative0     <type>
-validate            nonempty                        odd           negative1
-                                                                  positive0
-                                                                  positive1
-
+[all]     [all]     [isa_collection]  [isa_collection]  [isa_numeric]   [isa_numeric]   [mandatory]
+————————————————————————————————————————————————————————————————————————————————————————————————————
+isa       optional  empty             list_of           even            negative0       <type>
+validate            nonempty                            odd             negative1
+                                                                        positive0
+                                                                        positive1
 ###
 
 
