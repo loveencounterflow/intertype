@@ -23,6 +23,7 @@ echo                      = CND.echo.bind CND
 #...........................................................................................................
 GUY                       = require 'guy'
 E                         = require './errors'
+ITYP                      = @
 
 
 #===========================================================================================================
@@ -89,71 +90,99 @@ class Validate extends Intertype_abc
   list_of:    new Validate_list_of()
 
 #===========================================================================================================
+class @Type_cfg extends Intertype_abc
+
+  #---------------------------------------------------------------------------------------------------------
+  @defaults: GUY.lft.freeze
+    #.......................................................................................................
+    constructor_cfg:
+      isa_numeric:      false
+      isa_collection:   false
+      size:             null  # defaults to `'length'` where `isa_collection` is `true`
+      test:             null
+
+  #---------------------------------------------------------------------------------------------------------
+  constructor: ( cfg ) ->
+    ### TAINT ensure type_cfg does not contain `type`, `name` ###
+    super()
+    cfg         = { @constructor.defaults.constructor_cfg..., cfg..., }
+    cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
+    cfg.size   ?= null
+    @[ k ]      = v for k, v of cfg
+    return GUY.lft.freeze @
+
+#===========================================================================================================
 class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ->
+  @defaults: GUY.lft.freeze
+    #.......................................................................................................
+    constructor_cfg:
+      sep:  '$'
+
+  #---------------------------------------------------------------------------------------------------------
+  constructor: ( cfg ) ->
     super()
     # @defaults           = new Defaults()
     # @isa                = new Isa()
     # @validate           = new Validate()
-    @_types             = {}
+    @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
+    @_types   = {}
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  declare: ( hedges..., type, descriptor ) =>
+  declare: ( hedges..., type, type_cfg ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
-    ### TAINT ensure descriptor does not contain type, name ###
-    defaults          = { numeric: false, collection: false, }
-    descriptor        = { defaults..., descriptor..., }
-    descriptor.size   = 'length' if descriptor.collection and not descriptor.size?
-    descriptor.size  ?= null
+    type_cfg  = new ITYP.Type_cfg type_cfg
     hedges.push type
     if hedges[ 0 ] is 'optional'
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "'optional' cannot be a hedge in declarations, got #{rpr hedges}"
-    mandatory_name                = ( hedges.join '_' )
-    mandatory_test                = descriptor.test.bind @
-    optional_name                 = "optional_#{mandatory_name}"
+    mandatory_name                = ( hedges.join @cfg.sep )
+    mandatory_test                = type_cfg.test.bind @
+    optional_name                 = "optional#{@cfg.sep}#{mandatory_name}"
     optional_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_test x ) ).bind @
     # debug '^4234^', { mandatory_name, mandatory_test, optional_name, optional_test, }
-    @_types[ mandatory_name     ] = { descriptor..., name: mandatory_name, type, test: mandatory_test, }
-    @_types[ optional_name      ] = { descriptor..., name: optional_name,  type, test: optional_test,  }
+    @_types[ mandatory_name     ] = { type_cfg..., name: mandatory_name, type, test: mandatory_test, }
+    @_types[ optional_name      ] = { type_cfg..., name: optional_name,  type, test: optional_test,  }
+    debug '^675-1^', mandatory_name
+    debug '^675-1^', optional_name
     #.......................................................................................................
-    if descriptor.collection
-      mandatory_empty_name                = "empty_#{mandatory_name}"
-      mandatory_empty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_empty descriptor, x ) ).bind @
-      optional_empty_name                 = "optional_#{mandatory_empty_name}"
-      optional_empty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_empty_test x ) ).bind @
-      debug '^3345^', { mandatory_empty_name, optional_empty_name, }
-      @_types[ mandatory_empty_name     ] = { descriptor..., name: mandatory_empty_name, type, test: mandatory_empty_test, }
-      @_types[ optional_empty_name      ] = { descriptor..., name: optional_empty_name,  type, test: optional_empty_test,  }
-      mandatory_nonempty_name                = "nonempty_#{mandatory_name}"
-      mandatory_nonempty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_nonempty descriptor, x ) ).bind @
-      optional_nonempty_name                 = "optional_#{mandatory_nonempty_name}"
+    if type_cfg.isa_collection
+      mandatory_empty_name                   = "empty#{@cfg.sep}#{mandatory_name}"
+      mandatory_empty_test                   = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_empty type_cfg, x ) ).bind @
+      optional_empty_name                    = "optional#{@cfg.sep}#{mandatory_empty_name}"
+      optional_empty_test                    = ( test = ( x ) -> ( not x? ) or ( mandatory_empty_test x ) ).bind @
+      @_types[ mandatory_empty_name        ] = { type_cfg..., name: mandatory_empty_name, type, test: mandatory_empty_test, }
+      @_types[ optional_empty_name         ] = { type_cfg..., name: optional_empty_name,  type, test: optional_empty_test,  }
+      mandatory_nonempty_name                = "nonempty#{@cfg.sep}#{mandatory_name}"
+      mandatory_nonempty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_nonempty type_cfg, x ) ).bind @
+      optional_nonempty_name                 = "optional#{@cfg.sep}#{mandatory_nonempty_name}"
       optional_nonempty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_nonempty_test x ) ).bind @
-      debug '^3345^', { mandatory_nonempty_name, optional_nonempty_name, }
-      @_types[ mandatory_nonempty_name     ] = { descriptor..., name: mandatory_nonempty_name, type, test: mandatory_nonempty_test, }
-      @_types[ optional_nonempty_name      ] = { descriptor..., name: optional_nonempty_name,  type, test: optional_nonempty_test,  }
+      @_types[ mandatory_nonempty_name     ] = { type_cfg..., name: mandatory_nonempty_name, type, test: mandatory_nonempty_test, }
+      @_types[ optional_nonempty_name      ] = { type_cfg..., name: optional_nonempty_name,  type, test: optional_nonempty_test,  }
+      debug '^675-1^', mandatory_empty_name
+      debug '^675-1^', mandatory_nonempty_name
+      debug '^675-1^', optional_empty_name
+      debug '^675-1^', optional_nonempty_name
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _size_of:     ( descriptor, x ) ->
-    unless descriptor.size?
+  _size_of:     ( type_cfg, x ) ->
+    unless type_cfg.size?
       throw new Error E.Intertype_ETEMPTBD '^intertype@1^', ""
-    return ( Object.keys x ).length if descriptor.size is 'keys'
-    return x[ descriptor.size ]
+    return ( Object.keys x ).length if type_cfg.size is 'keys'
+    return x[ type_cfg.size ]
 
   #---------------------------------------------------------------------------------------------------------
-  _is_empty:    ( descriptor, x ) -> ( @_size_of descriptor, x ) is 0
-  _is_nonempty: ( descriptor, x ) -> ( @_size_of descriptor, x ) > 0
+  _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
+  _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
 
   #---------------------------------------------------------------------------------------------------------
   isa: ( hedges..., type, x ) =>
     ### TAINT code duplication ###
     hedges.push type
-    name = ( hedges.join '_' )
-    debug '^4563^', name
+    name = ( hedges.join @cfg.sep )
     # throw new Error '^534-1^' if hedges.length isnt 1
     unless ( test = @_types[ name ]?.test )?
       throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
