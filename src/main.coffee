@@ -115,6 +115,14 @@ class @Type_cfg extends Intertype_abc
 class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
+  @hedges: GUY.lft.freeze [
+    { x: [ 'optional',                                          ], match: { all: true,                } }
+    { x: [ 'empty', 'nonempty',                                 ], match: { isa: [ 'collection',  ],  } }
+    { x: [ 'list_of', 'set_of',                                 ], match: { isa: [ 'list',        ],  } }
+    { x: [ 'positive0', 'positive1', 'negative0', 'negative1',  ], match: { isa: [ 'numeric',     ],  } }
+    ]
+
+  #---------------------------------------------------------------------------------------------------------
   @defaults: GUY.lft.freeze
     #.......................................................................................................
     constructor_cfg:
