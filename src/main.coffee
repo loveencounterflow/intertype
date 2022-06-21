@@ -140,21 +140,18 @@ class @Intertype extends Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _XXX_walk_permutations: ( type_cfg, hedge_idx = 0, current_path = [], R = [] ) ->
+  _XXX_walk_permutations: ( type_cfg, hedge_idx = 0, current_path = [] ) ->
     ### thx to https://itecnote.com/tecnote/java-generate-all-combinations-from-multiple-lists/ ###
     if hedge_idx is @constructor.hedges.length
       yield current_path
       return null
-      # R.push current_path
-      # return R
     hedge = @constructor.hedges[ hedge_idx ]
-    yield from @_XXX_walk_permutations type_cfg, hedge_idx + 1, current_path, R
+    yield from @_XXX_walk_permutations type_cfg, hedge_idx + 1, current_path
     for term, term_idx in hedge.x
       next_path = [ current_path..., ]
       next_path.push term
-      yield from @_XXX_walk_permutations type_cfg, hedge_idx + 1, next_path, R
+      yield from @_XXX_walk_permutations type_cfg, hedge_idx + 1, next_path
     return null
-    # return R
 
   #---------------------------------------------------------------------------------------------------------
   declare: ( hedges..., type, type_cfg ) =>
