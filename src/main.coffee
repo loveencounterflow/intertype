@@ -125,6 +125,21 @@ class @Intertype extends Intertype_abc
     ]
 
   #---------------------------------------------------------------------------------------------------------
+  @hedgemethods: GUY.lft.freeze
+    optional: ( x ) ->
+    #.......................................................................................................
+    empty: ( x ) ->
+    nonempty: ( x ) ->
+    #.......................................................................................................
+    list_of: ( x ) ->
+    set_of: ( x ) ->
+    #.......................................................................................................
+    positive0: ( x ) ->
+    positive1: ( x ) ->
+    negative0: ( x ) ->
+    negative1: ( x ) ->
+
+  #---------------------------------------------------------------------------------------------------------
   @defaults: GUY.lft.freeze
     #.......................................................................................................
     constructor_cfg:
@@ -175,34 +190,40 @@ class @Intertype extends Intertype_abc
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  declare: ( hedges..., type, type_cfg ) =>
+  declare: ( type, type_cfg ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
     type_cfg  = new ITYP.Type_cfg type_cfg
-    hedges.push type
-    if hedges[ 0 ] is 'optional'
-      throw new E.Intertype_ETEMPTBD '^intertype@1^', "'optional' cannot be a hedge in declarations, got #{rpr hedges}"
-    mandatory_name                = ( hedges.join @cfg.sep )
-    mandatory_test                = type_cfg.test.bind @
-    optional_name                 = "optional#{@cfg.sep}#{mandatory_name}"
-    optional_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_test x ) ).bind @
-    # debug '^4234^', { mandatory_name, mandatory_test, optional_name, optional_test, }
-    @_types[ mandatory_name     ] = { type_cfg..., name: mandatory_name, type, test: mandatory_test, }
-    @_types[ optional_name      ] = { type_cfg..., name: optional_name,  type, test: optional_test,  }
-    #.......................................................................................................
-    if type_cfg.isa_collection
-      mandatory_empty_name                   = "empty#{@cfg.sep}#{mandatory_name}"
-      mandatory_empty_test                   = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_empty type_cfg, x ) ).bind @
-      optional_empty_name                    = "optional#{@cfg.sep}#{mandatory_empty_name}"
-      optional_empty_test                    = ( test = ( x ) -> ( not x? ) or ( mandatory_empty_test x ) ).bind @
-      @_types[ mandatory_empty_name        ] = { type_cfg..., name: mandatory_empty_name, type, test: mandatory_empty_test, }
-      @_types[ optional_empty_name         ] = { type_cfg..., name: optional_empty_name,  type, test: optional_empty_test,  }
-      mandatory_nonempty_name                = "nonempty#{@cfg.sep}#{mandatory_name}"
-      mandatory_nonempty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_nonempty type_cfg, x ) ).bind @
-      optional_nonempty_name                 = "optional#{@cfg.sep}#{mandatory_nonempty_name}"
-      optional_nonempty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_nonempty_test x ) ).bind @
-      @_types[ mandatory_nonempty_name     ] = { type_cfg..., name: mandatory_nonempty_name, type, test: mandatory_nonempty_test, }
-      @_types[ optional_nonempty_name      ] = { type_cfg..., name: optional_nonempty_name,  type, test: optional_nonempty_test,  }
+    for hedgepath from @_walk_hedgepaths type_cfg
+      info '^54656^', hedgepath, type
+      name            = [ hedgepath..., type, ].join @cfg.sep
+      ### TAINT must include test for hedges ###
+      test            = type_cfg.test.bind @
+      @_types[ name ] = { type_cfg..., name, type, test, }
+    # hedges.push type
+    # if hedges[ 0 ] is 'optional'
+    #   throw new E.Intertype_ETEMPTBD '^intertype@1^', "'optional' cannot be a hedge in declarations, got #{rpr hedges}"
+    # mandatory_name                = ( hedges.join @cfg.sep )
+    # mandatory_test                = type_cfg.test.bind @
+    # optional_name                 = "optional#{@cfg.sep}#{mandatory_name}"
+    # optional_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_test x ) ).bind @
+    # # debug '^4234^', { mandatory_name, mandatory_test, optional_name, optional_test, }
+    # @_types[ mandatory_name     ] = { type_cfg..., name: mandatory_name, type, test: mandatory_test, }
+    # @_types[ optional_name      ] = { type_cfg..., name: optional_name,  type, test: optional_test,  }
+    # #.......................................................................................................
+    # if type_cfg.isa_collection
+    #   mandatory_empty_name                   = "empty#{@cfg.sep}#{mandatory_name}"
+    #   mandatory_empty_test                   = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_empty type_cfg, x ) ).bind @
+    #   optional_empty_name                    = "optional#{@cfg.sep}#{mandatory_empty_name}"
+    #   optional_empty_test                    = ( test = ( x ) -> ( not x? ) or ( mandatory_empty_test x ) ).bind @
+    #   @_types[ mandatory_empty_name        ] = { type_cfg..., name: mandatory_empty_name, type, test: mandatory_empty_test, }
+    #   @_types[ optional_empty_name         ] = { type_cfg..., name: optional_empty_name,  type, test: optional_empty_test,  }
+    #   mandatory_nonempty_name                = "nonempty#{@cfg.sep}#{mandatory_name}"
+    #   mandatory_nonempty_test                = ( test = ( x ) -> ( mandatory_test x ) and ( @_is_nonempty type_cfg, x ) ).bind @
+    #   optional_nonempty_name                 = "optional#{@cfg.sep}#{mandatory_nonempty_name}"
+    #   optional_nonempty_test                 = ( test = ( x ) -> ( not x? ) or ( mandatory_nonempty_test x ) ).bind @
+    #   @_types[ mandatory_nonempty_name     ] = { type_cfg..., name: mandatory_nonempty_name, type, test: mandatory_nonempty_test, }
+    #   @_types[ optional_nonempty_name      ] = { type_cfg..., name: optional_nonempty_name,  type, test: optional_nonempty_test,  }
     return null
 
   #---------------------------------------------------------------------------------------------------------
