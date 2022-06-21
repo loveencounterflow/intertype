@@ -118,8 +118,9 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   @hedges: GUY.lft.freeze [
     { x: [ 'optional',                                          ], match: { all: true,                }, }
+    # { x: [ 'empty', 'nonempty',                                 ], match: { isa_collection: true,     }, }
+    { x: [ [ 'empty', 'nonempty', ], [ 'list_of', 'set_of', ]   ], match: { all: true,                }, }
     { x: [ 'empty', 'nonempty',                                 ], match: { isa_collection: true,     }, }
-    { x: [ 'list_of', 'set_of',                                 ], match: { all: true,                }, }
     { x: [ 'positive0', 'positive1', 'negative0', 'negative1',  ], match: { isa_numeric: true,        }, }
     ]
 
@@ -155,10 +156,22 @@ class @Intertype extends Intertype_abc
     hedge = @constructor.hedges[ hedge_idx ]
     yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, current_path
     return null unless @_match_hedge_and_type hedge, type_cfg
-    for term, term_idx in hedge.x
-      next_path = [ current_path..., ]
-      next_path.push term
-      yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
+    if Array.isArray hedge.x[ 0 ]
+      unless hedge.x.length is 2
+        throw new E.Intertype_ETEMPTBD '^intertype@1^', \
+          "expected hedge declaration to have exactly two sublists, got #{rpr hedge}"
+      for term in hedge.x[ 1 ]
+        next_path = [ current_path..., term, ]
+        yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
+      for term1 in hedge.x[ 0 ]
+        next_path_base = [ current_path..., term1 ]
+        for term in hedge.x[ 1 ]
+          next_path = [ next_path_base..., term, ]
+          yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
+    else
+      for term, term_idx in hedge.x
+        next_path = [ current_path..., term, ]
+        yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
     return null
 
   #---------------------------------------------------------------------------------------------------------
