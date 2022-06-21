@@ -117,10 +117,10 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   @hedges: GUY.lft.freeze [
-    { x: [ 'optional',                                          ], match: { all: true,                } }
-    { x: [ 'empty', 'nonempty',                                 ], match: { isa: [ 'collection',  ],  } }
-    { x: [ 'list_of', 'set_of',                                 ], match: { isa: [ 'list',        ],  } }
-    { x: [ 'positive0', 'positive1', 'negative0', 'negative1',  ], match: { isa: [ 'numeric',     ],  } }
+    { x: [ 'optional',                                          ], match: { all: true,                }, }
+    { x: [ 'empty', 'nonempty',                                 ], match: { isa_collection: true,     }, }
+    { x: [ 'list_of', 'set_of',                                 ], match: { all: true,                }, }
+    { x: [ 'positive0', 'positive1', 'negative0', 'negative1',  ], match: { isa_numeric: true,        }, }
     ]
 
   #---------------------------------------------------------------------------------------------------------
@@ -140,17 +140,25 @@ class @Intertype extends Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _XXX_walk_permutations: ( type_cfg, hedge_idx = 0, current_path = [] ) ->
+  _match_hedge_and_type: ( hedge, type_cfg ) ->
+    for property, value of hedge.match
+      return true if property is 'all'
+      return false unless type_cfg[ property ]
+    return true
+
+  #---------------------------------------------------------------------------------------------------------
+  _walk_hedgepaths: ( type_cfg, hedge_idx = 0, current_path = [] ) ->
     ### thx to https://itecnote.com/tecnote/java-generate-all-combinations-from-multiple-lists/ ###
     if hedge_idx is @constructor.hedges.length
       yield current_path
       return null
     hedge = @constructor.hedges[ hedge_idx ]
-    yield from @_XXX_walk_permutations type_cfg, hedge_idx + 1, current_path
+    yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, current_path
+    return null unless @_match_hedge_and_type hedge, type_cfg
     for term, term_idx in hedge.x
       next_path = [ current_path..., ]
       next_path.push term
-      yield from @_XXX_walk_permutations type_cfg, hedge_idx + 1, next_path
+      yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
     return null
 
   #---------------------------------------------------------------------------------------------------------
