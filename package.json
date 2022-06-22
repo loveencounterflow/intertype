@@ -18,6 +18,6 @@
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
     "cnd": "^9.2.2",
-    "guy": "^5.0.1"
+    "guy": "5.1.0"
   }
 }
