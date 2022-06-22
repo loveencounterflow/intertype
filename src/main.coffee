@@ -23,6 +23,7 @@ echo                      = CND.echo.bind CND
 #...........................................................................................................
 GUY                       = require 'guy'
 E                         = require './errors'
+H                         = require './helpers'
 ITYP                      = @
 
 
@@ -116,7 +117,8 @@ class @Type_cfg extends Intertype_abc
 class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
-  @hedges: GUY.lft.freeze [
+  ### TAINT tack onto prototype as hidden ###
+  _hedges: GUY.lft.freeze [
     { x: [ 'optional',                                          ], match: { all: true,                }, }
     # { x: [ 'empty', 'nonempty',                                 ], match: { isa_collection: true,     }, }
     { x: [ [ 'empty', 'nonempty', ], [ 'list_of', 'set_of', ]   ], match: { all: true,                }, }
@@ -125,19 +127,28 @@ class @Intertype extends Intertype_abc
     ]
 
   #---------------------------------------------------------------------------------------------------------
-  @hedgemethods: GUY.lft.freeze
-    optional: ( x ) ->
+  ### TAINT tack onto prototype as hidden ###
+  _signals: GUY.lft.freeze new GUY.props.Strict_owner target:
+    true_and_break:   Symbol 'true_and_break'
+    false_and_break:  Symbol 'false_and_break'
+
+  #---------------------------------------------------------------------------------------------------------
+  ### TAINT tack onto prototype as hidden ###
+  _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
+    optional:   ( x ) -> return @_signals.true_and_break unless x?; return true
     #.......................................................................................................
-    empty: ( x ) ->
-    nonempty: ( x ) ->
+    ### TAINT use `length` or `size` or custom method ###
+    empty:      ( x ) -> return ( @_size_of x ) is 0
+    nonempty:   ( x ) -> return ( @_size_of x ) isnt 0
     #.......................................................................................................
-    list_of: ( x ) ->
-    set_of: ( x ) ->
+    ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
+    list_of:    ( x ) -> return @_signals.false_and_break unless Array.isArray x;   return true
+    set_of:     ( x ) -> return @_signals.false_and_break unless x instanceof Set;  return true
     #.......................................................................................................
-    positive0: ( x ) ->
-    positive1: ( x ) ->
-    negative0: ( x ) ->
-    negative1: ( x ) ->
+    positive0:  ( x ) -> x >= 0
+    positive1:  ( x ) -> x >  0
+    negative0:  ( x ) -> x <= 0
+    negative1:  ( x ) -> x <  0
 
   #---------------------------------------------------------------------------------------------------------
   @defaults: GUY.lft.freeze
@@ -175,10 +186,10 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _walk_hedgepaths: ( type_cfg, hedge_idx = 0, current_path = [] ) ->
     ### thx to https://itecnote.com/tecnote/java-generate-all-combinations-from-multiple-lists/ ###
-    if hedge_idx is @constructor.hedges.length
+    if hedge_idx is @_hedges.length
       yield current_path
       return null
-    hedge = @constructor.hedges[ hedge_idx ]
+    hedge = @_hedges[ hedge_idx ]
     yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, current_path
     return null unless @_match_hedge_and_type hedge, type_cfg
     if Array.isArray hedge.x[ 0 ]
@@ -214,26 +225,44 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _declare_hedgepath: ({ method, test, type, type_cfg, name, hedgepath, }) =>
-    parent = method
-    for term in hedgepath
-      unless parent.has term
-        ### TAINT consider to make functions out of these (re-use `method`?) ###
-        GUY.props.hide parent, term, new GUY.props.Strict_owner()
-      parent = parent[ term ]
+    typetest      = test
+    parent        = method
+    hedgemethods  = []
+    parent        = do =>
+      for term in hedgepath
+        hedgemethods.push [ term, @_hedgemethods[ term ], ]
+        unless parent.has term
+          ### TAINT consider to make functions out of these (re-use `method`?) ###
+          GUY.props.hide parent, term, new GUY.props.Strict_owner()
+        parent = parent[ term ]
+      return parent
+    #.......................................................................................................
     unless parent.has type
+      #.....................................................................................................
+      test = ( x ) =>
+        for [ term, hedgemethod, ] in hedgemethods
+          switch R = hedgemethod.call @, x
+            when @_signals.true_and_break   then return true
+            when @_signals.false_and_break  then return false
+            when false                      then return false
+            when true                       then null
+            else throw new E.Intertype_internal_error '^intertype@1^', \
+              "unexpected return value from hedgemethod for term #{rpr term}: #{rpr R}"
+        return typetest.call @, x
+      #.....................................................................................................
       GUY.props.hide parent, type, test
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _size_of:     ( type_cfg, x ) ->
-    unless type_cfg.size?
-      throw new Error E.Intertype_ETEMPTBD '^intertype@1^', ""
-    return ( Object.keys x ).length if type_cfg.size is 'keys'
-    return x[ type_cfg.size ]
+  _size_of:     ( x ) ->
+    ### TAINT this will break with `Strict_owner` instances ###
+    return R if ( R = x.length )?
+    return R if ( R = x.size )?
+    return ( Object.keys x ).length
 
-  #---------------------------------------------------------------------------------------------------------
-  _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
-  _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
+  # #---------------------------------------------------------------------------------------------------------
+  # _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
+  # _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
 
   #---------------------------------------------------------------------------------------------------------
   js_type_of:                 ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
