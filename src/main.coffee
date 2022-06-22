@@ -153,6 +153,16 @@ class @Intertype extends Intertype_abc
     # @validate           = new Validate()
     @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
     @_types   = {}
+    #.......................................................................................................
+    @isa = new GUY.props.Strict_owner target: ( hedges..., type, x ) =>
+      ### TAINT code duplication ###
+      hedges.push type
+      name = ( hedges.join @cfg.sep )
+      # throw new Error '^534-1^' if hedges.length isnt 1
+      unless ( test = @_types[ name ]?.test )?
+        throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
+      return test x
+    #.......................................................................................................
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
@@ -199,6 +209,19 @@ class @Intertype extends Intertype_abc
       ### TAINT must include test for hedges ###
       test            = type_cfg.test.bind @
       @_types[ name ] = { type_cfg..., name, type, test, }
+      @_declare_hedgepath { method: @isa, test, type, type_cfg, name, hedgepath, }
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _declare_hedgepath: ({ method, test, type, type_cfg, name, hedgepath, }) =>
+    parent = method
+    for term in hedgepath
+      unless parent.has term
+        ### TAINT consider to make functions out of these (re-use `method`?) ###
+        GUY.props.hide parent, term, new GUY.props.Strict_owner()
+      parent = parent[ term ]
+    unless parent.has type
+      GUY.props.hide parent, type, test
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -211,16 +234,6 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
   _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
-
-  #---------------------------------------------------------------------------------------------------------
-  isa: ( hedges..., type, x ) =>
-    ### TAINT code duplication ###
-    hedges.push type
-    name = ( hedges.join @cfg.sep )
-    # throw new Error '^534-1^' if hedges.length isnt 1
-    unless ( test = @_types[ name ]?.test )?
-      throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
-    return test x
 
   #---------------------------------------------------------------------------------------------------------
   js_type_of:                 ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
