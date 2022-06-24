@@ -129,21 +129,29 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
   _signals: GUY.lft.freeze new GUY.props.Strict_owner target:
-    true_and_break:   Symbol 'true_and_break'
-    false_and_break:  Symbol 'false_and_break'
+    true_and_break:         Symbol 'true_and_break'
+    false_and_break:        Symbol 'false_and_break'
+    process_list_elements:  Symbol 'process_list_elements'
+    processd_set_elements:  Symbol 'processd_set_elements'
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
   _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
-    optional:   ( x ) -> return @_signals.true_and_break unless x?; return true
+    optional:   ( x ) ->
+      return @_signals.true_and_break unless x?
+      return true
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
     empty:      ( x ) -> return ( @_size_of x ) is 0
     nonempty:   ( x ) -> return ( @_size_of x ) isnt 0
     #.......................................................................................................
     ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
-    list_of:    ( x ) -> return @_signals.false_and_break unless Array.isArray x;   return true
-    set_of:     ( x ) -> return @_signals.false_and_break unless x instanceof Set;  return true
+    list_of:    ( x ) ->
+      return @_signals.false_and_break unless Array.isArray x
+      return @_signals.process_list_elements
+    set_of:     ( x ) ->
+      return @_signals.false_and_break unless x instanceof Set
+      return @_signals.processd_set_elements
     #.......................................................................................................
     positive0:  ( x ) -> x >= 0
     positive1:  ( x ) -> x >  0
@@ -224,6 +232,11 @@ class @Intertype extends Intertype_abc
     return null
 
   #---------------------------------------------------------------------------------------------------------
+  _protocol_isa: ( term, result, verdict ) ->
+    debug '^_protocol_isa@1^', { term, result, verdict, }
+    return verdict
+
+  #---------------------------------------------------------------------------------------------------------
   _declare_hedgepath: ({ method, test, type, type_cfg, name, hedgepath, }) =>
     typetest      = test
     parent        = method
@@ -240,15 +253,23 @@ class @Intertype extends Intertype_abc
     unless parent.has type
       #.....................................................................................................
       test = ( x ) =>
-        for [ term, hedgemethod, ] in hedgemethods
+        for [ term, hedgemethod, ], hedge_idx in hedgemethods
+          # debug '^_declare_hedgepath.test@1^', { term, R: ( hedgemethod.call @, x ), }
           switch R = hedgemethod.call @, x
-            when @_signals.true_and_break   then return true
-            when @_signals.false_and_break  then return false
-            when false                      then return false
-            when true                       then null
+            when @_signals.true_and_break   then return @_protocol_isa term, R, true
+            when @_signals.false_and_break  then return @_protocol_isa term, R, false
+            when false                      then return @_protocol_isa term, R, false
+            when true                       then        @_protocol_isa term, R, true
+            when @_signals.process_list_elements
+              tail = ( hedgemethods[ idx ][ 1 ] for idx in [ hedge_idx + 1 ... hedgemethods.length ] )
+              tail.push type
+              debug '^4534^', tail
+              for e in x
+                return @_protocol_isa term, R, false unless @isa tail..., e
+              return @_protocol_isa term, R, true
             else throw new E.Intertype_internal_error '^intertype@1^', \
               "unexpected return value from hedgemethod for term #{rpr term}: #{rpr R}"
-        return typetest.call @, x
+        return @_protocol_isa type, null, typetest.call @, x
       #.....................................................................................................
       GUY.props.hide parent, type, test
     return null
