@@ -2,10 +2,12 @@ lockfileVersion: 5.4
 
 specifiers:
   cnd: ^9.2.2
+  combinate: ^1.1.11
   guy: 5.1.0
 
 dependencies:
   cnd: 9.2.2
+  combinate: 1.1.11
   guy: 5.1.0
 
 packages:
@@ -15,6 +17,10 @@ packages:
     hasBin: true
     dependencies:
       jsx-number-format: 0.1.5
+    dev: false
+
+  /combinate/1.1.11:
+    resolution: {integrity: sha512-+2MNAQ29HtNejOxkgaTQPC2Bm+pQvFuqf7o18uObl/Bx3daX06kjLUNY/qa9f+YSqzqm/ic3SdrlfN0fvTlw2g==}
     dev: false
 
   /guy/5.1.0:
