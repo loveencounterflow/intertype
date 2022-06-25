@@ -119,11 +119,10 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
   _hedges: GUY.lft.freeze [
-    { x: [ 'optional',                                          ], match: { all: true,                }, }
-    # { x: [ 'empty', 'nonempty',                                 ], match: { isa_collection: true,     }, }
-    { x: [ [ 'empty', 'nonempty', ], [ 'list_of', 'set_of', ]   ], match: { all: true,                }, }
-    { x: [ 'empty', 'nonempty',                                 ], match: { isa_collection: true,     }, }
-    { x: [ 'positive0', 'positive1', 'negative0', 'negative1',  ], match: { isa_numeric: true,        }, }
+    { x: [ 'optional',                                                          ], match: { all: true,                }, }
+    { x: [ [ 'empty', 'nonempty', ], [ 'list_of', 'set_of', ], [ 'optional', ], ], match: { all: true,                }, }
+    { x: [ 'empty', 'nonempty',                                                 ], match: { isa_collection: true,     }, }
+    { x: [ 'positive0', 'positive1', 'negative0', 'negative1',                  ], match: { isa_numeric: true,        }, }
     ]
 
   #---------------------------------------------------------------------------------------------------------
