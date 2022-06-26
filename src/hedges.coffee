@@ -24,7 +24,10 @@ combinate                 = ( require "combinate" ).default
 class @Combinator extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
-  combine_ ( terms ) => ( ( v for _, v of x ) for x in combinate terms )
+  @_hedges: GUY.lft.freeze []
+
+  #---------------------------------------------------------------------------------------------------------
+  _combine: ( terms ) => ( ( v for _, v of x ) for x in combinate terms )
 
   #---------------------------------------------------------------------------------------------------------
   _compile_hedges: ( hedges, type_cfg ) ->
@@ -43,7 +46,7 @@ class @Combinator extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   get_hedgepaths: ( compiled_hedges ) ->
-    R = ( x.flat() for x in combine compiled_hedges )
+    R = ( x.flat() for x in @_combine compiled_hedges )
     return R
 
   #---------------------------------------------------------------------------------------------------------
@@ -65,3 +68,43 @@ class @Intertype_hedge_combinator extends @Combinator
     { terms: [ null, 'empty', 'nonempty', ],                                match: { isa_collection: true, }, }
     { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], match: { isa_numeric: true, }, }
     ]
+
+  #---------------------------------------------------------------------------------------------------------
+  ### TAINT tack onto prototype as hidden ###
+  _signals: GUY.lft.freeze new GUY.props.Strict_owner target:
+    true_and_break:         Symbol 'true_and_break'
+    false_and_break:        Symbol 'false_and_break'
+    process_list_elements:  Symbol 'process_list_elements'
+    processd_set_elements:  Symbol 'processd_set_elements'
+
+  #---------------------------------------------------------------------------------------------------------
+  ### TAINT tack onto prototype as hidden ###
+  _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
+    optional:   ( x ) ->
+      return @_signals.true_and_break unless x?
+      return true
+    #.......................................................................................................
+    ### TAINT use `length` or `size` or custom method ###
+    empty:      ( x ) -> return ( @_size_of x ) is 0
+    nonempty:   ( x ) -> return ( @_size_of x ) isnt 0
+    #.......................................................................................................
+    ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
+    list_of:    ( x ) ->
+      return @_signals.false_and_break unless Array.isArray x
+      return @_signals.process_list_elements
+    set_of:     ( x ) ->
+      return @_signals.false_and_break unless x instanceof Set
+      return @_signals.processd_set_elements
+    #.......................................................................................................
+    positive0:  ( x ) -> x >= 0
+    positive1:  ( x ) -> x >  0
+    negative0:  ( x ) -> x <= 0
+    negative1:  ( x ) -> x <  0
+
+  #---------------------------------------------------------------------------------------------------------
+  _match_hedge_and_type_cfg: ( hedge, type_cfg ) ->
+    for property, value of hedge.match
+      return true if property is 'all'
+      return false unless type_cfg[ property ]
+    return true
+
