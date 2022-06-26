@@ -118,47 +118,6 @@ class @Type_cfg extends Intertype_abc
 class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT tack onto prototype as hidden ###
-  _hedges: GUY.lft.freeze [
-    { x: [ 'optional',                                                          ], match: { all: true,                }, }
-    { x: [ [ 'empty', 'nonempty', ], [ 'list_of', 'set_of', ], [ 'optional', ], ], match: { all: true,                }, }
-    { x: [ 'empty', 'nonempty',                                                 ], match: { isa_collection: true,     }, }
-    { x: [ 'positive0', 'positive1', 'negative0', 'negative1',                  ], match: { isa_numeric: true,        }, }
-    ]
-
-  #---------------------------------------------------------------------------------------------------------
-  ### TAINT tack onto prototype as hidden ###
-  _signals: GUY.lft.freeze new GUY.props.Strict_owner target:
-    true_and_break:         Symbol 'true_and_break'
-    false_and_break:        Symbol 'false_and_break'
-    process_list_elements:  Symbol 'process_list_elements'
-    processd_set_elements:  Symbol 'processd_set_elements'
-
-  #---------------------------------------------------------------------------------------------------------
-  ### TAINT tack onto prototype as hidden ###
-  _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
-    optional:   ( x ) ->
-      return @_signals.true_and_break unless x?
-      return true
-    #.......................................................................................................
-    ### TAINT use `length` or `size` or custom method ###
-    empty:      ( x ) -> return ( @_size_of x ) is 0
-    nonempty:   ( x ) -> return ( @_size_of x ) isnt 0
-    #.......................................................................................................
-    ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
-    list_of:    ( x ) ->
-      return @_signals.false_and_break unless Array.isArray x
-      return @_signals.process_list_elements
-    set_of:     ( x ) ->
-      return @_signals.false_and_break unless x instanceof Set
-      return @_signals.processd_set_elements
-    #.......................................................................................................
-    positive0:  ( x ) -> x >= 0
-    positive1:  ( x ) -> x >  0
-    negative0:  ( x ) -> x <= 0
-    negative1:  ( x ) -> x <  0
-
-  #---------------------------------------------------------------------------------------------------------
   @defaults: GUY.lft.freeze
     #.......................................................................................................
     constructor_cfg:
