@@ -24,6 +24,7 @@ echo                      = CND.echo.bind CND
 GUY                       = require 'guy'
 E                         = require './errors'
 H                         = require './helpers'
+HEDGES                    = require './hedges'
 ITYP                      = @
 
 
@@ -171,6 +172,7 @@ class @Intertype extends Intertype_abc
     # @validate           = new Validate()
     @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
     @_types   = {}
+    @_hedges  = new HEDGES.Intertype_hedge_combinator()
     #.......................................................................................................
     @isa = new GUY.props.Strict_owner target: ( hedges..., type, x ) =>
       ### TAINT code duplication ###
