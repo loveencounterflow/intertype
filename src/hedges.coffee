@@ -24,20 +24,29 @@ combinate                 = ( require "combinate" ).default
 class @Combinator extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
-  @_hedges: GUY.lft.freeze []
+  @catchall_group: 'other'
+  @hedges: GUY.lft.freeze []
+
+  #---------------------------------------------------------------------------------------------------------
+  constructor: ->
+    super()
+    @hedgepaths = {}
+    return undefined
 
   #---------------------------------------------------------------------------------------------------------
   _combine: ( terms ) => ( ( v for _, v of x ) for x in combinate terms )
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_hedges: ( hedges, type_cfg ) ->
-    R = []
+  _compile_hedges: ( groupname, hedges ) ->
+    R               = []
+    catchall_group  = @constructor.catchall_group
     for hedge in hedges
-      continue unless @_match_hedge_and_type_cfg hedge, type_cfg
-      # termses = [ hedge.terms..., ]
+      unless catchall_group in hedge.groups
+        continue unless groupname in hedge.groups
       target = []
       R.push target
       for termgroup in hedge.terms
+        # continue if termgroup? and @_has_conflicting_hedge_matchers
         if Array.isArray termgroup
           target.splice target.length - 1, 0, ( @get_hedgepaths termgroup )...
         else
@@ -52,21 +61,25 @@ class @Combinator extends GUY.props.Strict_owner
   #---------------------------------------------------------------------------------------------------------
   _reduce_hedgepaths: ( combinations ) -> ( ( e for e in hp when e? ) for hp in combinations )
 
+  #---------------------------------------------------------------------------------------------------------
+  _get_groupnames: -> GUY.lft.freeze new Set ( h.groups for h in @constructor.hedges ).flat()
+
+
 
 #===========================================================================================================
 class @Intertype_hedge_combinator extends @Combinator
 
   #---------------------------------------------------------------------------------------------------------
   @hedges: GUY.lft.freeze [
-    { terms: [ null, 'optional', ],                                         match: { all: true, }, }
+    { terms: [ null, 'optional', ],                                         groups: [ 'other',        ], }
     { terms: [
       null,
       [ [ null, 'empty', 'nonempty', ]
         [ 'list_of', 'set_of', ]
         [ null, 'optional', ]
-        ], ],                                                               match: { all: true, }, }
-    { terms: [ null, 'empty', 'nonempty', ],                                match: { isa_collection: true, }, }
-    { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], match: { isa_numeric: true, }, }
+        ], ],                                                               groups: [ 'other',        ], }
+    { terms: [ null, 'empty', 'nonempty', ],                                groups: [ 'collections',  ], }
+    { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], groups: [ 'numbers',      ], }
     ]
 
   #---------------------------------------------------------------------------------------------------------
@@ -101,10 +114,14 @@ class @Intertype_hedge_combinator extends @Combinator
     negative0:  ( x ) -> x <= 0
     negative1:  ( x ) -> x <  0
 
-  #---------------------------------------------------------------------------------------------------------
-  _match_hedge_and_type_cfg: ( hedge, type_cfg ) ->
-    for property, value of hedge.match
-      return true if property is 'all'
-      return false unless type_cfg[ property ]
-    return true
+  # #---------------------------------------------------------------------------------------------------------
+  # _match_hedge_and_type_cfg: ( hedge, type_cfg ) ->
+  #   unless @constructor.hedges_matchers_are_orthogonal
+  #     name = @constructor.name
+  #     throw new E.Intertype_not_implemented '^intertype.hedges@1^', \
+  #       "non-orthogonal hedge matchers not implemented, got #{name}.hedges_matchers_are_orthogonal == false"
+  #   return true unless property?
+  #   for property of hedge.match
+  #     return false unless type_cfg[ property ]
+  #   return true
 
