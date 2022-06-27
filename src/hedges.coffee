@@ -31,6 +31,10 @@ class @Combinator extends GUY.props.Strict_owner
   constructor: ->
     super()
     @hedgepaths = {}
+    for groupname from @_get_groupnames()
+      compiled_hedges           = @_compile_hedges groupname, @constructor.hedges
+      hedgepaths                = @get_hedgepaths compiled_hedges
+      @hedgepaths[ groupname ]  = @_reduce_hedgepaths hedgepaths
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
@@ -56,6 +60,7 @@ class @Combinator extends GUY.props.Strict_owner
   #---------------------------------------------------------------------------------------------------------
   get_hedgepaths: ( compiled_hedges ) ->
     R = ( x.flat() for x in @_combine compiled_hedges )
+    R.sort()
     return R
 
   #---------------------------------------------------------------------------------------------------------
