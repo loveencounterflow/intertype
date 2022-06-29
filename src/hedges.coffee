@@ -30,7 +30,7 @@ class @Combinator extends GUY.props.Strict_owner
   #---------------------------------------------------------------------------------------------------------
   constructor: ->
     super()
-    @hedgepaths = {}
+    @hedgepaths = new GUY.props.Strict_owner()
     for groupname from @_get_groupnames()
       compiled_hedges           = @_compile_hedges groupname, @constructor.hedges
       hedgepaths                = @get_hedgepaths compiled_hedges
