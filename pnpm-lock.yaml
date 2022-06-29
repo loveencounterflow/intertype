@@ -4,11 +4,13 @@ specifiers:
   cnd: ^9.2.2
   combinate: ^1.1.11
   guy: 5.1.0
+  intertype: ^7.7.1
 
 dependencies:
   cnd: 9.2.2
   combinate: 1.1.11
   guy: 5.1.0
+  intertype: 7.7.1
 
 packages:
 
