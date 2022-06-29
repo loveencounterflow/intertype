@@ -114,6 +114,13 @@ class @Type_cfg extends Intertype_abc
     @[ k ]      = v for k, v of cfg
     return GUY.lft.freeze @
 
+  #---------------------------------------------------------------------------------------------------------
+  _compile_groups: ( groups ) ->
+    R = if ( types.isa.text groups ) then groups.split /\s*,\s*/ else groups
+    for group in R
+      continue if @hub._hedges.hedgepaths.has group
+      throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
+    return R
 #===========================================================================================================
 class @Intertype extends Intertype_abc
 
