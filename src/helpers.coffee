@@ -9,6 +9,8 @@
 LOUPE         = require '../deps/loupe.js'
 @rpr          = rpr = ( x ) => LOUPE.inspect x, { customInspect: false, }
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
+GUY           = require 'guy'
+
 
 #===========================================================================================================
 # TYPE_OF FLAVORS
@@ -38,3 +40,9 @@ LOUPE         = require '../deps/loupe.js'
   a = [ a..., ].sort()
   b = [ b..., ].sort()
   return ( x for x in a when x in b ).sort()
+#---------------------------------------------------------------------------------------------------------
+@signals = GUY.lft.freeze new GUY.props.Strict_owner target:
+  true_and_break:         Symbol 'true_and_break'
+  false_and_break:        Symbol 'false_and_break'
+  process_list_elements:  Symbol 'process_list_elements'
+  process_set_elements:   Symbol 'process_set_elements'

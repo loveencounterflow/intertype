@@ -89,11 +89,6 @@ class @Intertype_hedge_combinator extends @Combinator
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
-  _signals: GUY.lft.freeze new GUY.props.Strict_owner target:
-    true_and_break:         Symbol 'true_and_break'
-    false_and_break:        Symbol 'false_and_break'
-    process_list_elements:  Symbol 'process_list_elements'
-    processd_set_elements:  Symbol 'processd_set_elements'
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
