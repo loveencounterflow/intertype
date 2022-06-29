@@ -40,9 +40,25 @@ GUY           = require 'guy'
   a = [ a..., ].sort()
   b = [ b..., ].sort()
   return ( x for x in a when x in b ).sort()
+
+#---------------------------------------------------------------------------------------------------------
+@size_of = ( x ) ->
+  if x instanceof GUY.props.Strict_owner
+    return R if ( x.has 'length'  ) and ( R = x.length )?
+    return R if ( x.has 'size'    ) and ( R = x.size )?
+  else
+    return R if ( R = x.length )?
+    return R if ( R = x.size )?
+  return ( Object.keys x ).length
+
+# #---------------------------------------------------------------------------------------------------------
+# _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
+# _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
+
 #---------------------------------------------------------------------------------------------------------
 @signals = GUY.lft.freeze new GUY.props.Strict_owner target:
   true_and_break:         Symbol 'true_and_break'
   false_and_break:        Symbol 'false_and_break'
   process_list_elements:  Symbol 'process_list_elements'
   process_set_elements:   Symbol 'process_set_elements'
+

@@ -235,17 +235,6 @@ class @Intertype extends Intertype_abc
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _size_of:     ( x ) ->
-    ### TAINT this will break with `Strict_owner` instances ###
-    return R if ( R = x.length )?
-    return R if ( R = x.size )?
-    return ( Object.keys x ).length
-
-  # #---------------------------------------------------------------------------------------------------------
-  # _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
-  # _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
-
-  #---------------------------------------------------------------------------------------------------------
   js_type_of:                 ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
   _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
   _constructor_of_generators: ( ( -> yield 42 )() ).constructor
