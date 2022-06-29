@@ -152,33 +152,6 @@ class @Intertype extends Intertype_abc
     return true
 
   #---------------------------------------------------------------------------------------------------------
-  _walk_hedgepaths: ( type_cfg, hedge_idx = 0, current_path = [] ) ->
-    ### thx to https://itecnote.com/tecnote/java-generate-all-combinations-from-multiple-lists/ ###
-    if hedge_idx is @_hedges.length
-      yield current_path
-      return null
-    hedge = @_hedges[ hedge_idx ]
-    yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, current_path
-    return null unless @_match_hedge_and_type hedge, type_cfg
-    if Array.isArray hedge.x[ 0 ]
-      unless hedge.x.length is 2
-        throw new E.Intertype_ETEMPTBD '^intertype@1^', \
-          "expected hedge declaration to have exactly two sublists, got #{rpr hedge}"
-      for term in hedge.x[ 1 ]
-        next_path = [ current_path..., term, ]
-        yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
-      for term1 in hedge.x[ 0 ]
-        next_path_base = [ current_path..., term1 ]
-        for term in hedge.x[ 1 ]
-          next_path = [ next_path_base..., term, ]
-          yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
-    else
-      for term, term_idx in hedge.x
-        next_path = [ current_path..., term, ]
-        yield from @_walk_hedgepaths type_cfg, hedge_idx + 1, next_path
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
   declare: ( type, type_cfg ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
@@ -281,7 +254,7 @@ x = new @Intertype()
 # urge x.has
 # urge x.has.foo
 # urge x.has.bar
-try urge x.bar catch error then warn CND.reverse error.message
+# try urge x.bar catch error then warn CND.reverse error.message
 
 js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
 length_of = ( x ) ->
