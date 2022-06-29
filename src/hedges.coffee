@@ -89,30 +89,30 @@ class @Intertype_hedge_combinator extends @Combinator
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
-
-  #---------------------------------------------------------------------------------------------------------
-  ### TAINT tack onto prototype as hidden ###
   _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
-    optional:   ( x ) ->
-      return @_signals.true_and_break unless x?
+    optional:   ( x ) =>
+      debug CND.reverse CND.yellow '^optional@453^', rpr x
+      return H.signals.true_and_break unless x?
       return true
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
-    empty:      ( x ) -> return ( @_size_of x ) is 0
-    nonempty:   ( x ) -> return ( @_size_of x ) isnt 0
+    empty:      ( x ) => return ( H.size_of x ) is 0
+    nonempty:   ( x ) => return ( H.size_of x ) isnt 0
     #.......................................................................................................
     ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
-    list_of:    ( x ) ->
-      return @_signals.false_and_break unless Array.isArray x
-      return @_signals.process_list_elements
-    set_of:     ( x ) ->
-      return @_signals.false_and_break unless x instanceof Set
-      return @_signals.processd_set_elements
+    list_of:    ( x ) =>
+      return H.signals.false_and_break unless Array.isArray x
+      return H.signals.process_list_elements
+    set_of:     ( x ) =>
+      return H.signals.false_and_break unless x instanceof Set
+      return H.signals.process_set_elements
     #.......................................................................................................
-    positive0:  ( x ) -> x >= 0
-    positive1:  ( x ) -> x >  0
-    negative0:  ( x ) -> x <= 0
-    negative1:  ( x ) -> x <  0
+    positive0:  ( x ) =>
+      debug CND.reverse CND.yellow '^positive0@453^', rpr x
+      x >= 0
+    positive1:  ( x ) => x >  0
+    negative0:  ( x ) => x <= 0
+    negative1:  ( x ) => x <  0
 
   # #---------------------------------------------------------------------------------------------------------
   # _match_hedge_and_type_cfg: ( hedge, type_cfg ) ->
