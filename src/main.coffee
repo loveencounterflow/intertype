@@ -26,7 +26,8 @@ E                         = require './errors'
 H                         = require './helpers'
 HEDGES                    = require './hedges'
 ITYP                      = @
-
+types                     = new ( require 'intertype' ).Intertype()
+@defaults                 = {}
 
 #===========================================================================================================
 class Intertype_abc extends GUY.props.Strict_owner
@@ -92,23 +93,30 @@ class Validate extends Intertype_abc
   list_of:    new Validate_list_of()
 
 
+#-----------------------------------------------------------------------------------------------------------
+types.declare 'Type_cfg_constructor_cfg', tests:
+  "@isa.object x":                      ( x ) -> @isa.object x
+  "@isa_optional.nonempty_text x.size": ( x ) -> @isa_optional.nonempty_text x.size
+  "@isa.function x.test":               ( x ) -> @isa.function x.test
+  "x.groups is a nonempty text or a nonempty list of nonempty texts": ( x ) ->
+    return true if @isa.nonempty_text x.groups
+    return false unless @isa.list x.groups
+    return x.groups.every ( e ) => ( @isa.nonempty_text e ) and not ( /[\s,]/ ).test e
+#...........................................................................................................
+@defaults.Type_cfg_constructor_cfg =
+  groups:           'other'
+  size:             null  # defaults to `'length'` where `isa_collection` is `true`
+  test:             null
+
 #===========================================================================================================
 class @Type_cfg extends Intertype_abc
-
-  #---------------------------------------------------------------------------------------------------------
-  @defaults: GUY.lft.freeze
-    #.......................................................................................................
-    constructor_cfg:
-      isa_numeric:      false
-      isa_collection:   false
-      size:             null  # defaults to `'length'` where `isa_collection` is `true`
-      test:             null
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     ### TAINT ensure type_cfg does not contain `type`, `name` ###
     super()
     cfg         = { @constructor.defaults.constructor_cfg..., cfg..., }
+    types.validate.Type_cfg_constructor_cfg cfg
     cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
     cfg.size   ?= null
     @[ k ]      = v for k, v of cfg
