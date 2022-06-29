@@ -130,8 +130,8 @@ class @Intertype extends Intertype_abc
     # @isa                = new Isa()
     # @validate           = new Validate()
     @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
-    @_types   = {}
-    @_hedges  = new HEDGES.Intertype_hedge_combinator()
+    GUY.props.hide @, '_types', {}
+    GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
     #.......................................................................................................
     @isa = new GUY.props.Strict_owner target: ( hedges..., type, x ) =>
       ### TAINT code duplication ###
