@@ -112,11 +112,14 @@ types.declare 'Type_cfg_constructor_cfg', tests:
 class @Type_cfg extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ( cfg ) ->
+  constructor: ( hub, cfg ) ->
     ### TAINT ensure type_cfg does not contain `type`, `name` ###
     super()
-    cfg         = { @constructor.defaults.constructor_cfg..., cfg..., }
+    GUY.props.hide @, 'hub', hub
+    cfg         = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
+    cfg.groups  = @_compile_groups cfg.groups
     types.validate.Type_cfg_constructor_cfg cfg
+    ### TAINT implement bootstrapping strategy for cfg validation ###
     cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
     cfg.size   ?= null
     @[ k ]      = v for k, v of cfg
@@ -129,6 +132,8 @@ class @Type_cfg extends Intertype_abc
       continue if @hub._hedges.hedgepaths.has group
       throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
     return R
+
+
 #===========================================================================================================
 class @Intertype extends Intertype_abc
 
@@ -152,10 +157,12 @@ class @Intertype extends Intertype_abc
       ### TAINT code duplication ###
       hedges.push type
       name = ( hedges.join @cfg.sep )
+      warn '^isa@678^', hedges
       # throw new Error '^534-1^' if hedges.length isnt 1
       unless ( test = @_types[ name ]?.test )?
         throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
-      return test x
+      verdict = test x
+      return @_protocol_isa name, verdict, verdict
     #.......................................................................................................
     return undefined
 
@@ -170,28 +177,34 @@ class @Intertype extends Intertype_abc
   declare: ( type, type_cfg ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
-    type_cfg  = new ITYP.Type_cfg type_cfg
-    for hedgepath from @_walk_hedgepaths type_cfg
-      name            = [ hedgepath..., type, ].join @cfg.sep
-      ### TAINT must include test for hedges ###
-      test            = type_cfg.test.bind @
-      @_types[ name ] = { type_cfg..., name, type, test, }
-      @_declare_hedgepath { method: @isa, test, type, type_cfg, name, hedgepath, }
+    debug '^43354^', { type, }
+    type_cfg    = new ITYP.Type_cfg @, type_cfg
+    # seen_paths  = new Set()
+    for group in type_cfg.groups
+      for hedgepath from @_hedges.hedgepaths[ group ]
+        # continue if seen_paths.has group
+        # seen_paths.add hedgepath
+        name            = [ hedgepath..., type, ].join @cfg.sep
+        ### TAINT must include test for hedges ###
+        typetest        = type_cfg.test.bind @
+        @_types[ name ] = { type_cfg..., name, type, test: typetest, }
+        @_declare_hedgepath { method: @isa, typetest, type, type_cfg, name, hedgepath, }
     return null
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ( term, result, verdict ) ->
-    debug '^_protocol_isa@1^', { term, result, verdict, }
+    urge '^_protocol_isa@1^', { term, result, verdict, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
-  _declare_hedgepath: ({ method, test, type, type_cfg, name, hedgepath, }) =>
-    typetest      = test
+  _declare_hedgepath: ({ method, typetest, type, type_cfg, name, hedgepath, }) =>
     parent        = method
     hedgemethods  = []
     parent        = do =>
       for term in hedgepath
-        hedgemethods.push [ term, @_hedgemethods[ term ], ]
+        hedgemethod = @_hedges._hedgemethods[ term ]
+        hedgemethods.push [ term, hedgemethod, ]
+        debug '^34455^', { hedgepath, hedgemethod, }
         unless parent.has term
           ### TAINT consider to make functions out of these (re-use `method`?) ###
           GUY.props.hide parent, term, new GUY.props.Strict_owner()
@@ -202,22 +215,23 @@ class @Intertype extends Intertype_abc
       #.....................................................................................................
       test = ( x ) =>
         for [ term, hedgemethod, ], hedge_idx in hedgemethods
-          # debug '^_declare_hedgepath.test@1^', { term, R: ( hedgemethod.call @, x ), }
+          urge '^_declare_hedgepath.test@1^', { term, hedgemethod, }
           switch R = hedgemethod.call @, x
-            when @_signals.true_and_break   then return @_protocol_isa term, R, true
-            when @_signals.false_and_break  then return @_protocol_isa term, R, false
+            when H.signals.true_and_break   then return @_protocol_isa term, R, true
+            when H.signals.false_and_break  then return @_protocol_isa term, R, false
             when false                      then return @_protocol_isa term, R, false
             when true                       then        @_protocol_isa term, R, true
-            when @_signals.process_list_elements
-              tail = ( hedgemethods[ idx ][ 1 ] for idx in [ hedge_idx + 1 ... hedgemethods.length ] )
+            when H.signals.process_list_elements, H.signals.process_set_elements
+              tail = ( hedgemethods[ idx ][ 0 ] for idx in [ hedge_idx + 1 ... hedgemethods.length ] )
               tail.push type
-              debug '^4534^', tail
-              for e in x
+              info '^34435^', tail
+              for e from x
                 return @_protocol_isa term, R, false unless @isa tail..., e
               return @_protocol_isa term, R, true
             else throw new E.Intertype_internal_error '^intertype@1^', \
               "unexpected return value from hedgemethod for term #{rpr term}: #{rpr R}"
-        return @_protocol_isa type, null, typetest.call @, x
+        verdict = typetest.call @, x
+        return @_protocol_isa type, verdict, verdict
       #.....................................................................................................
       GUY.props.hide parent, type, test
     return null
@@ -260,7 +274,8 @@ class @Intertype extends Intertype_abc
     return 'class'    if R is 'function' and x.toString().startsWith 'class '
     return R
 
-
+############################################################################################################
+@defaults = GUY.lft.freeze @defaults
 
 #===========================================================================================================
 x = new @Intertype()
