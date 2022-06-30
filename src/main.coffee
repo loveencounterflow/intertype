@@ -167,13 +167,6 @@ class @Intertype extends Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _match_hedge_and_type_cfg: ( hedge, type_cfg ) ->
-    for property, value of hedge.match
-      return true if property is 'all'
-      return false unless type_cfg[ property ]
-    return true
-
-  #---------------------------------------------------------------------------------------------------------
   declare: ( type, type_cfg ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
