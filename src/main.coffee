@@ -157,7 +157,7 @@ class @Intertype extends Intertype_abc
       ### TAINT code duplication ###
       hedges.push type
       name = ( hedges.join @cfg.sep )
-      warn '^isa@678^', hedges
+      # warn '^isa@678^', hedges
       # throw new Error '^534-1^' if hedges.length isnt 1
       unless ( test = @_types[ name ]?.test )?
         throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
@@ -177,7 +177,7 @@ class @Intertype extends Intertype_abc
   declare: ( type, type_cfg ) =>
     ### TAINT code duplication ###
     ### TAINT find better name for `name` ###
-    debug '^43354^', { type, }
+    # debug '^43354^', { type, }
     type_cfg    = new ITYP.Type_cfg @, type_cfg
     # seen_paths  = new Set()
     for group in type_cfg.groups
@@ -193,7 +193,7 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ( term, result, verdict ) ->
-    urge '^_protocol_isa@1^', { term, result, verdict, }
+    # urge '^_protocol_isa@1^', { term, result, verdict, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ class @Intertype extends Intertype_abc
       for term in hedgepath
         hedgemethod = @_hedges._hedgemethods[ term ]
         hedgemethods.push [ term, hedgemethod, ]
-        debug '^34455^', { hedgepath, hedgemethod, }
+        # debug '^34455^', { hedgepath, hedgemethod, }
         unless parent.has term
           ### TAINT consider to make functions out of these (re-use `method`?) ###
           GUY.props.hide parent, term, new GUY.props.Strict_owner()
@@ -215,7 +215,7 @@ class @Intertype extends Intertype_abc
       #.....................................................................................................
       test = ( x ) =>
         for [ term, hedgemethod, ], hedge_idx in hedgemethods
-          urge '^_declare_hedgepath.test@1^', { term, hedgemethod, }
+          # urge '^_declare_hedgepath.test@1^', { term, hedgemethod, }
           switch R = hedgemethod.call @, x
             when H.signals.true_and_break   then return @_protocol_isa term, R, true
             when H.signals.false_and_break  then return @_protocol_isa term, R, false
@@ -224,7 +224,7 @@ class @Intertype extends Intertype_abc
             when H.signals.process_list_elements, H.signals.process_set_elements
               tail = ( hedgemethods[ idx ][ 0 ] for idx in [ hedge_idx + 1 ... hedgemethods.length ] )
               tail.push type
-              info '^34435^', tail
+              # info '^34435^', tail
               for e from x
                 return @_protocol_isa term, R, false unless @isa tail..., e
               return @_protocol_isa term, R, true
