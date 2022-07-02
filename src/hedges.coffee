@@ -83,8 +83,8 @@ class @Intertype_hedge_combinator extends @Combinator
         [ 'list_of', 'set_of', ]
         [ null, 'optional', ]
         ], ],                                                               groups: [ 'other',        ], }
-    { terms: [ null, 'empty', 'nonempty', ],                                groups: [ 'collections',  ], }
-    { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], groups: [ 'numbers',      ], }
+    { terms: [ null, 'empty', 'nonempty', ],                                groups: [ 'collection',   ], }
+    { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], groups: [ 'number',       ], }
     ]
 
   #---------------------------------------------------------------------------------------------------------
