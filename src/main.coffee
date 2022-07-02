@@ -119,7 +119,7 @@ class @Type_cfg extends Intertype_abc
     cfg         = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
     cfg.groups  = @_compile_groups cfg.groups
     types.validate.Type_cfg_constructor_cfg cfg
-    ### TAINT implement bootstrapping strategy for cfg validation ###
+    cfg.test    = cfg.test.bind hub
     cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
     cfg.size   ?= null
     @[ k ]      = v for k, v of cfg
@@ -150,84 +150,75 @@ class @Intertype extends Intertype_abc
     # @isa                = new Isa()
     # @validate           = new Validate()
     @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
-    GUY.props.hide @, '_types', {}
     GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
     #.......................................................................................................
-    @isa = new GUY.props.Strict_owner target: ( hedges..., type, x ) =>
-      ### TAINT code duplication ###
-      hedges.push type
-      name = ( hedges.join @cfg.sep )
-      # warn '^isa@678^', hedges
-      # throw new Error '^534-1^' if hedges.length isnt 1
-      unless ( test = @_types[ name ]?.test )?
-        throw new E.Intertype_ETEMPTBD '^intertype@2^', "no such type #{rpr hedges}"
-      verdict = test x
-      return @_protocol_isa name, verdict, verdict
+    # @isa = {}; GUY.props.hide @isa, 'has', ( key ) => @isa[ key ]? #
+    @isa = new GUY.props.Strict_owner()
+    # @isa = new GUY.props.Strict_owner target: isa = ( hedges..., type, x ) =>
+    #   ### TAINT code duplication ###
+    #   info '^354^', { hedges, type, x, }
+    #   test    = @isa
+    #   test    = test[ hedge ] for hedge in hedges
+    #   test    = test[ type ]
+    #   verdict = test x
+    #   return @_protocol_isa type, verdict, verdict
     #.......................................................................................................
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
   declare: ( type, type_cfg ) =>
-    ### TAINT code duplication ###
-    ### TAINT find better name for `name` ###
-    # debug '^43354^', { type, }
-    type_cfg    = new ITYP.Type_cfg @, type_cfg
-    # seen_paths  = new Set()
+    type_cfg      = new ITYP.Type_cfg @, type_cfg
+    GUY.props.hide @isa, type, type_cfg.test
     for group in type_cfg.groups
       for hedgepath from @_hedges.hedgepaths[ group ]
-        # continue if seen_paths.has group
-        # seen_paths.add hedgepath
-        name            = [ hedgepath..., type, ].join @cfg.sep
-        ### TAINT must include test for hedges ###
-        typetest        = type_cfg.test.bind @
-        @_types[ name ] = { type_cfg..., name, type, test: typetest, }
-        @_declare_hedgepath { method: @isa, typetest, type, type_cfg, name, hedgepath, }
+        continue if hedgepath.length is 0
+        self = @isa
+        for hedge in hedgepath
+          unless self.has hedge
+            # GUY.props.hide self, hedge, new GUY.props.Strict_owner()
+            self[ hedge ] = new GUY.props.Strict_owner()
+          self = self[ hedge ]
+        GUY.props.hide self, type, ( x ) =>
+          info '^443^', { hedgepath, type, x, }
+          @_isa hedgepath..., type, x
     return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _isa: ( hedges..., type, x ) =>
+    for hedge in hedges
+      return false unless @_test_hedge hedge, x
+    # urge '^345^', { hedge, hedges, type, x, }
+    #.......................................................................................................
+    unless ( typetest = @isa.get type, null )?
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
+    # debug '^3435^', { hedges, type, x, }
+    verdict = typetest x
+    return @_protocol_isa type, verdict, verdict
+
+  #---------------------------------------------------------------------------------------------------------
+  _test_hedge: ( hedge, x ) =>
+    unless ( hedgetest = @_hedges._hedgemethods.get hedge, null )?
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
+    #.......................................................................................................
+    switch R = hedgetest x
+      when H.signals.true_and_break   then return @_protocol_isa hedge, R, true
+      when H.signals.false_and_break  then return @_protocol_isa hedge, R, false
+      when false                      then return @_protocol_isa hedge, R, false
+      when true                       then return @_protocol_isa hedge, R, true
+      #.....................................................................................................
+      when H.signals.process_list_elements, H.signals.process_set_elements
+        for e from x
+          unless @_isa hedges..., type, e
+            return @_protocol_isa hedge, R, false
+        return @_protocol_isa hedge, R, true
+    #.......................................................................................................
+    throw new E.Intertype_internal_error '^intertype@1^', \
+      "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ( term, result, verdict ) ->
     # urge '^_protocol_isa@1^', { term, result, verdict, }
     return verdict
-
-  #---------------------------------------------------------------------------------------------------------
-  _declare_hedgepath: ({ method, typetest, type, type_cfg, name, hedgepath, }) =>
-    parent        = method
-    hedgemethods  = []
-    parent        = do =>
-      for term in hedgepath
-        hedgemethod = @_hedges._hedgemethods[ term ]
-        hedgemethods.push [ term, hedgemethod, ]
-        # debug '^34455^', { hedgepath, hedgemethod, }
-        unless parent.has term
-          ### TAINT consider to make functions out of these (re-use `method`?) ###
-          GUY.props.hide parent, term, new GUY.props.Strict_owner()
-        parent = parent[ term ]
-      return parent
-    #.......................................................................................................
-    unless parent.has type
-      #.....................................................................................................
-      test = ( x ) =>
-        for [ term, hedgemethod, ], hedge_idx in hedgemethods
-          # urge '^_declare_hedgepath.test@1^', { term, hedgemethod, }
-          switch R = hedgemethod.call @, x
-            when H.signals.true_and_break   then return @_protocol_isa term, R, true
-            when H.signals.false_and_break  then return @_protocol_isa term, R, false
-            when false                      then return @_protocol_isa term, R, false
-            when true                       then        @_protocol_isa term, R, true
-            when H.signals.process_list_elements, H.signals.process_set_elements
-              tail = ( hedgemethods[ idx ][ 0 ] for idx in [ hedge_idx + 1 ... hedgemethods.length ] )
-              tail.push type
-              # info '^34435^', tail
-              for e from x
-                return @_protocol_isa term, R, false unless @isa tail..., e
-              return @_protocol_isa term, R, true
-            else throw new E.Intertype_internal_error '^intertype@1^', \
-              "unexpected return value from hedgemethod for term #{rpr term}: #{rpr R}"
-        verdict = typetest.call @, x
-        return @_protocol_isa type, verdict, verdict
-      #.....................................................................................................
-      GUY.props.hide parent, type, test
-    return null
 
   #---------------------------------------------------------------------------------------------------------
   js_type_of:                 ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
