@@ -151,9 +151,15 @@ class @Intertype extends Intertype_abc
     # @validate           = new Validate()
     @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
+    @isa      = new GUY.props.Strict_owner()
+    @groups   = {}
+    #.......................................................................................................
+    for group from @_hedges._get_groupnames()
+      @groups[ group ] = new Set()
+      GUY.props.hide @isa, group, ( x ) => @groups[ group ].has @type_of x
+    GUY.lft.freeze @groups
     #.......................................................................................................
     # @isa = {}; GUY.props.hide @isa, 'has', ( key ) => @isa[ key ]? #
-    @isa = new GUY.props.Strict_owner()
     # @isa = new GUY.props.Strict_owner target: isa = ( hedges..., type, x ) =>
     #   ### TAINT code duplication ###
     #   info '^354^', { hedges, type, x, }
@@ -170,6 +176,10 @@ class @Intertype extends Intertype_abc
     type_cfg      = new ITYP.Type_cfg @, type_cfg
     GUY.props.hide @isa, type, type_cfg.test
     for group in type_cfg.groups
+      #.....................................................................................................
+      ### register type with group ###
+      @_add_type_to_group group, type
+      #.....................................................................................................
       for hedgepath from @_hedges.hedgepaths[ group ]
         continue if hedgepath.length is 0
         self = @isa
@@ -181,6 +191,12 @@ class @Intertype extends Intertype_abc
         GUY.props.hide self, type, ( x ) =>
           info '^443^', { hedgepath, type, x, }
           @_isa hedgepath..., type, x
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _add_type_to_group: ( group, type ) =>
+    @groups[ group ].add type
+    # @groups = GUY.lft.lets @groups, ( d ) -> d[ group ].add type
     return null
 
   #---------------------------------------------------------------------------------------------------------
