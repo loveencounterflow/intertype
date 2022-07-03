@@ -97,7 +97,9 @@ class @Intertype extends Intertype_abc
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
       do ( group ) =>
-        GUY.props.hide @isa, group, ( x ) => @groups[ group ].has @type_of x
+        GUY.props.hide @isa, group, ( x ) =>
+          R = @groups[ group ].has @type_of x
+          return @_protocol_isa group, R, R
     GUY.lft.freeze @groups
     #.......................................................................................................
     return undefined
