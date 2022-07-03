@@ -73,16 +73,11 @@ class @Type_cfg extends Intertype_abc
 #===========================================================================================================
 class @Intertype extends Intertype_abc
 
-  #---------------------------------------------------------------------------------------------------------
-  @defaults: GUY.lft.freeze
-    #.......................................................................................................
-    constructor_cfg:
-      sep:  '$'
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
-    @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
+    @cfg      = { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
     @isa      = new GUY.props.Strict_owner()
     @groups   = {}
