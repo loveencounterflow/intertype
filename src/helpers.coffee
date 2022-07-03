@@ -42,14 +42,18 @@ GUY           = require 'guy'
   return ( x for x in a when x in b ).sort()
 
 #---------------------------------------------------------------------------------------------------------
-@size_of = ( x ) ->
-  if x instanceof GUY.props.Strict_owner
-    return R if ( x.has 'length'  ) and ( R = x.length )?
-    return R if ( x.has 'size'    ) and ( R = x.size )?
-  else
-    return R if ( R = x.length )?
-    return R if ( R = x.size )?
-  return ( Object.keys x ).length
+@size_of = ( x, fallback = misfit ) ->
+  unless x?
+    return fallback unless fallback is misfit
+  try
+    return R if ( R = x.length  )?
+  catch error then null
+  try
+    return R if ( R = x.size    )?
+  catch error then null
+  return fallback unless fallback is misfit
+  throw new E.Intertype_ETEMPTBD '^intertype.size_of@1^', \
+    "expected an object with `x.length` or `x.size`, got a #{@type_of x}"
 
 # #---------------------------------------------------------------------------------------------------------
 # _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
