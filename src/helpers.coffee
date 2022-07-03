@@ -51,13 +51,14 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
 @size_of = ( x, fallback = misfit ) ->
   unless x?
     return fallback unless fallback is misfit
-  try
-    return R if ( R = x.length  )?
-  catch error then null
-  try
-    return R if ( R = x.size    )?
-  catch error then null
-  return fallback unless fallback is misfit
+  else
+    try
+      return R if ( R = x.length  )?
+    catch error then null
+    try
+      return R if ( R = x.size    )?
+    catch error then null
+    return fallback unless fallback is misfit
   throw new E.Intertype_ETEMPTBD '^intertype.size_of@1^', \
     "expected an object with `x.length` or `x.size`, got a #{@type_of x}"
 
