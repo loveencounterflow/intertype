@@ -133,8 +133,21 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., type, x ) =>
-    for hedge in hedges
-      return false unless @_test_hedge hedge, x
+    for hedge, hedge_idx in hedges
+      switch R = @_test_hedge hedge, x
+        when true                       then null
+        when H.signals.true_and_break   then return @_protocol_isa hedge, R, true
+        when H.signals.false_and_break  then return @_protocol_isa hedge, R, false
+        when false                      then return false
+        when H.signals.process_list_elements, H.signals.process_set_elements
+          tail_hedges = hedges[ hedge_idx + 1 .. ]
+          # debug '^3324^', { tail_hedges, }
+          for e from x
+            unless @_isa tail_hedges..., type, e
+              return @_protocol_isa hedge, R, false
+          return true
+        else
+          throw new E.Intertype_ETEMPTBD '^intertype@1^', "illegal return value from `_test_hedge()`: #{rpr type}"
     # urge '^345^', { hedge, hedges, type, x, }
     #.......................................................................................................
     unless ( typetest = @isa.get type, null )?
@@ -149,23 +162,19 @@ class @Intertype extends Intertype_abc
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
     #.......................................................................................................
     switch R = hedgetest x
-      when H.signals.true_and_break   then return @_protocol_isa hedge, R, true
-      when H.signals.false_and_break  then return @_protocol_isa hedge, R, false
-      when false                      then return @_protocol_isa hedge, R, false
-      when true                       then return @_protocol_isa hedge, R, true
-      #.....................................................................................................
-      when H.signals.process_list_elements, H.signals.process_set_elements
-        for e from x
-          unless @_isa hedges..., type, e
-            return @_protocol_isa hedge, R, false
-        return @_protocol_isa hedge, R, true
+      when H.signals.true_and_break         then return @_protocol_isa hedge, R, R
+      when H.signals.false_and_break        then return @_protocol_isa hedge, R, R
+      when false                            then return @_protocol_isa hedge, R, false
+      when true                             then return @_protocol_isa hedge, R, true
+      when H.signals.process_list_elements  then return @_protocol_isa hedge, R, R
+      when H.signals.process_set_elements   then return @_protocol_isa hedge, R, R
     #.......................................................................................................
     throw new E.Intertype_internal_error '^intertype@1^', \
       "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ( term, result, verdict ) ->
-    # urge '^_protocol_isa@1^', { term, result, verdict, }
+    urge '^_protocol_isa@1^', { term, result, verdict, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
