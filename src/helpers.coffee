@@ -11,7 +11,7 @@ LOUPE         = require '../deps/loupe.js'
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 GUY           = require 'guy'
 misfit        = Symbol 'misfit'
-E             = require './helpers'
+E             = require './errors'
 
 ###
 _normalize_type =            ( type ) -> type.toLowerCase().replace /\s+/g, ''
