@@ -44,6 +44,18 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   size:             null  # defaults to `'length'` where `isa_collection` is `true`
   test:             null
 
+#-----------------------------------------------------------------------------------------------------------
+types.declare 'Intertype_constructor_cfg', tests:
+  "@isa.object x":                      ( x ) -> @isa.object x
+  "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
+#...........................................................................................................
+@defaults.Intertype_constructor_cfg =
+  sep:              '$'
+
+#===========================================================================================================
+class Intertype_abc extends GUY.props.Strict_owner
+
+
 #===========================================================================================================
 class @Type_cfg extends Intertype_abc
 
@@ -114,7 +126,6 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _add_type_to_group: ( group, type ) =>
     @groups[ group ].add type
-    # @groups = GUY.lft.lets @groups, ( d ) -> d[ group ].add type
     return null
 
   #---------------------------------------------------------------------------------------------------------
