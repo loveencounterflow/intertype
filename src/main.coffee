@@ -116,8 +116,8 @@ class @Intertype extends Intertype_abc
         self = @isa
         for hedge in hedgepath
           unless self.has hedge
-            # GUY.props.hide self, hedge, new GUY.props.Strict_owner()
-            self[ hedge ] = new GUY.props.Strict_owner()
+            GUY.props.hide self, hedge, new GUY.props.Strict_owner()
+            # self[ hedge ] = new GUY.props.Strict_owner()
           self = self[ hedge ]
         #...................................................................................................
         do ( hedgepath ) =>
