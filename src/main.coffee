@@ -29,70 +29,6 @@ ITYP                      = @
 types                     = new ( require 'intertype' ).Intertype()
 @defaults                 = {}
 
-#===========================================================================================================
-class Intertype_abc extends GUY.props.Strict_owner
-
-  # #---------------------------------------------------------------------------------------------------------
-  # constructor: ->
-  #   super()
-  #   return undefined
-
-#===========================================================================================================
-class Empty     extends Intertype_abc
-class Nonempty  extends Intertype_abc
-class List_of   extends Intertype_abc
-class Defaults  extends Intertype_abc
-
-#===========================================================================================================
-class Isa_list_of extends Intertype_abc
-
-#===========================================================================================================
-class Validate_list_of extends Intertype_abc
-
-#===========================================================================================================
-class Isa_empty extends Intertype_abc
-  list_of:    new Isa_list_of()
-
-#===========================================================================================================
-class Validate_empty extends Intertype_abc
-  list_of:    new Validate_list_of()
-
-#===========================================================================================================
-class Isa_nonempty extends Intertype_abc
-  list_of:    new Isa_list_of()
-
-#===========================================================================================================
-class Validate_nonempty extends Intertype_abc
-  list_of:    new Validate_list_of()
-
-#===========================================================================================================
-class Isa_optional extends Intertype_abc
-  empty:      new Isa_empty()
-  nonempty:   new Isa_nonempty()
-  list_of:    new Isa_list_of()
-
-#===========================================================================================================
-class Validate_optional extends Intertype_abc
-  empty:      new Validate_empty()
-  nonempty:   new Validate_nonempty()
-  list_of:    new Validate_list_of()
-
-
-#===========================================================================================================
-class Isa extends Intertype_abc
-  optional:   new Isa_optional()
-  empty:      new Isa_empty()
-  nonempty:   new Isa_nonempty()
-  list_of:    new Isa_list_of()
-
-#===========================================================================================================
-class Validate extends Intertype_abc
-  optional:   new Validate_optional()
-  empty:      new Validate_empty()
-  nonempty:   new Validate_nonempty()
-  list_of:    new Validate_list_of()
-
-
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Type_cfg_constructor_cfg', tests:
   "@isa.object x":                      ( x ) -> @isa.object x
@@ -146,9 +82,6 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
-    # @defaults           = new Defaults()
-    # @isa                = new Isa()
-    # @validate           = new Validate()
     @cfg      = { @constructor.defaults.constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
     @isa      = new GUY.props.Strict_owner()
@@ -158,16 +91,6 @@ class @Intertype extends Intertype_abc
       @groups[ group ] = new Set()
       GUY.props.hide @isa, group, ( x ) => @groups[ group ].has @type_of x
     GUY.lft.freeze @groups
-    #.......................................................................................................
-    # @isa = {}; GUY.props.hide @isa, 'has', ( key ) => @isa[ key ]? #
-    # @isa = new GUY.props.Strict_owner target: isa = ( hedges..., type, x ) =>
-    #   ### TAINT code duplication ###
-    #   info '^354^', { hedges, type, x, }
-    #   test    = @isa
-    #   test    = test[ hedge ] for hedge in hedges
-    #   test    = test[ type ]
-    #   verdict = test x
-    #   return @_protocol_isa type, verdict, verdict
     #.......................................................................................................
     return undefined
 
