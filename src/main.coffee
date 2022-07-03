@@ -96,7 +96,8 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
-      GUY.props.hide @isa, group, ( x ) => @groups[ group ].has @type_of x
+      do ( group ) =>
+        GUY.props.hide @isa, group, ( x ) => @groups[ group ].has @type_of x
     GUY.lft.freeze @groups
     #.......................................................................................................
     return undefined
@@ -118,9 +119,9 @@ class @Intertype extends Intertype_abc
             # GUY.props.hide self, hedge, new GUY.props.Strict_owner()
             self[ hedge ] = new GUY.props.Strict_owner()
           self = self[ hedge ]
-        GUY.props.hide self, type, ( x ) =>
-          info '^443^', { hedgepath, type, x, }
-          @_isa hedgepath..., type, x
+        #...................................................................................................
+        do ( hedgepath ) =>
+          GUY.props.hide self, type, ( x ) => @_isa hedgepath..., type, x
     return null
 
   #---------------------------------------------------------------------------------------------------------
