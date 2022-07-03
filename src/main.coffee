@@ -167,42 +167,8 @@ class @Intertype extends Intertype_abc
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
-  js_type_of:                 ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
-  _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
-  _constructor_of_generators: ( ( -> yield 42 )() ).constructor
+  type_of:                    H.type_of
 
-  #---------------------------------------------------------------------------------------------------------
-  type_of: ( x ) ->
-    throw new Error "^7746^ expected 1 argument, got #{arity}" unless ( arity = arguments.length ) is 1
-    return 'null'       if x is null
-    return 'undefined'  if x is undefined
-    return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
-    return 'boolean'    if ( x is true      ) or  ( x is false      )
-    return 'nan'        if ( Number.isNaN     x )
-    return 'float'      if ( Number.isFinite  x )
-    return 'buffer'     if ( Buffer.isBuffer  x )
-    return 'list'       if ( Array.isArray  x )
-    #.........................................................................................................
-    ### TAINT Not needed (?) b/c `@js_type_of x` does work with these values, too ###
-    ### this catches `Array Iterator`, `String Iterator`, `Map Iterator`, `Set Iterator`: ###
-    if ( tagname = x[ Symbol.toStringTag ] )? and ( typeof tagname ) is 'string'
-      return @_normalize_type tagname
-    #.........................................................................................................
-    ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
-    return 'nullobject' if ( c = x.constructor ) is undefined
-    return 'object'     if ( typeof c ) isnt 'function'
-    if ( R = c.name.toLowerCase() ) is ''
-      return 'generator' if x.constructor is @_constructor_of_generators
-      ### NOTE: throw error since this should never happen ###
-      return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
-    #.........................................................................................................
-    return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
-    return 'regex'    if R is 'regexp'
-    return 'text'     if R is 'string'
-    ### thx to https://stackoverflow.com/a/29094209 ###
-    ### TAINT may produce an arbitrarily long throwaway string ###
-    return 'class'    if R is 'function' and x.toString().startsWith 'class '
-    return R
 
 ############################################################################################################
 @defaults = GUY.lft.freeze @defaults
@@ -216,20 +182,6 @@ x = new @Intertype()
 # urge x.has.bar
 # try urge x.bar catch error then warn CND.reverse error.message
 
-js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
-length_of = ( x ) ->
-  throw new Error "^1^" unless x?
-  return x.length if Object.hasOwnProperty x, length
-  return x.size   if Object.hasOwnProperty x, size
-  return ( Object.keys x ).length if ( js_type_of x ) is 'object'
-  throw new Error "^2^"
-nonempty  = ( x ) -> ( length_of x ) > 0
-empty     = ( x ) -> ( length_of x ) == 0
-list_of   = ( type, x ) ->
-  return false unless ( js_type_of x ) is 'array'
-  return true if x.length is 0
-  # return x.every ( e ) -> isa type, e
-  return x.every ( e ) -> ( js_type_of e ) is type ### TAINT should use `isa` ###
 
 ###
 

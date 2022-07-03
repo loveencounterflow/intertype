@@ -10,7 +10,13 @@ LOUPE         = require '../deps/loupe.js'
 @rpr          = rpr = ( x ) => LOUPE.inspect x, { customInspect: false, }
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 GUY           = require 'guy'
+misfit        = Symbol 'misfit'
+E             = require './helpers'
 
+###
+_normalize_type =            ( type ) -> type.toLowerCase().replace /\s+/g, ''
+js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
+###
 
 #===========================================================================================================
 # TYPE_OF FLAVORS
@@ -66,3 +72,38 @@ GUY           = require 'guy'
   process_list_elements:  Symbol 'process_list_elements'
   process_set_elements:   Symbol 'process_set_elements'
 
+#-----------------------------------------------------------------------------------------------------------
+@type_of = ( x ) ->
+  throw new Error "^7746^ expected 1 argument, got #{arity}" unless ( arity = arguments.length ) is 1
+  return 'null'       if x is null
+  return 'undefined'  if x is undefined
+  return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
+  return 'boolean'    if ( x is true      ) or  ( x is false      )
+  return 'nan'        if ( Number.isNaN     x )
+  return 'float'      if ( Number.isFinite  x )
+  return 'buffer'     if ( Buffer.isBuffer  x )
+  return 'list'       if ( Array.isArray  x )
+  #.........................................................................................................
+  ### TAINT Not needed (?) b/c `@js_type_of x` does work with these values, too ###
+  ### this catches `Array Iterator`, `String Iterator`, `Map Iterator`, `Set Iterator`: ###
+  if ( tagname = x[ Symbol.toStringTag ] )? and ( typeof tagname ) is 'string'
+    return @_normalize_type tagname
+  #.........................................................................................................
+  ### Domenic Denicola Device, see https://stackoverflow.com/a/30560581 ###
+  return 'nullobject' if ( c = x.constructor ) is undefined
+  return 'object'     if ( typeof c ) isnt 'function'
+  if ( R = c.name.toLowerCase() ) is ''
+    return 'generator' if x.constructor is @constructor_of_generators
+    ### NOTE: throw error since this should never happen ###
+    return ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase() ### Mark Miller Device ###
+  #.........................................................................................................
+  return 'wrapper'  if ( typeof x is 'object' ) and R in [ 'boolean', 'number', 'string', ]
+  return 'regex'    if R is 'regexp'
+  return 'text'     if R is 'string'
+  ### thx to https://stackoverflow.com/a/29094209 ###
+  ### TAINT may produce an arbitrarily long throwaway string ###
+  return 'class'    if R is 'function' and x.toString().startsWith 'class '
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@constructor_of_generators = ( ( -> yield 42 )() ).constructor
