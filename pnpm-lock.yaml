@@ -5,7 +5,7 @@ specifiers:
   astring: ^1.8.3
   cnd: ^9.2.2
   combinate: ^1.1.11
-  guy: 5.1.0
+  guy: 5.3.0
   intertype: ^7.7.1
 
 dependencies:
@@ -13,7 +13,7 @@ dependencies:
   astring: 1.8.3
   cnd: 9.2.2
   combinate: 1.1.11
-  guy: 5.1.0
+  guy: 5.3.0_4k6qy6fwzytg4mnvcbxw7o5eay
   intertype: 7.7.1
 
 packages:
@@ -47,9 +47,16 @@ packages:
     resolution: {integrity: sha512-+2MNAQ29HtNejOxkgaTQPC2Bm+pQvFuqf7o18uObl/Bx3daX06kjLUNY/qa9f+YSqzqm/ic3SdrlfN0fvTlw2g==}
     dev: false
 
-  /guy/5.1.0:
-    resolution: {integrity: sha512-1EDYpUsCTkO4mwQOH+ohPZBrKTzhh75M8AD+aYRZJ5LSUrF4ao4ok5XfdF5WEy66cD2sdLfOqbl6Rsb4viEXHg==}
+  /guy/5.3.0_4k6qy6fwzytg4mnvcbxw7o5eay:
+    resolution: {integrity: sha512-VPlfGBvB5ZCcaJ6ILoklH2TdJ0bDNFrG6RUqXvDUIzg1E7GIeu6XyOyMGzXmbwIJsO+vEbdgH34ALJ0yP4zQ5g==}
+    peerDependencies:
+      acorn: ^8.7.1
+      acorn-loose: ^8.3.0
+      acorn-walk: ^8.2.0
+      astring: ^1.8.3
     dependencies:
+      acorn-loose: 8.3.0
+      astring: 1.8.3
       cnd: 9.2.2
       intertype: 7.7.1
       letsfreezethat: 3.1.0
