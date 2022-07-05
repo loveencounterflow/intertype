@@ -32,8 +32,9 @@ types                     = new ( require 'intertype' ).Intertype()
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Type_cfg_constructor_cfg', tests:
   "@isa.object x":                      ( x ) -> @isa.object x
-  "@isa_optional.nonempty_text x.size": ( x ) -> @isa_optional.nonempty_text x.size
-  "@isa.function x.test":               ( x ) -> @isa.function x.test
+  "@isa.nonempty_text x.name":          ( x ) -> @isa.nonempty_text x.name
+  "( @isa.function x.test ) or ( @isa_list_of.function x.test )": \
+    ( x ) -> ( @isa.function x.test ) or ( @isa_list_of.function x.test )
   "x.groups is a nonempty text or a nonempty list of nonempty texts": ( x ) ->
     return true if @isa.nonempty_text x.groups
     return false unless @isa.list x.groups
@@ -41,7 +42,7 @@ types.declare 'Type_cfg_constructor_cfg', tests:
 #...........................................................................................................
 @defaults.Type_cfg_constructor_cfg =
   groups:           'other'
-  size:             null  # defaults to `'length'` where `isa_collection` is `true`
+  name:             null
   test:             null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -67,7 +68,11 @@ class @Type_cfg extends Intertype_abc
     cfg         = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
     cfg.groups  = @_compile_groups cfg.groups
     types.validate.Type_cfg_constructor_cfg cfg
-    cfg.test    = cfg.test.bind hub
+    if types.isa.list cfg.test
+      _test       = ( f.bind hub for f in cfg.test )
+      cfg.test    = ( x ) => _test.every ( f ) -> f x
+    else
+      cfg.test    = cfg.test.bind hub
     cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
     cfg.size   ?= null
     @[ k ]      = v for k, v of cfg
@@ -85,7 +90,6 @@ class @Type_cfg extends Intertype_abc
 #===========================================================================================================
 class @Intertype extends Intertype_abc
 
-
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
@@ -102,10 +106,19 @@ class @Intertype extends Intertype_abc
           return @_protocol_isa group, R, R
     GUY.lft.freeze @groups
     #.......................................................................................................
+    ### TAINT to get the demo off the ground we here shim a few types; this part will definitily
+    change in future versions ###
+    @declare 'object',  test: ( x ) -> ( H.type_of x ) is 'object'
+    @declare 'float',   groups: 'number',     test: ( x ) -> ( H.type_of x ) is 'float'
+    @declare 'text',    groups: 'collection', test: ( x ) -> ( H.type_of x ) is 'text'
+    #.......................................................................................................
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
   declare: ( type, type_cfg ) =>
+    ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
+    convention for this method. ###
+    type_cfg      = { type_cfg..., name: type, }
     type_cfg      = new ITYP.Type_cfg @, type_cfg
     GUY.props.hide @isa, type, type_cfg.test
     for group in type_cfg.groups
