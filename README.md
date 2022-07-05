@@ -29,3 +29,8 @@ types       = new ( require 'intertype' ).Intertype()
 ## To Do
 
 
+* **[–]** make depth of hedgepaths configurable; default depth should be 0. **Hedges need an opt-in** by
+  using *`hedgedepth`* or a *wildcard hedgepath pattern*, at instantiation time and/or declaration time.
+* **[–]** implement sum types (a.k.a. tagged union, variant, variant record, choice type, discriminated
+  union, disjoint union, or coproduct :-O) as in `isa.integer.or.optional.nonempty.text`
+* **[–]** implement hedges `odd`, `even`; valid for `float`s but do imply those numbers will be integer
