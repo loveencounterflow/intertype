@@ -581,7 +581,17 @@ A code comment from 2010 ([CND Types module]()):
   passing in a text where a list was expected, function may end up iterating over Unicode codeunits and do
   all sorts of funny stuff before failing loudly, if ever)
 * [ ] ensure that when `validate()` fails, the entire chains of reasons will be printed out
+* [ ] In JS, objects are *not* collections: they don't have a `length` or `size` attribute like arrays and
+  sets, `( {} )[Symbol.iterator]` does not exist, and you can't use them with the spread operator in
+  function calls (as in, `f { x: 1, }...`). (OTOH `{ { x: 1, }... }` does work and so does `for k, v of
+  {}`.)
 
+  ```
+  coffee> ( [] )[Symbol.iterator]
+  [Function: values]
+  coffee> ( {} )[Symbol.iterator]
+  undefined
+  ```
 
 <!--
 
