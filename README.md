@@ -56,6 +56,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 
 * **[+]** <del>use
   [`Reflect.has()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect)
-  to check for property availability in `size_of()`</del> <ins>reject because `Reflect.has()` balks on
+  to check for property availability in `size_of()`</del> <ins>reject</ins> because `Reflect.has()` balks on
   primitive values like numbers, too, which further complicates the code instead of making it simpler.
   ⁂sigh⁂
