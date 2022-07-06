@@ -11,6 +11,7 @@ LOUPE         = require '../deps/loupe.js'
 @xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 GUY           = require 'guy'
 misfit        = Symbol 'misfit'
+notavalue     = Symbol 'notavalue'
 E             = require './errors'
 
 ###
@@ -61,6 +62,14 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
     return fallback unless fallback is misfit
   throw new E.Intertype_ETEMPTBD '^intertype.size_of@1^', \
     "expected an object with `x.length` or `x.size`, got a #{@type_of x}"
+
+#---------------------------------------------------------------------------------------------------------
+@size_of = ( x, fallback = misfit ) ->
+  return R unless ( R = GUY.props.get x, 'length',  notavalue ) is notavalue
+  return R unless ( R = GUY.props.get x, 'size',    notavalue ) is notavalue
+  return fallback unless fallback is misfit
+  throw new E.Intertype_ETEMPTBD '^intertype.size_of@1^', \
+    "expected an object with `x.length` or `x.size`, got a #{@type_of x} with neither"
 
 # #---------------------------------------------------------------------------------------------------------
 # _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0

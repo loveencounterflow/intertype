@@ -82,7 +82,7 @@ class @Type_cfg extends Intertype_abc
   _compile_groups: ( groups ) ->
     R = if ( types.isa.text groups ) then groups.split /\s*,\s*/ else groups
     for group in R
-      continue if @hub._hedges.hedgepaths.has group
+      continue if GUY.props.has @hub._hedges.hedgepaths, group
       throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
     return R
 
@@ -130,7 +130,7 @@ class @Intertype extends Intertype_abc
         continue if hedgepath.length is 0
         self = @isa
         for hedge in hedgepath
-          unless self.has hedge
+          unless GUY.props.has self, hedge
             GUY.props.hide self, hedge, new GUY.props.Strict_owner()
             # self[ hedge ] = new GUY.props.Strict_owner()
           self = self[ hedge ]
@@ -163,7 +163,7 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype@1^', "illegal return value from `_test_hedge()`: #{rpr type}"
     # urge '^345^', { hedge, hedges, type, x, }
     #.......................................................................................................
-    unless ( typetest = @isa.get type, null )?
+    unless ( typetest = GUY.props.get @isa, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
     # debug '^3435^', { hedges, type, x, }
     verdict = typetest x
@@ -171,7 +171,7 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _test_hedge: ( hedge, x ) =>
-    unless ( hedgetest = @_hedges._hedgemethods.get hedge, null )?
+    unless ( hedgetest = GUY.props.get @_hedges._hedgemethods, hedge, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
     #.......................................................................................................
     switch R = hedgetest x
