@@ -1,5 +1,5 @@
 {
-  "name": "intertype",
+  "name": "intertype-legacy",
   "version": "7.7.1",
   "description": "A JavaScript typechecker",
   "main": "lib/main.js",
