@@ -26,7 +26,7 @@ E                         = require './errors'
 H                         = require './helpers'
 HEDGES                    = require './hedges'
 ITYP                      = @
-types                     = new ( require 'intertype' ).Intertype()
+types                     = new ( require 'intertype-legacy' ).Intertype()
 @defaults                 = {}
 
 #-----------------------------------------------------------------------------------------------------------
