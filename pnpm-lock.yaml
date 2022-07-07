@@ -6,7 +6,7 @@ specifiers:
   cnd: ^9.2.2
   combinate: ^1.1.11
   guy: 6.0.0
-  intertype: ^7.7.1
+  intertype-legacy: ^7.7.1
 
 dependencies:
   acorn-loose: 8.3.0
@@ -14,7 +14,7 @@ dependencies:
   cnd: 9.2.2
   combinate: 1.1.11
   guy: 6.0.0_4k6qy6fwzytg4mnvcbxw7o5eay
-  intertype: 7.7.1
+  intertype-legacy: 7.7.1
 
 packages:
 
@@ -60,6 +60,12 @@ packages:
       cnd: 9.2.2
       intertype: 7.7.1
       letsfreezethat: 3.1.0
+    dev: false
+
+  /intertype-legacy/7.7.1:
+    resolution: {integrity: sha512-Bj3k9bCu8vA6JLIvnCrJXOdkecgY5wtCmORclJ87uq22N53swREHT5bezSeK5TwcxgSJEDg2wEfcn4kNr9Qv8A==}
+    dependencies:
+      multimix: 5.0.0
     dev: false
 
   /intertype/7.7.1:

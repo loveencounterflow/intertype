@@ -22,6 +22,6 @@
     "cnd": "^9.2.2",
     "combinate": "^1.1.11",
     "guy": "6.0.0",
-    "intertype": "^7.7.1"
+    "intertype-legacy": "^7.7.1"
   }
 }
