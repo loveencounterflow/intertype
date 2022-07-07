@@ -1,6 +1,15 @@
 
 # InterType
 
+🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+
+**This branch is the home of `intertype-legacy` which has been published as a way to avoid circular
+dependency issues. Do not use it unless you know what you're doing; instead, use `pnpm add intertype` for
+your NodeJS project.**
+
+🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+
+
 A JavaScript type checker with helpers to implement own types and do object shape validation.
 
 
@@ -22,15 +31,6 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
-
-**This branch is the home of `intertype-legacy` which has been published as a way to avoid circular
-dependency issues. Do not use it unless you know what you're doing; instead, use `pnpm add intertype` for
-your NodeJS project.**
-
-🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
-
 # Concepts
 
 * what is a type
