@@ -101,7 +101,7 @@ class @Intertype extends Intertype_abc
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
       do ( group ) =>
-        GUY.props.hide @isa, group, ( x ) =>
+        @isa[ group ] = ( x ) =>
           R = @groups[ group ].has @type_of x
           return @_protocol_isa group, R, R
     GUY.lft.freeze @groups
@@ -120,7 +120,7 @@ class @Intertype extends Intertype_abc
     convention for this method. ###
     type_cfg      = { type_cfg..., name: type, }
     type_cfg      = new ITYP.Type_cfg @, type_cfg
-    GUY.props.hide @isa, type, type_cfg.test
+    @isa[ type ]  = type_cfg.test
     for group in type_cfg.groups
       #.....................................................................................................
       ### register type with group ###
@@ -131,12 +131,12 @@ class @Intertype extends Intertype_abc
         self = @isa
         for hedge in hedgepath
           unless GUY.props.has self, hedge
-            GUY.props.hide self, hedge, new GUY.props.Strict_owner()
+            self[ hedge ] = new GUY.props.Strict_owner()
             # self[ hedge ] = new GUY.props.Strict_owner()
           self = self[ hedge ]
         #...................................................................................................
         do ( hedgepath ) =>
-          GUY.props.hide self, type, ( x ) => @_isa hedgepath..., type, x
+          self[ type ] = ( x ) => @_isa hedgepath..., type, x
     return null
 
   #---------------------------------------------------------------------------------------------------------
