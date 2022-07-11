@@ -5,7 +5,7 @@ specifiers:
   astring: ^1.8.3
   cnd: ^9.2.2
   combinate: ^1.1.11
-  guy: 6.0.0
+  guy: 7.1.0
   intertype-legacy: ^7.7.1
 
 dependencies:
@@ -13,7 +13,7 @@ dependencies:
   astring: 1.8.3
   cnd: 9.2.2
   combinate: 1.1.11
-  guy: 6.0.0_4k6qy6fwzytg4mnvcbxw7o5eay
+  guy: 7.1.0_4k6qy6fwzytg4mnvcbxw7o5eay
   intertype-legacy: 7.7.1
 
 packages:
@@ -47,8 +47,8 @@ packages:
     resolution: {integrity: sha512-+2MNAQ29HtNejOxkgaTQPC2Bm+pQvFuqf7o18uObl/Bx3daX06kjLUNY/qa9f+YSqzqm/ic3SdrlfN0fvTlw2g==}
     dev: false
 
-  /guy/6.0.0_4k6qy6fwzytg4mnvcbxw7o5eay:
-    resolution: {integrity: sha512-pNFYTLmT7Ua8CGgSoJy2AcUd2MPqS+oxU1GuPh8zwsmglyEV3MaDzZfN1LP9GJrwRMaLCvoZSahquZCbagNqSQ==}
+  /guy/7.1.0_4k6qy6fwzytg4mnvcbxw7o5eay:
+    resolution: {integrity: sha512-j+r9mpPSo3wPmlvAjU+zP1hIJtyXDnj8aE9XxDQu2ErmvCPvCLl9aRNE/XObOEEyFoZHcFA4RFTpFgb9Gh364A==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0
@@ -57,19 +57,12 @@ packages:
     dependencies:
       acorn-loose: 8.3.0
       astring: 1.8.3
-      cnd: 9.2.2
-      intertype: 7.7.1
+      intertype-legacy: 7.7.1
       letsfreezethat: 3.1.0
     dev: false
 
   /intertype-legacy/7.7.1:
     resolution: {integrity: sha512-Bj3k9bCu8vA6JLIvnCrJXOdkecgY5wtCmORclJ87uq22N53swREHT5bezSeK5TwcxgSJEDg2wEfcn4kNr9Qv8A==}
-    dependencies:
-      multimix: 5.0.0
-    dev: false
-
-  /intertype/7.7.1:
-    resolution: {integrity: sha512-GgGJYdbHaZ5AM4TvxzXSfkgFwAIEl6w3yIFiDY15uc85W41YfSRL0vNuO68tjNQ3gNIJ+U+xOYA8cw9NN8j0JQ==}
     dependencies:
       multimix: 5.0.0
     dev: false
