@@ -51,6 +51,11 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** implement hedges `odd`, `even`; valid for `float`s but do imply those numbers will be integer
 * **[–]** implement diagnostic API, primarily to check for existence of hedged types; allow to distinguish
   between standard types and user-defined types
+* **[–]** "a group is a set of types. A group's `groups` property is itself, so group `collection` is
+  groupmember of group `collection`, meaning there are tests for `isa.collection`, `isa.empty.collection`
+  and so on."
+* **[–]** eliminate hedgepaths that end in a hedge instead of in a type (or group). So we don't allow to
+  test for `empty x`, only for `empty.collection x`, `empty.any x` &c
 
 ## Is Done
 
