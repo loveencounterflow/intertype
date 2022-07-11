@@ -95,22 +95,25 @@ class @Intertype extends Intertype_abc
     super()
     @cfg      = { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
-    @isa      = new GUY.props.Strict_owner()
+    @isa      = new GUY.props.Strict_owner { reset: false, }
     @groups   = {}
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
       do ( group ) =>
-        @isa[ group ] = ( x ) =>
+      #   @isa[ group ] = ( x ) =>
+      #     R = @groups[ group ].has @type_of x
+      #     return @_protocol_isa group, R, R
+        @declare group, groups: group, test: ( x ) =>
           R = @groups[ group ].has @type_of x
           return @_protocol_isa group, R, R
     GUY.lft.freeze @groups
     #.......................................................................................................
     ### TAINT to get the demo off the ground we here shim a few types; this part will definitily
     change in future versions ###
-    @declare 'object',  test: ( x ) -> ( H.type_of x ) is 'object'
-    @declare 'float',   groups: 'number',     test: ( x ) -> ( H.type_of x ) is 'float'
-    @declare 'text',    groups: 'collection', test: ( x ) -> ( H.type_of x ) is 'text'
+    # @declare 'object',  test: ( x ) -> ( H.type_of x ) is 'object'
+    # @declare 'float',   groups: 'number',     test: ( x ) -> ( H.type_of x ) is 'float'
+    # @declare 'text',    groups: 'collection', test: ( x ) -> ( H.type_of x ) is 'text'
     #.......................................................................................................
     return undefined
 
