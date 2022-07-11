@@ -56,6 +56,13 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   and so on."
 * **[–]** eliminate hedgepaths that end in a hedge instead of in a type (or group). So we don't allow to
   test for `empty x`, only for `empty.collection x`, `empty.any x` &c
+* **[–]** special types:
+  * groups
+  * hedges
+  * existential / quantified:
+    * `anything`:  `( x ) -> true`
+    * `something`: `( x ) -> x?`
+    * `nothing`:   `( x ) -> not x?`
 
 ## Is Done
 
