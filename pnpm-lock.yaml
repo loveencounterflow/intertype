@@ -3,17 +3,17 @@ lockfileVersion: 5.4
 specifiers:
   acorn-loose: ^8.3.0
   astring: ^1.8.3
-  cnd: ^9.2.2
+  cnd: 9.2.3
   combinate: ^1.1.11
-  guy: 7.1.0
+  guy: 8.0.0
   intertype-legacy: ^7.7.1
 
 dependencies:
   acorn-loose: 8.3.0
   astring: 1.8.3
-  cnd: 9.2.2
+  cnd: 9.2.3
   combinate: 1.1.11
-  guy: 7.1.0_4k6qy6fwzytg4mnvcbxw7o5eay
+  guy: 8.0.0_4k6qy6fwzytg4mnvcbxw7o5eay
   intertype-legacy: 7.7.1
 
 packages:
@@ -36,8 +36,8 @@ packages:
     hasBin: true
     dev: false
 
-  /cnd/9.2.2:
-    resolution: {integrity: sha512-F+/H+7luk4fZkvN0+MT0I2nwn80YM/EtfMttNUFxENR50XJH4g0KgQevzeyEJ8B6t6l8Tb4Xti6QAksa8DmePA==}
+  /cnd/9.2.3:
+    resolution: {integrity: sha512-CdgrCS/KS2p5TvvtpjiG+sCdAkqCDBHcmUBKGGH8owlJ5/DMZAcbJ6PDJFMUOhL+y2jzdDVl0OeMUrh1Fd1LOQ==}
     hasBin: true
     dependencies:
       jsx-number-format: 0.1.5
@@ -47,8 +47,8 @@ packages:
     resolution: {integrity: sha512-+2MNAQ29HtNejOxkgaTQPC2Bm+pQvFuqf7o18uObl/Bx3daX06kjLUNY/qa9f+YSqzqm/ic3SdrlfN0fvTlw2g==}
     dev: false
 
-  /guy/7.1.0_4k6qy6fwzytg4mnvcbxw7o5eay:
-    resolution: {integrity: sha512-j+r9mpPSo3wPmlvAjU+zP1hIJtyXDnj8aE9XxDQu2ErmvCPvCLl9aRNE/XObOEEyFoZHcFA4RFTpFgb9Gh364A==}
+  /guy/8.0.0_4k6qy6fwzytg4mnvcbxw7o5eay:
+    resolution: {integrity: sha512-S1EeLca37kML3KcjeSePw2eJ4sTDi5V+trdheEiE7TWQoh9uf/9Yw2AzgtA0kzscn7Cbct7GN4xRBeD+lGooyA==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0
