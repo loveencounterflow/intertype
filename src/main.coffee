@@ -93,11 +93,11 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
-    @cfg      = { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
-    GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
-    @isa      = new GUY.props.Strict_owner { reset: false, }
-    @groups   = {}
+    GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
+    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator()
+    GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'declare',  new Proxy @_declare, get: ( _, type ) => ( cfg ) => @_declare type, cfg
+    GUY.props.hide @, 'groups',   {}
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
@@ -144,12 +144,12 @@ class @Intertype extends Intertype_abc
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _add_type_to_group: ( group, type ) =>
+  _add_type_to_group: ( group, type ) ->
     @groups[ group ].add type
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _isa: ( hedges..., type, x ) =>
+  _isa: ( hedges..., type, x ) ->
     for hedge, hedge_idx in hedges
       switch R = @_test_hedge hedge, x
         when true                       then null
@@ -174,7 +174,7 @@ class @Intertype extends Intertype_abc
     return @_protocol_isa type, verdict, verdict
 
   #---------------------------------------------------------------------------------------------------------
-  _test_hedge: ( hedge, x ) =>
+  _test_hedge: ( hedge, x ) ->
     unless ( hedgetest = GUY.props.get @_hedges._hedgemethods, hedge, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
     #.......................................................................................................
