@@ -97,6 +97,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, '_hedges', new HEDGES.Intertype_hedge_combinator()
     @isa      = new GUY.props.Strict_owner { reset: false, }
     @groups   = {}
+    GUY.props.hide @, 'declare',  new Proxy @_declare, get: ( _, type ) => ( cfg ) => @_declare type, cfg
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
@@ -118,7 +119,7 @@ class @Intertype extends Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  declare: ( type, type_cfg ) =>
+  _declare: ( type, type_cfg ) ->
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
     type_cfg      = { type_cfg..., name: type, }
