@@ -34,6 +34,16 @@ declare 'xy_quantity', test: [
   ( x ) -> @isa.nonempty.text   x.unit
   ]
 
+# can use simplified form:
+
+declare.xy_quantity,
+  test: [
+    ( x ) -> @isa.object          x
+    ( x ) -> @isa.float           x.value
+    ( x ) -> @isa.nonempty.text   x.unit
+    ]
+
+
 log '^1-1^', isa.xy_quantity null
 log '^1-1^', isa.xy_quantity 42
 log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
@@ -63,6 +73,12 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     * `anything`:  `( x ) -> true`
     * `something`: `( x ) -> x?`
     * `nothing`:   `( x ) -> not x?`
+* **[–]** allow to derive types, including derivation of defaults
+* **[–]** provide methods for the ubiquitous `validate.$TYPE ( cfg = { defaults.$TYPE..., cfg..., } )` as
+  `cfg = types.get_defaults.$TYPE cfg`
+* **[–]** add `defaults` parameter to `declare`
+* **[–]** make it so that type declarations can be queried / viewed / checked by user, especially `defaults`
+  must be retrievable so they can be referenced from new type declarations
 
 ## Is Done
 
@@ -71,3 +87,5 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   to check for property availability in `size_of()`</del> <ins>reject</ins> because `Reflect.has()` balks on
   primitive values like numbers, too, which further complicates the code instead of making it simpler.
   ⁂sigh⁂
+* **[+]** in keeping with APIs for `isa[ typename ]` (i.e. `isa.integer &c`) and `validate[ typename ]`,
+  implement the same for `declare` as in `declare.my_type cfg`
