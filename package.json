@@ -21,7 +21,7 @@
     "astring": "^1.8.3",
     "cnd": "9.2.3",
     "combinate": "^1.1.11",
-    "guy": "8.0.0",
+    "guy": "9.0.0",
     "intertype-legacy": "^7.7.1"
   }
 }
