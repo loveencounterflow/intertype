@@ -96,7 +96,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator()
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'declare',  new Proxy @_declare, get: ( _, type ) => ( cfg ) => @_declare type, cfg
+    GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'groups',   {}
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
