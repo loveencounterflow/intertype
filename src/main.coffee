@@ -97,6 +97,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator()
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
+    GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'groups',   {}
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
@@ -122,9 +123,10 @@ class @Intertype extends Intertype_abc
   _declare: ( type, type_cfg ) ->
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
-    type_cfg      = { type_cfg..., name: type, }
-    type_cfg      = new ITYP.Type_cfg @, type_cfg
-    @isa[ type ]  = type_cfg.test
+    type_cfg          = { type_cfg..., name: type, }
+    type_cfg          = new ITYP.Type_cfg @, type_cfg
+    @registry[ type ] = type_cfg
+    @isa[ type ]      = type_cfg.test
     for group in type_cfg.groups
       #.....................................................................................................
       ### register type with group ###
