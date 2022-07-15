@@ -87,6 +87,10 @@ class @Intertype_hedge_combinator extends @Combinator
     { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], groups: [ 'number',       ], }
     ]
 
+  # #---------------------------------------------------------------------------------------------------------
+  # @groups_of_groups:
+  #   collection:       [ ]
+
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
   _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
