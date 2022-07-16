@@ -121,7 +121,7 @@ class @Intertype extends Intertype_abc
     type_cfg            = new ITYP.Type_cfg @, type_cfg
     @registry[  type ]  = type_cfg
     @isa[       type ]  = type_cfg.test
-    @validate[  type ]  = type_cfg.test
+    @validate[  type ]  = ( x ) => @_validate type, x
     for group in type_cfg.groups
       #.....................................................................................................
       ### register type with group ###
