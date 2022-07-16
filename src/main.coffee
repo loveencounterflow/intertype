@@ -132,11 +132,10 @@ class @Intertype extends Intertype_abc
         i_target = @isa
         v_target = @validate
         for hedge in hedgepath
-          unless GUY.props.has i_target, hedge
-            i_target[ hedge ] = new GUY.props.Strict_owner()
-            v_target[ hedge ] = new GUY.props.Strict_owner()
-          i_target = i_target[ hedge ]
-          v_target = v_target[ hedge ]
+          i_target[ hedge ] = new GUY.props.Strict_owner() unless GUY.props.has i_target, hedge
+          v_target[ hedge ] = new GUY.props.Strict_owner() unless GUY.props.has v_target, hedge
+          i_target          = i_target[ hedge ]
+          v_target          = v_target[ hedge ]
         #...................................................................................................
         do ( hedgepath ) =>
           i_target[ type ] = ( x ) => @_isa       hedgepath..., type, x
