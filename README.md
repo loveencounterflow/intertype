@@ -9,6 +9,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [InterType](#intertype)
+  - [Hedges](#hedges)
   - [Type Declarations](#type-declarations)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -17,6 +18,49 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 
 # InterType
+
+## Hedges
+
+```
+types.isa.integer                                           42
+types.isa.even.integer                                      -42
+types.isa.odd.integer                                       41
+types.isa.negative1.integer                                 -42
+types.isa.negative0.integer                                 0
+types.isa.positive1.integer                                 42
+types.isa.positive0.integer                                 0
+types.isa.list_of.integer                                   [ 42, ]
+types.isa.nonempty.list_of.negative1.integer                [ -42, ]
+types.isa.nonempty.list_of.negative0.integer                [ 0, ]
+types.isa.nonempty.list_of.positive1.integer                [ 42, ]
+types.isa.nonempty.list_of.positive0.integer                [ 0, ]
+types.isa.empty.list_of.integer                             []
+types.isa.nonempty.list_of.integer                          [ 42, ]
+types.isa.optional.integer                                  42
+types.isa.optional.list_of.integer                          [ 42, ]
+types.isa.optional.empty.list_of.integer                    []
+types.isa.optional.nonempty.list_of.integer                 [ 42, ]
+types.isa.optional.negative1.integer                        -42
+types.isa.optional.negative0.integer                        0
+types.isa.optional.positive1.integer                        42
+types.isa.optional.positive0.integer                        0
+types.isa.optional.nonempty.list_of.negative1.integer       [ -42, ]
+types.isa.optional.nonempty.list_of.negative0.integer       [ 0, ]
+types.isa.optional.nonempty.list_of.positive1.integer       [ 42, ]
+types.isa.optional.nonempty.list_of.positive0.integer       [ 0, ]
+types.isa.optional.empty.list_of.negative1.integer          -42
+types.isa.optional.empty.list_of.negative0.integer          0
+types.isa.optional.empty.list_of.positive1.integer          42
+types.isa.optional.empty.list_of.positive0.integer          0
+
+[all]     [all]     [isa_collection]  [isa_collection]  [isa_numeric]   [isa_numeric]   [mandatory]
+————————————————————————————————————————————————————————————————————————————————————————————————————
+isa       optional  empty             list_of           even            negative0       <type>
+validate            nonempty                            odd             negative1
+                                                                        positive0
+                                                                        positive1
+```
+
 
 ## Type Declarations
 
