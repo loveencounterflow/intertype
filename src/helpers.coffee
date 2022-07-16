@@ -50,10 +50,6 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
   throw new E.Intertype_ETEMPTBD '^intertype.size_of@1^', \
     "expected an object with `x.length` or `x.size`, got a #{@type_of x} with neither"
 
-# #---------------------------------------------------------------------------------------------------------
-# _is_empty:    ( type_cfg, x ) -> ( @_size_of type_cfg, x ) is 0
-# _is_nonempty: ( type_cfg, x ) -> ( @_size_of type_cfg, x ) > 0
-
 #---------------------------------------------------------------------------------------------------------
 @signals = GUY.lft.freeze new GUY.props.Strict_owner target:
   true_and_break:         Symbol 'true_and_break'
