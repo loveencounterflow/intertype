@@ -93,8 +93,8 @@ class @Intertype_hedge_combinator extends @Combinator
       return true
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
-    empty:      ( x ) => return ( H.size_of x, null ) is 0
-    nonempty:   ( x ) => return ( H.size_of x, null ) isnt 0
+    empty:      ( x ) => ( H.size_of x, null ) is 0
+    nonempty:   ( x ) => ( H.size_of x, null ) isnt 0
     #.......................................................................................................
     ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
     list_of:    ( x ) =>
