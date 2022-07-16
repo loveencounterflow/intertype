@@ -73,7 +73,6 @@ class @Type_cfg extends Intertype_abc
       throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
     return R
 
-
 #===========================================================================================================
 class @Intertype extends Intertype_abc
 
@@ -83,10 +82,17 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator()
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
+    # isa_proxy = new Proxy ( @_isa.bind @ ), get: ( _, type ) => ( cfg ) => @_isa.call @, type, cfg
+    # GUY.props.hide @, 'isa',      new Proxy {}, { get: ( ( t, k ) => debug '^323————————————————————————————————————^', rpr k; t[ k ] ), }
+    # GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'validate',  new Proxy ( @_validate.bind @ ), get: ( _, type ) => ( cfg ) => @_validate.call @, type, cfg
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'groups',   {}
+    # GUY.props.hide @, 'proxy',    new Proxy @,
+    #   get: ( target, key ) =>
+    #     debug '^334234234^', GUY.trm.reverse "proxy", rpr key
+    #     return target[ key ]
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
