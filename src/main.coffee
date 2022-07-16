@@ -83,6 +83,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator()
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'groups',   {}
@@ -110,10 +111,11 @@ class @Intertype extends Intertype_abc
   _declare: ( type, type_cfg ) ->
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
-    type_cfg          = { type_cfg..., name: type, }
-    type_cfg          = new ITYP.Type_cfg @, type_cfg
-    @registry[ type ] = type_cfg
-    @isa[ type ]      = type_cfg.test
+    type_cfg            = { type_cfg..., name: type, }
+    type_cfg            = new ITYP.Type_cfg @, type_cfg
+    @registry[  type ]  = type_cfg
+    @isa[       type ]  = type_cfg.test
+    @validate[  type ]  = type_cfg.test
     for group in type_cfg.groups
       #.....................................................................................................
       ### register type with group ###
@@ -121,15 +123,18 @@ class @Intertype extends Intertype_abc
       #.....................................................................................................
       for hedgepath from @_hedges.hedgepaths[ group ]
         continue if hedgepath.length is 0
-        self = @isa
+        i_target = @isa
+        v_target = @validate
         for hedge in hedgepath
-          unless GUY.props.has self, hedge
-            self[ hedge ] = new GUY.props.Strict_owner()
-            # self[ hedge ] = new GUY.props.Strict_owner()
-          self = self[ hedge ]
+          unless GUY.props.has i_target, hedge
+            i_target[ hedge ] = new GUY.props.Strict_owner()
+            v_target[ hedge ] = new GUY.props.Strict_owner()
+          i_target = i_target[ hedge ]
+          v_target = v_target[ hedge ]
         #...................................................................................................
         do ( hedgepath ) =>
-          self[ type ] = ( x ) => @_isa hedgepath..., type, x
+          i_target[ type ] = ( x ) => @_isa       hedgepath..., type, x
+          v_target[ type ] = ( x ) => @_validate  hedgepath..., type, x
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -182,6 +187,15 @@ class @Intertype extends Intertype_abc
   _protocol_isa: ( term, result, verdict ) ->
     urge '^_protocol_isa@1^', { term, result, verdict, }
     return verdict
+
+  #---------------------------------------------------------------------------------------------------------
+  _validate: ( hedges..., type, x ) ->
+    debug '^4534^', { hedges, type, x, }
+    debug '^4534^', @_isa hedges..., type, x
+    return true if @_isa hedges..., type, x
+    qtype = [ hedges..., type, ].join @cfg.sep
+    xr    = to_width ( rpr x ), 100
+    throw new E.Intertype_ETEMPTBD '^intertype@1^', "not a valid #{qtype}"
 
   #---------------------------------------------------------------------------------------------------------
   type_of:                    H.type_of
