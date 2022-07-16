@@ -3,10 +3,10 @@
 'use strict'
 
 #-----------------------------------------------------------------------------------------------------------
-GUY           = require 'guy'
-misfit        = Symbol 'misfit'
-notavalue     = Symbol 'notavalue'
-E             = require './errors'
+GUY                       = require 'guy'
+misfit                    = Symbol 'misfit'
+notavalue                 = Symbol 'notavalue'
+E                         = require './errors'
 
 ###
 _normalize_type =            ( type ) -> type.toLowerCase().replace /\s+/g, ''
