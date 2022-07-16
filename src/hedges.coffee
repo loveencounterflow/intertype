@@ -4,17 +4,10 @@
 
 
 ############################################################################################################
-# njs_util                  = require 'util'
-njs_path                  = require 'path'
-# njs_fs                    = require 'fs'
-#...........................................................................................................
-CND                       = require 'cnd'
-rpr                       = CND.rpr.bind CND
-badge                     = 'INTERTYPE/combinator'
-debug                     = CND.get_logger 'debug',     badge
-echo                      = CND.echo.bind CND
-#...........................................................................................................
 GUY                       = require 'guy'
+{ debug }                 = GUY.trm.get_loggers 'INTERTYPE/hedges'
+{ rpr   }                 = GUY.trm
+#...........................................................................................................
 E                         = require './errors'
 H                         = require './helpers'
 combinate                 = ( require "combinate" ).default

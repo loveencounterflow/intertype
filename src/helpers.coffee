@@ -3,12 +3,6 @@
 'use strict'
 
 #-----------------------------------------------------------------------------------------------------------
-{ inspect, }  = require 'util'
-@assign       = Object.assign
-# @jr           = JSON.stringify
-LOUPE         = require '../deps/loupe.js'
-@rpr          = rpr = ( x ) => LOUPE.inspect x, { customInspect: false, }
-@xrpr         = ( x ) -> ( rpr x )[ .. 1024 ]
 GUY           = require 'guy'
 misfit        = Symbol 'misfit'
 notavalue     = Symbol 'notavalue'

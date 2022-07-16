@@ -3,31 +3,18 @@
 
 
 ############################################################################################################
-# njs_util                  = require 'util'
-njs_path                  = require 'path'
-# njs_fs                    = require 'fs'
-#...........................................................................................................
-CND                       = require 'cnd'
-rpr                       = CND.rpr.bind CND
-badge                     = 'INTERTYPE/main'
-log                       = CND.get_logger 'plain',     badge
-info                      = CND.get_logger 'info',      badge
-whisper                   = CND.get_logger 'whisper',   badge
-alert                     = CND.get_logger 'alert',     badge
-debug                     = CND.get_logger 'debug',     badge
-warn                      = CND.get_logger 'warn',      badge
-help                      = CND.get_logger 'help',      badge
-urge                      = CND.get_logger 'urge',      badge
-praise                    = CND.get_logger 'praise',    badge
-echo                      = CND.echo.bind CND
-#...........................................................................................................
 GUY                       = require 'guy'
+{ debug }                 = GUY.trm.get_loggers 'INTERTYPE'
+{ rpr   }                 = GUY.trm
+#...........................................................................................................
 E                         = require './errors'
 H                         = require './helpers'
 HEDGES                    = require './hedges'
 ITYP                      = @
 types                     = new ( require 'intertype-legacy' ).Intertype()
 @defaults                 = {}
+{ to_width }              = require 'to-width'
+
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Type_cfg_constructor_cfg', tests:
