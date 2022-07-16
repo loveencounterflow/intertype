@@ -1,22 +1,53 @@
 lockfileVersion: 5.4
 
 specifiers:
+  acorn: ^8.7.1
+  acorn-loose: ^8.3.0
+  acorn-walk: ^8.2.0
+  astring: ^1.8.3
   combinate: ^1.1.11
-  guy: 9.0.0
+  guy: 9.0.1
   intertype-legacy: ^7.7.1
   to-width: ^1.2.0
 
 dependencies:
+  acorn: 8.7.1
+  acorn-loose: 8.3.0
+  acorn-walk: 8.2.0
+  astring: 1.8.3
   combinate: 1.1.11
-  guy: 9.0.0
+  guy: 9.0.1_4prdxtoba2tordf5bhh3dou7hy
   intertype-legacy: 7.7.1
   to-width: 1.2.0
 
 packages:
 
+  /acorn-loose/8.3.0:
+    resolution: {integrity: sha512-75lAs9H19ldmW+fAbyqHdjgdCrz0pWGXKmnqFoh8PyVd1L2RIb4RzYrSjmopeqv3E1G3/Pimu6GgLlrGbrkF7w==}
+    engines: {node: '>=0.4.0'}
+    dependencies:
+      acorn: 8.7.1
+    dev: false
+
+  /acorn-walk/8.2.0:
+    resolution: {integrity: sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==}
+    engines: {node: '>=0.4.0'}
+    dev: false
+
+  /acorn/8.7.1:
+    resolution: {integrity: sha512-Xx54uLJQZ19lKygFXOWsscKUbsBZW0CPykPhVQdhIeIwrbPmJzqeASDInc8nKBnp/JT6igTs82qPXz069H8I/A==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
+    dev: false
+
   /ansi-regex/5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
+    dev: false
+
+  /astring/1.8.3:
+    resolution: {integrity: sha512-sRpyiNrx2dEYIMmUXprS8nlpRg2Drs8m9ElX9vVEXaCB4XEAJhKfs7IcX0IwShjuOAjLR6wzIrgoptz1n19i1A==}
+    hasBin: true
     dev: false
 
   /combinate/1.1.11:
@@ -27,14 +58,18 @@ packages:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
     dev: false
 
-  /guy/9.0.0:
-    resolution: {integrity: sha512-uZ2MoGLf8UVIiIaUsjJ9tNO5fJw2OewbCARkWk81tsG+5Ggyfv0MhQzzKLeKdv7V5Kud1VGzqcMAWjAtnimZDg==}
+  /guy/9.0.1_4prdxtoba2tordf5bhh3dou7hy:
+    resolution: {integrity: sha512-2Wre+QRaX685WVabqdl59CHAxQ6zjJB9QL7uKWrH7mvY9QrNh0YawvjKHuYrFrYAqgd62RfAXkbF9qtJtWcI9w==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0
       acorn-walk: ^8.2.0
       astring: ^1.8.3
     dependencies:
+      acorn: 8.7.1
+      acorn-loose: 8.3.0
+      acorn-walk: 8.2.0
+      astring: 1.8.3
       intertype-legacy: 7.7.1
       letsfreezethat: 3.1.0
     dev: false
