@@ -152,15 +152,15 @@ class @Intertype extends Intertype_abc
     for hedge, hedge_idx in hedges
       switch R = @_test_hedge hedge, x
         when true                       then null
-        when H.signals.true_and_break   then return @_protocol_isa hedge, R, true
-        when H.signals.false_and_break  then return @_protocol_isa hedge, R, false
+        when H.signals.true_and_break   then return true
+        when H.signals.false_and_break  then return false
         when false                      then return false
         when H.signals.process_list_elements, H.signals.process_set_elements
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           # debug '^3324^', { tail_hedges, }
           for e from x
             unless @_isa tail_hedges..., type, e
-              return @_protocol_isa hedge, R, false
+              return false
           return true
         else
           throw new E.Intertype_ETEMPTBD '^intertype@1^', "illegal return value from `_test_hedge()`: #{rpr type}"
