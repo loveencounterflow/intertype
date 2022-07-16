@@ -38,7 +38,7 @@ types.declare 'Intertype_constructor_cfg', tests:
   "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
 #...........................................................................................................
 @defaults.Intertype_constructor_cfg =
-  sep:              '$'
+  sep:              '.'
 
 #===========================================================================================================
 class Intertype_abc extends GUY.props.Strict_owner
