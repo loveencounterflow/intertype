@@ -177,7 +177,7 @@ class @Intertype extends Intertype_abc
     unless ( hedgetest = GUY.props.get @_hedges._hedgemethods, hedge, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
     #.......................................................................................................
-    switch R = hedgetest x
+    switch R = hedgetest.call @, x
       when H.signals.true_and_break         then return @_protocol_isa hedge, R, R
       when H.signals.false_and_break        then return @_protocol_isa hedge, R, R
       when false                            then return @_protocol_isa hedge, R, false
