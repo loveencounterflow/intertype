@@ -88,7 +88,7 @@ class @Intertype_hedge_combinator extends @Combinator
   ### TAINT tack onto prototype as hidden ###
   _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
     optional:   ( x ) =>
-      # debug CND.reverse CND.yellow '^optional@453^', rpr x
+      # debug GUY.trm.reverse GUY.trm.yellow '^optional@453^', rpr x, @
       return H.signals.true_and_break unless x?
       return true
     #.......................................................................................................
@@ -105,7 +105,7 @@ class @Intertype_hedge_combinator extends @Combinator
       return H.signals.process_set_elements
     #.......................................................................................................
     positive0:  ( x ) =>
-      # debug CND.reverse CND.yellow '^positive0@453^', rpr x
+      # debug GUY.trm.reverse GUY.trm.yellow '^positive0@453^', rpr x
       x >= 0
     positive1:  ( x ) => x >  0
     negative0:  ( x ) => x <= 0
