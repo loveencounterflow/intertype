@@ -6,7 +6,7 @@ specifiers:
   acorn-walk: ^8.2.0
   astring: ^1.8.3
   combinate: ^1.1.11
-  guy: 9.0.1
+  guy: 9.0.2
   intertype-legacy: ^7.7.1
   to-width: ^1.2.0
 
@@ -16,7 +16,7 @@ dependencies:
   acorn-walk: 8.2.0
   astring: 1.8.3
   combinate: 1.1.11
-  guy: 9.0.1_4prdxtoba2tordf5bhh3dou7hy
+  guy: 9.0.2_4prdxtoba2tordf5bhh3dou7hy
   intertype-legacy: 7.7.1
   to-width: 1.2.0
 
@@ -58,8 +58,8 @@ packages:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
     dev: false
 
-  /guy/9.0.1_4prdxtoba2tordf5bhh3dou7hy:
-    resolution: {integrity: sha512-2Wre+QRaX685WVabqdl59CHAxQ6zjJB9QL7uKWrH7mvY9QrNh0YawvjKHuYrFrYAqgd62RfAXkbF9qtJtWcI9w==}
+  /guy/9.0.2_4prdxtoba2tordf5bhh3dou7hy:
+    resolution: {integrity: sha512-v4eQVObwFsUCLzA6ePinnuX3XfMmXxGp4w1k5udhF5D6P82HZYu/wy5dwy1qLXkArV6/0Qer0Q/dUytn0GJGEg==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0

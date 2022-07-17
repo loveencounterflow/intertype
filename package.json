@@ -22,7 +22,7 @@
     "acorn-walk": "^8.2.0",
     "astring": "^1.8.3",
     "combinate": "^1.1.11",
-    "guy": "9.0.1",
+    "guy": "9.0.2",
     "intertype-legacy": "^7.7.1",
     "to-width": "^1.2.0"
   }
