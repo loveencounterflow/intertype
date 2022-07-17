@@ -56,6 +56,7 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
   false_and_break:        Symbol 'false_and_break'
   process_list_elements:  Symbol 'process_list_elements'
   process_set_elements:   Symbol 'process_set_elements'
+  nothing:                Symbol 'nothing'
 
 #-----------------------------------------------------------------------------------------------------------
 @type_of = ( x ) ->

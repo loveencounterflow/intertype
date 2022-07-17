@@ -56,9 +56,12 @@ class @Type_cfg extends Intertype_abc
     cfg.groups  = @_compile_groups cfg.groups
     types.validate.Type_cfg_constructor_cfg cfg
     if types.isa.list cfg.test
+      # for f in cfg.test
+        # console.log '^443^', f.name, GUY.src.slug_from_simple_function { function: f, }
       _test       = ( f.bind hub for f in cfg.test )
       cfg.test    = ( x ) => _test.every ( f ) -> f x
     else
+      # console.log '^443^', cfg.test.name, GUY.src.slug_from_simple_function { function: cfg.test, }
       cfg.test    = cfg.test.bind hub
     cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
     cfg.size   ?= null
@@ -102,7 +105,7 @@ class @Intertype extends Intertype_abc
       #     return @_protocol_isa group, R, R
         @declare group, groups: group, test: ( x ) =>
           R = @groups[ group ].has @type_of x
-          return @_protocol_isa group, R, R
+          return @_protocol_isa { term: group, x, value: H.signals.nothing, verdict: R, }
     GUY.lft.freeze @groups
     #.......................................................................................................
     ### TAINT to get the demo off the ground we here shim a few types; this part will definitily
@@ -170,7 +173,7 @@ class @Intertype extends Intertype_abc
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
     # debug '^3435^', { hedges, type, x, }
     verdict = typetest x
-    return @_protocol_isa type, verdict, verdict
+    return @_protocol_isa { term: type, x, value: H.signals.nothing, verdict, }
 
   #---------------------------------------------------------------------------------------------------------
   _test_hedge: ( hedge, x ) ->
@@ -178,19 +181,29 @@ class @Intertype extends Intertype_abc
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
     #.......................................................................................................
     switch R = hedgetest.call @, x
-      when H.signals.true_and_break         then return @_protocol_isa hedge, R, R
-      when H.signals.false_and_break        then return @_protocol_isa hedge, R, R
-      when false                            then return @_protocol_isa hedge, R, false
-      when true                             then return @_protocol_isa hedge, R, true
-      when H.signals.process_list_elements  then return @_protocol_isa hedge, R, R
-      when H.signals.process_set_elements   then return @_protocol_isa hedge, R, R
+      when H.signals.true_and_break         then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+      when H.signals.false_and_break        then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+      when false                            then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: false, }
+      when true                             then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+      when H.signals.process_list_elements  then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+      when H.signals.process_set_elements   then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
     #.......................................................................................................
     throw new E.Intertype_internal_error '^intertype@1^', \
       "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
 
   #---------------------------------------------------------------------------------------------------------
-  _protocol_isa: ( term, result, verdict ) ->
-    urge '^_protocol_isa@1^', { term, result, verdict, }
+  _protocol_isa: ({ term, x, value, verdict }) ->
+    if ( type_cfg = GUY.props.get @registry, term, null )?
+      debug GUY.trm.plum '^_protocol_isa@1^', GUY.props.get type_cfg, 'test', null
+      groups  = type_cfg.groups ? null
+      if ( test = GUY.props.get type_cfg, 'test', null )?
+        src     = GUY.src.slug_from_simple_function { function: test, fallback: '???', }
+      else
+        src     = null
+    else
+      groups  = null
+      src     = null
+    debug GUY.trm.gold '^_protocol_isa@1^', { term, groups, x, value, verdict, src, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
