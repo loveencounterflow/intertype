@@ -5,7 +5,6 @@ specifiers:
   acorn-loose: ^8.3.0
   acorn-walk: ^8.2.0
   astring: ^1.8.3
-  combinate: ^1.1.11
   guy: 10.0.0
   intertype-legacy: ^7.7.1
   picomatch: ^2.3.1
@@ -16,7 +15,6 @@ dependencies:
   acorn-loose: 8.3.0
   acorn-walk: 8.2.0
   astring: 1.8.3
-  combinate: 1.1.11
   guy: 10.0.0_4prdxtoba2tordf5bhh3dou7hy
   intertype-legacy: 7.7.1
   picomatch: 2.3.1
@@ -50,10 +48,6 @@ packages:
   /astring/1.8.3:
     resolution: {integrity: sha512-sRpyiNrx2dEYIMmUXprS8nlpRg2Drs8m9ElX9vVEXaCB4XEAJhKfs7IcX0IwShjuOAjLR6wzIrgoptz1n19i1A==}
     hasBin: true
-    dev: false
-
-  /combinate/1.1.11:
-    resolution: {integrity: sha512-+2MNAQ29HtNejOxkgaTQPC2Bm+pQvFuqf7o18uObl/Bx3daX06kjLUNY/qa9f+YSqzqm/ic3SdrlfN0fvTlw2g==}
     dev: false
 
   /emoji-regex/8.0.0:
