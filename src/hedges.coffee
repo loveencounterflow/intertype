@@ -11,7 +11,6 @@ GUY                       = require 'guy'
 E                         = require './errors'
 H                         = require './helpers'
 L                         = @
-combinate                 = ( require "combinate" ).default
 PMATCH                    = require 'picomatch'
 
 
@@ -20,8 +19,9 @@ PMATCH                    = require 'picomatch'
   combinator_cfg:
     hedgematch:     '*'
 
+
 #===========================================================================================================
-class @Combinator extends GUY.props.Strict_owner
+class @Intertype_hedges extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   @catchall_group: 'other'
@@ -31,11 +31,11 @@ class @Combinator extends GUY.props.Strict_owner
   constructor: ( cfg ) ->
     super()
     @cfg        = { L.defaults.combinator_cfg..., cfg..., }
-    @hedgepaths = new GUY.props.Strict_owner()
-    for groupname from @_get_groupnames()
-      compiled_hedges           = @_compile_hedges groupname, @constructor.hedges
-      hedgepaths                = @get_hedgepaths compiled_hedges
-      @hedgepaths[ groupname ]  = @_reduce_hedgepaths hedgepaths
+    # @hedgepaths = new GUY.props.Strict_owner()
+    # for groupname from @_get_groupnames()
+    #   compiled_hedges           = @_compile_hedges groupname, @constructor.hedges
+    #   hedgepaths                = @get_hedgepaths compiled_hedges
+    #   @hedgepaths[ groupname ]  = @_reduce_hedgepaths hedgepaths
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
@@ -60,6 +60,7 @@ class @Combinator extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   get_hedgepaths: ( compiled_hedges ) ->
+    throw new Error "not implemented: get_hedgepaths()"
     return [] unless ( hedgematch = @cfg.hedgematch )?
     R = ( x.flat() for x in @_combine compiled_hedges )
     unless hedgematch is '*'
@@ -69,14 +70,8 @@ class @Combinator extends GUY.props.Strict_owner
     return R
 
   #---------------------------------------------------------------------------------------------------------
-  _match_hedgepath: ( hedgepath, globpattern ) -> debug '^453^', { hedgepath, globpattern, }; PMATCH.isMatch hedgepath, globpattern
-  _reduce_hedgepaths: ( combinations ) -> ( ( e for e in hp when e? ) for hp in combinations )
+  _match_hedgepath: ( hedgepath, globpattern ) -> PMATCH.isMatch hedgepath, globpattern
   _get_groupnames: -> GUY.lft.freeze new Set ( h.groups for h in @constructor.hedges ).flat()
-
-
-
-#===========================================================================================================
-class @Intertype_hedge_combinator extends @Combinator
 
   #---------------------------------------------------------------------------------------------------------
   @hedges: GUY.lft.freeze [
@@ -121,14 +116,4 @@ class @Intertype_hedge_combinator extends @Combinator
     negative0:  ( x ) -> x <= 0
     negative1:  ( x ) -> x <  0
 
-  # #---------------------------------------------------------------------------------------------------------
-  # _match_hedge_and_type_cfg: ( hedge, type_cfg ) ->
-  #   unless @constructor.hedges_matchers_are_orthogonal
-  #     name = @constructor.name
-  #     throw new E.Intertype_not_implemented '^intertype.hedges@1^', \
-  #       "non-orthogonal hedge matchers not implemented, got #{name}.hedges_matchers_are_orthogonal == false"
-  #   return true unless property?
-  #   for property of hedge.match
-  #     return false unless type_cfg[ property ]
-  #   return true
 

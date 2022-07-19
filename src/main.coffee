@@ -4,7 +4,7 @@
 
 ############################################################################################################
 GUY                       = require 'guy'
-{ debug }                 = GUY.trm.get_loggers 'INTERTYPE'
+{ debug, warn, }          = GUY.trm.get_loggers 'INTERTYPE'
 { rpr   }                 = GUY.trm
 #...........................................................................................................
 E                         = require './errors'
@@ -36,25 +36,23 @@ types.declare 'Type_cfg_constructor_cfg', tests:
 types.declare 'Intertype_constructor_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
-  "@isa_optional.nonempty_text x.hedgematch": ( x ) -> @isa_optional.nonempty_text x.hedgematch
 #...........................................................................................................
 @defaults.Intertype_constructor_cfg =
   sep:              '.'
-  hedgematch:       '*'
 
-#-----------------------------------------------------------------------------------------------------------
-types.declare 'Intertype_walk_hedgepaths_cfg', tests:
-  "@isa.object x":                      ( x ) -> @isa.object x
-  "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
-  "@isa_optional.function x.evaluate":  ( x ) -> @isa_optional.function x.evaluate
-  ### TAINT omitted other settings for `GUY.props.tree()` ###
-#...........................................................................................................
-@defaults.Intertype_walk_hedgepaths_cfg =
-  sep:      @defaults.Intertype_constructor_cfg.sep
-  evaluate: ({ owner, key, value, }) ->
-    return 'take' if ( types.type_of value ) is 'function'
-    return 'take' unless GUY.props.has_any_keys value
-    return 'descend'
+# #-----------------------------------------------------------------------------------------------------------
+# types.declare 'Intertype_walk_hedgepaths_cfg', tests:
+#   "@isa.object x":                      ( x ) -> @isa.object x
+#   "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
+#   "@isa_optional.function x.evaluate":  ( x ) -> @isa_optional.function x.evaluate
+#   ### TAINT omitted other settings for `GUY.props.tree()` ###
+# #...........................................................................................................
+# @defaults.Intertype_walk_hedgepaths_cfg =
+#   sep:      @defaults.Intertype_constructor_cfg.sep
+#   evaluate: ({ owner, key, value, }) ->
+#     return 'take' if ( types.type_of value ) is 'function'
+#     return 'take' unless GUY.props.has_any_keys value
+#     return 'descend'
 
 #===========================================================================================================
 class Intertype_abc extends GUY.props.Strict_owner
@@ -72,12 +70,9 @@ class @Type_cfg extends Intertype_abc
     cfg.groups  = @_compile_groups cfg.groups
     types.validate.Type_cfg_constructor_cfg cfg
     if types.isa.list cfg.test
-      # for f in cfg.test
-        # console.log '^443^', f.name, GUY.src.slug_from_simple_function { function: f, }
       _test       = ( f.bind hub for f in cfg.test )
       cfg.test    = ( x ) => _test.every ( f ) -> f x
     else
-      # console.log '^443^', cfg.test.name, GUY.src.slug_from_simple_function { function: cfg.test, }
       cfg.test    = cfg.test.bind hub
     cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
     cfg.size   ?= null
@@ -86,10 +81,11 @@ class @Type_cfg extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _compile_groups: ( groups ) ->
+    warn GUY.trm.reverse "^_compile_groups@1^ should validate groups"
     R = if ( types.isa.text groups ) then groups.split /\s*,\s*/ else groups
-    for group in R
-      continue if GUY.props.has @hub._hedges.hedgepaths, group
-      throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
+    # for group in R
+    #   continue if GUY.props.has @hub._hedges.hedgepaths, group
+    #   throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
     return R
 
 #===========================================================================================================
@@ -99,40 +95,23 @@ class @Intertype extends Intertype_abc
   constructor: ( cfg ) ->
     super()
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
-    ### TAINT use defaults as key index, GUY.props.crossmatch() to build `cfg` for hedge combinator ###
-    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator { hedgematch: @cfg.hedgematch, }
+    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedges()
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
-    # isa_proxy = new Proxy ( @_isa.bind @ ), get: ( _, type ) => ( cfg ) => @_isa.call @, type, cfg
-    # GUY.props.hide @, 'isa',      new Proxy {}, { get: ( ( t, k ) => debug '^323————————————————————————————————————^', rpr k; t[ k ] ), }
     GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
-    # GUY.props.hide @, 'validate',  new Proxy ( @_validate.bind @ ), get: ( _, type ) => ( cfg ) => @_validate.call @, type, cfg
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',    types
     GUY.props.hide @, 'groups',   {}
-    # GUY.props.hide @, 'proxy',    new Proxy @,
-    #   get: ( target, key ) =>
-    #     debug '^334234234^', GUY.trm.reverse "proxy", rpr key
-    #     return target[ key ]
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
       do ( group ) =>
-      #   @isa[ group ] = ( x ) =>
-      #     R = @groups[ group ].has @type_of x
-      #     return @_protocol_isa group, R, R
         @declare group, groups: group, test: ( x ) =>
           R = @groups[ group ].has @type_of x
           return @_protocol_isa { term: group, x, value: H.signals.nothing, verdict: R, }
     GUY.lft.freeze @groups
     #.......................................................................................................
-    ### TAINT to get the demo off the ground we here shim a few types; this part will definitily
-    change in future versions ###
-    # @declare 'object',  test: ( x ) -> ( H.type_of x ) is 'object'
-    # @declare 'float',   groups: 'number',     test: ( x ) -> ( H.type_of x ) is 'float'
-    # @declare 'text',    groups: 'collection', test: ( x ) -> ( H.type_of x ) is 'text'
-    #.......................................................................................................
-    return undefined # new Proxy @, { get: ( ( t, k ) => debug GUY.trm.reverse GUY.trm.steel '^323————————————————————————————————————^', rpr k; t[ k ] ), }
+    return undefined
 
   #---------------------------------------------------------------------------------------------------------
   _declare: ( type, type_cfg ) ->
@@ -144,23 +123,7 @@ class @Intertype extends Intertype_abc
     @isa[       type ]  = type_cfg.test
     @validate[  type ]  = ( x ) => @_validate type, x
     for group in type_cfg.groups
-      #.....................................................................................................
-      ### register type with group ###
       @_add_type_to_group group, type
-      #.....................................................................................................
-      for hedgepath from @_hedges.hedgepaths[ group ]
-        continue if hedgepath.length is 0
-        i_target = @isa
-        v_target = @validate
-        for hedge in hedgepath
-          i_target[ hedge ] = new GUY.props.Strict_owner() unless GUY.props.has i_target, hedge
-          v_target[ hedge ] = new GUY.props.Strict_owner() unless GUY.props.has v_target, hedge
-          i_target          = i_target[ hedge ]
-          v_target          = v_target[ hedge ]
-        #...................................................................................................
-        do ( hedgepath ) =>
-          i_target[ type ] = ( x ) => @_isa       hedgepath..., type, x
-          v_target[ type ] = ( x ) => @_validate  hedgepath..., type, x
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -178,18 +141,15 @@ class @Intertype extends Intertype_abc
         when false                      then return false
         when H.signals.process_list_elements, H.signals.process_set_elements
           tail_hedges = hedges[ hedge_idx + 1 .. ]
-          # debug '^3324^', { tail_hedges, }
           for e from x
             unless @_isa tail_hedges..., type, e
               return false
           return true
         else
           throw new E.Intertype_ETEMPTBD '^intertype@1^', "illegal return value from `_test_hedge()`: #{rpr type}"
-    # urge '^345^', { hedge, hedges, type, x, }
     #.......................................................................................................
     unless ( typetest = GUY.props.get @isa, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
-    # debug '^3435^', { hedges, type, x, }
     verdict = typetest x
     return @_protocol_isa { term: type, x, value: H.signals.nothing, verdict, }
 
@@ -212,7 +172,6 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ({ term, x, value, verdict }) ->
     if ( type_cfg = GUY.props.get @registry, term, null )?
-      # debug GUY.trm.plum '^_protocol_isa@1^', GUY.props.get type_cfg, 'test', null
       groups  = type_cfg.groups ? null
       if ( test = GUY.props.get type_cfg, 'test', null )?
         src     = GUY.src.slug_from_simple_function { function: test, fallback: '???', }
@@ -240,9 +199,10 @@ class @Intertype extends Intertype_abc
 
   #-----------------------------------------------------------------------------------------------------------
   _walk_hedgepaths: ( cfg ) ->
-    cfg = { ITYP.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
-    yield from GUY.props.walk_tree @isa, cfg
-    return null
+    throw new Error "^_walk_hedgepaths@1^ not implemented"
+    # cfg = { ITYP.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
+    # yield from GUY.props.walk_tree @isa, cfg
+    # return null
 
 
 ############################################################################################################
