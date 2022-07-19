@@ -101,8 +101,8 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     # isa_proxy = new Proxy ( @_isa.bind @ ), get: ( _, type ) => ( cfg ) => @_isa.call @, type, cfg
     # GUY.props.hide @, 'isa',      new Proxy {}, { get: ( ( t, k ) => debug '^323————————————————————————————————————^', rpr k; t[ k ] ), }
-    # GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'validate',  new Proxy ( @_validate.bind @ ), get: ( _, type ) => ( cfg ) => @_validate.call @, type, cfg
+    GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
+    # GUY.props.hide @, 'validate',  new Proxy ( @_validate.bind @ ), get: ( _, type ) => ( cfg ) => @_validate.call @, type, cfg
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',    types
