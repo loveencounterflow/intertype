@@ -135,6 +135,11 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     * <del>**[–]** possible to 'auto-vivify' hedgepaths?</del>
     * <del>**[–]** scrap hedgepaths, replace by `isa.$TYPE x, cfg` API? or `isa.$TYPE P..., x` where P may be any
       number of modifiers as in `isa.list 'optional', 'empty', x`</del>
+* **[–]** salvage
+  * from [farewell-commit of generated
+    hedgepaths](https://github.com/loveencounterflow/intertype/tree/c541c4a38bb047fd0cb65b4697c54028dffc2a4f)
+    solution how to make combinatorics work, write up in [Gaps &
+    Islands](https://github.com/loveencounterflow/gaps-and-islands)
 
 ## Is Done
 
