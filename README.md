@@ -123,6 +123,8 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** add `defaults` parameter to `declare`
 * **[–]** make it so that type declarations can be queried / viewed / checked by user, especially `defaults`
   must be retrievable so they can be referenced from new type declarations
+* **[–]** rename group `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does
+  not cover imaginary, complex numbers. Observe we now have `BigInt`s
 
 ## Is Done
 
