@@ -96,7 +96,6 @@ class @Intertype_hedge_combinator extends @Combinator
     empty:      ( x ) -> ( H.size_of x, null ) is 0
     nonempty:   ( x ) -> ( H.size_of x, null ) isnt 0
     #.......................................................................................................
-    ### TAINT this is wrong, must test ensuing arguments against each element in collection ###
     list_of:    ( x ) ->
       return H.signals.false_and_break unless Array.isArray x
       return H.signals.process_list_elements
