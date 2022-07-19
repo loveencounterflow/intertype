@@ -125,6 +125,16 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   must be retrievable so they can be referenced from new type declarations
 * **[–]** rename group `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does
   not cover imaginary, complex numbers. Observe we now have `BigInt`s
+  pre-generating literally hundreds of hedgpath chains
+* **[–]** fix naming of type test functions (always `test`, should be name of type)
+* **[–]** use 'auto-vivification' for hedgepaths as outlined in
+  [`hengist/dev/intertype`](https://github.com/loveencounterflow/hengist/blob/40ec7b9cec3afc72c389a0d2889d4bab7babc893/dev/intertype/src/_ng.test.coffee#L813)
+  * <del>**[–]** how to finalize hedges?</del>
+    * <del>**[–]** demand to declare types with hedgepaths? `types.declare.empty.list`? `types.declare 'empty',
+      'list'`?</del>
+    * <del>**[–]** possible to 'auto-vivify' hedgepaths?</del>
+    * <del>**[–]** scrap hedgepaths, replace by `isa.$TYPE x, cfg` API? or `isa.$TYPE P..., x` where P may be any
+      number of modifiers as in `isa.list 'optional', 'empty', x`</del>
 
 ## Is Done
 
