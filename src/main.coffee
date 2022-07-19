@@ -234,6 +234,12 @@ class @Intertype extends Intertype_abc
   type_of:                    H.type_of
   size_of:                    H.size_of
 
+  #-----------------------------------------------------------------------------------------------------------
+  _walk_hedgepaths: ( cfg ) ->
+    cfg = { ITYP.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
+    yield from GUY.props.walk_tree @isa, cfg
+    return null
+
 
 ############################################################################################################
 @defaults = GUY.lft.freeze @defaults
