@@ -105,6 +105,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'validate',  new Proxy ( @_validate.bind @ ), get: ( _, type ) => ( cfg ) => @_validate.call @, type, cfg
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'types',    types
     GUY.props.hide @, 'groups',   {}
     # GUY.props.hide @, 'proxy',    new Proxy @,
     #   get: ( target, key ) =>
