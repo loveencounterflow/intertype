@@ -94,14 +94,44 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
-    GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
-    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedges()
-    GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'validate', new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
-    GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'types',    types
-    GUY.props.hide @, 'groups',   {}
+    #.......................................................................................................
+    ### TAINT ideally would put this stuff elsewhere ###
+    base_proxy_cfg =
+      get: ( target, key ) =>
+        return undefined if key is Symbol.toStringTag
+        @_hedgebuffer.length = 0
+        @_hedgebuffer.push '_isa'
+        @_hedgebuffer.push key
+        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        f = { "#{key}": ( ( x ) -> praise '^878-1^', rpr x; 'something' ), }[ key ]
+        return target[ key ] = new Proxy f, sub_proxy_cfg
+    #.......................................................................................................
+    count = 0
+    sub_proxy_cfg =
+      get: ( target, key ) =>
+        process.exit 111 if count++ > 10
+        return undefined if key is Symbol.toStringTag
+        # debug '^878-2^', target, rpr key
+        @_hedgebuffer.push key
+        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        f =  ( x ) ->
+          debug '^878-3^', @_hedgebuffer
+          method_name = @_hedgebuffer.shift()
+          return @[ method_name ] @_hedgebuffer..., x
+        f = { "#{key}": f, }[ key ]
+        return target[ key ] = new Proxy f, sub_proxy_cfg
+    #.......................................................................................................
+    GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
+    GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
+    # GUY.props.hide @, 'isa',          new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'isa',          new Proxy {}, base_proxy_cfg
+    GUY.props.hide @, 'validate',     new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
+    GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'types',        types
+    GUY.props.hide @, 'groups',       {}
+    GUY.props.hide @, '_hedgebuffer', []
+    debug '^878-4^', @_hedgebuffer
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
