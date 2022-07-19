@@ -128,7 +128,7 @@ class @Intertype extends Intertype_abc
     # @declare 'float',   groups: 'number',     test: ( x ) -> ( H.type_of x ) is 'float'
     # @declare 'text',    groups: 'collection', test: ( x ) -> ( H.type_of x ) is 'text'
     #.......................................................................................................
-    return new Proxy @, { get: ( ( t, k ) => debug GUY.trm.reverse GUY.trm.steel '^323————————————————————————————————————^', rpr k; t[ k ] ), }
+    return undefined # new Proxy @, { get: ( ( t, k ) => debug GUY.trm.reverse GUY.trm.steel '^323————————————————————————————————————^', rpr k; t[ k ] ), }
 
   #---------------------------------------------------------------------------------------------------------
   _declare: ( type, type_cfg ) ->
