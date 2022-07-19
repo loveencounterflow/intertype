@@ -40,6 +40,20 @@ types.declare 'Intertype_constructor_cfg', tests:
 @defaults.Intertype_constructor_cfg =
   sep:              '.'
 
+#-----------------------------------------------------------------------------------------------------------
+types.declare 'Intertype_walk_hedgepaths_cfg', tests:
+  "@isa.object x":                      ( x ) -> @isa.object x
+  "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
+  "@isa_optional.function x.evaluate":  ( x ) -> @isa_optional.function x.evaluate
+  ### TAINT omitted other settings for `GUY.props.tree()` ###
+#...........................................................................................................
+@defaults.Intertype_walk_hedgepaths_cfg =
+  sep:      @defaults.Intertype_constructor_cfg.sep
+  evaluate: ({ owner, key, value, }) ->
+    return 'take' if ( types.type_of value ) is 'function'
+    return 'take' unless GUY.props.has_any_keys value
+    return 'descend'
+
 #===========================================================================================================
 class Intertype_abc extends GUY.props.Strict_owner
 
