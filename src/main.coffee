@@ -233,6 +233,7 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   type_of:                    H.type_of
   size_of:                    H.size_of
+  _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
 
   #-----------------------------------------------------------------------------------------------------------
   _walk_hedgepaths: ( cfg ) ->

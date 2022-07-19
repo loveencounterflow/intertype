@@ -9,7 +9,6 @@ notavalue                 = Symbol 'notavalue'
 E                         = require './errors'
 
 ###
-_normalize_type =            ( type ) -> type.toLowerCase().replace /\s+/g, ''
 js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
 ###
 
