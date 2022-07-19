@@ -18,8 +18,8 @@ types                     = new ( require 'intertype-legacy' ).Intertype()
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Type_cfg_constructor_cfg', tests:
-  "@isa.object x":                      ( x ) -> @isa.object x
-  "@isa.nonempty_text x.name":          ( x ) -> @isa.nonempty_text x.name
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
   "( @isa.function x.test ) or ( @isa_list_of.function x.test )": \
     ( x ) -> ( @isa.function x.test ) or ( @isa_list_of.function x.test )
   "x.groups is a nonempty text or a nonempty list of nonempty texts": ( x ) ->
@@ -34,11 +34,13 @@ types.declare 'Type_cfg_constructor_cfg', tests:
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Intertype_constructor_cfg', tests:
-  "@isa.object x":                      ( x ) -> @isa.object x
-  "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
+  "@isa_optional.nonempty_text x.hedgematch": ( x ) -> @isa_optional.nonempty_text x.hedgematch
 #...........................................................................................................
 @defaults.Intertype_constructor_cfg =
   sep:              '.'
+  hedgematch:       '*'
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Intertype_walk_hedgepaths_cfg', tests:
@@ -97,7 +99,8 @@ class @Intertype extends Intertype_abc
   constructor: ( cfg ) ->
     super()
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
-    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator()
+    ### TAINT use defaults as key index, GUY.props.crossmatch() to build `cfg` for hedge combinator ###
+    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedge_combinator { hedgematch: @cfg.hedgematch, }
     GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     # isa_proxy = new Proxy ( @_isa.bind @ ), get: ( _, type ) => ( cfg ) => @_isa.call @, type, cfg
     # GUY.props.hide @, 'isa',      new Proxy {}, { get: ( ( t, k ) => debug '^323————————————————————————————————————^', rpr k; t[ k ] ), }
@@ -209,7 +212,7 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ({ term, x, value, verdict }) ->
     if ( type_cfg = GUY.props.get @registry, term, null )?
-      debug GUY.trm.plum '^_protocol_isa@1^', GUY.props.get type_cfg, 'test', null
+      # debug GUY.trm.plum '^_protocol_isa@1^', GUY.props.get type_cfg, 'test', null
       groups  = type_cfg.groups ? null
       if ( test = GUY.props.get type_cfg, 'test', null )?
         src     = GUY.src.slug_from_simple_function { function: test, fallback: '???', }

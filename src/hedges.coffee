@@ -10,8 +10,15 @@ GUY                       = require 'guy'
 #...........................................................................................................
 E                         = require './errors'
 H                         = require './helpers'
+L                         = @
 combinate                 = ( require "combinate" ).default
+PMATCH                    = require 'picomatch'
 
+
+#===========================================================================================================
+@defaults =
+  combinator_cfg:
+    hedgematch:     '*'
 
 #===========================================================================================================
 class @Combinator extends GUY.props.Strict_owner
@@ -21,8 +28,9 @@ class @Combinator extends GUY.props.Strict_owner
   @hedges: GUY.lft.freeze []
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ->
+  constructor: ( cfg ) ->
     super()
+    @cfg        = { L.defaults.combinator_cfg..., cfg..., }
     @hedgepaths = new GUY.props.Strict_owner()
     for groupname from @_get_groupnames()
       compiled_hedges           = @_compile_hedges groupname, @constructor.hedges
@@ -52,14 +60,17 @@ class @Combinator extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   get_hedgepaths: ( compiled_hedges ) ->
+    return [] unless ( hedgematch = @cfg.hedgematch )?
     R = ( x.flat() for x in @_combine compiled_hedges )
+    unless hedgematch is '*'
+      for idx in [ R.length - 1 .. 0 ] by -1
+        delete R[ idx ] unless @_match_hedgepath R[ idx ], hedgematch
     R.sort()
     return R
 
   #---------------------------------------------------------------------------------------------------------
+  _match_hedgepath: ( hedgepath, globpattern ) -> debug '^453^', { hedgepath, globpattern, }; PMATCH.isMatch hedgepath, globpattern
   _reduce_hedgepaths: ( combinations ) -> ( ( e for e in hp when e? ) for hp in combinations )
-
-  #---------------------------------------------------------------------------------------------------------
   _get_groupnames: -> GUY.lft.freeze new Set ( h.groups for h in @constructor.hedges ).flat()
 
 
