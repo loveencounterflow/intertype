@@ -94,32 +94,29 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
+    self = @
     #.......................................................................................................
     ### TAINT ideally would put this stuff elsewhere ###
     base_proxy_cfg =
       get: ( target, key ) =>
         return undefined if key is Symbol.toStringTag
-        _hedgebuffer.length = 0
-        _hedgebuffer.push '_isa'
-        _hedgebuffer.push key
+        self._hedgebuffer.length = 0
+        self._hedgebuffer.push '_isa'
+        self._hedgebuffer.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        f = { "#{key}": ( ( x ) -> praise '^878-1^', rpr x; 'something' ), }[ key ]
+        debug '^5534^', rpr key
+        f = { "#{key}": ( ( x ) -> warn '^878-1^', rpr x; 'something' ), }[ key ]
         return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
-    count = 0
     sub_proxy_cfg =
       get: ( target, key ) =>
-        # debug '^878-2^', target, rpr key
-        # process.exit 111 if count++ > 100
         return undefined if key is Symbol.toStringTag
-        _hedgebuffer.push key
+        self._hedgebuffer.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         f = { "#{key}": ( x ) ->
-            method_name = _hedgebuffer.shift()
-            debug '^878-3^', { method_name, _hedgebuffer, }
-            return @[ method_name ] _hedgebuffer..., x
+            method_name = self._hedgebuffer.shift()
+            return self[ method_name ] self._hedgebuffer..., x
             }[ key ]
-        debug '^878-4^', f
         return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
     GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
@@ -131,8 +128,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
     GUY.props.hide @, 'groups',       {}
-    # GUY.props.hide @, '_hedgebuffer', []
-    _hedgebuffer = []
+    GUY.props.hide @, '_hedgebuffer', []
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
