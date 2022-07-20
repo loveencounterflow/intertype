@@ -10,6 +10,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 - [InterType](#intertype)
   - [Hedges](#hedges)
+  - [Intertype `state` Property](#intertype-state-property)
   - [Type Declarations](#type-declarations)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -61,6 +62,14 @@ validate            nonempty                            odd             negative
                                                                         positive1
 ```
 
+## Intertype `state` Property
+
+* `Intertype` instances have a `state` property; initial value is `{ data: null, method: null, hedges: [], }`
+* when chained methods on `isa` and `validate` are called (as in `isa.optional.positive0.integer 42`),
+  `method` will be set to the name of method to be invokes (here `'_isa'`) and `hedges` will contain the
+  chain of hedges (including the type), in this case `[ 'optional', 'positive0', 'integer', ]`
+* type testing methods are allowed to set or manipulate the `types.state.data` value; this can be used as a
+  side channel e.g. to cache intermediate and ancillary results from an expensive testing method
 
 ## Type Declarations
 
