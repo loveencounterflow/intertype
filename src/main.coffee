@@ -97,14 +97,15 @@ class @Intertype extends Intertype_abc
     self = @
     #.......................................................................................................
     ### TAINT ideally would put this stuff elsewhere ###
-    base_proxy_cfg =
-      get: ( target, key ) =>
-        return undefined if key is Symbol.toStringTag
-        self.state.method = '_isa'
-        self.state.hedges = [ key, ]
-        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        f = { "#{key}": ( ( x ) -> warn '^878-1^', rpr x; 'something' ), }[ key ]
-        return target[ key ] = new Proxy f, sub_proxy_cfg
+    get_base_proxy_cfg = ( method_name ) ->
+      return
+        get: ( target, key ) =>
+          return undefined if key is Symbol.toStringTag
+          self.state.method = method_name
+          self.state.hedges = [ key, ]
+          return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+          f = { "#{key}": ( ( x ) -> warn '^878-1^', rpr x; 'something' ), }[ key ]
+          return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
     sub_proxy_cfg =
       get: ( target, key ) =>
@@ -119,8 +120,8 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
     # GUY.props.hide @, 'isa',          new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'isa',          new Proxy {}, base_proxy_cfg
-    GUY.props.hide @, 'validate',     new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'isa',          new Proxy {}, get_base_proxy_cfg '_isa'
+    GUY.props.hide @, 'validate',     new Proxy {}, get_base_proxy_cfg '_validate'
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
@@ -212,8 +213,6 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _validate: ( hedges..., type, x ) ->
-    debug '^4534^', { hedges, type, x, }
-    debug '^4534^', @_isa hedges..., type, x
     return true if @_isa hedges..., type, x
     qtype = [ hedges..., type, ].join @cfg.sep
     xr    = to_width ( rpr x ), 100
