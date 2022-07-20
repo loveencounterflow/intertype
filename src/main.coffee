@@ -100,22 +100,19 @@ class @Intertype extends Intertype_abc
     base_proxy_cfg =
       get: ( target, key ) =>
         return undefined if key is Symbol.toStringTag
-        self._hedgebuffer.length = 0
-        self._hedgebuffer.push '_isa'
-        self._hedgebuffer.push key
+        self.state.method = '_isa'
+        self.state.hedges = [ key, ]
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        debug '^5534^', rpr key
         f = { "#{key}": ( ( x ) -> warn '^878-1^', rpr x; 'something' ), }[ key ]
         return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
     sub_proxy_cfg =
       get: ( target, key ) =>
         return undefined if key is Symbol.toStringTag
-        self._hedgebuffer.push key
+        self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         f = { "#{key}": ( x ) ->
-            method_name = self._hedgebuffer.shift()
-            return self[ method_name ] self._hedgebuffer..., x
+            return self[ self.state.method ] self.state.hedges..., x
             }[ key ]
         return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
@@ -128,7 +125,10 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
     GUY.props.hide @, 'groups',       {}
-    GUY.props.hide @, '_hedgebuffer', []
+    @state =
+      data:     null
+      method:   null
+      hedges:   []
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
