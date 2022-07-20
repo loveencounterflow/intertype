@@ -106,7 +106,7 @@ class @Intertype extends Intertype_abc
           self.state.hedges = [ key, ]
           return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
           if method_name is '_new'
-            f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P..., key ), }[ key ]
+            f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
           else
             f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
           return target[ key ] = new Proxy f, sub_proxy_cfg
