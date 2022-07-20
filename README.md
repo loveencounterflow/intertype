@@ -149,6 +149,7 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     hedgepaths](https://github.com/loveencounterflow/intertype/tree/c541c4a38bb047fd0cb65b4697c54028dffc2a4f)
     solution how to make combinatorics work, write up in [Gaps &
     Islands](https://github.com/loveencounterflow/gaps-and-islands)
+* **[–]** flatten type entries in registry to be simple `Type_cfg` instances
 
 ## Is Done
 
