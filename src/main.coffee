@@ -99,9 +99,9 @@ class @Intertype extends Intertype_abc
     base_proxy_cfg =
       get: ( target, key ) =>
         return undefined if key is Symbol.toStringTag
-        @_hedgebuffer.length = 0
-        @_hedgebuffer.push '_isa'
-        @_hedgebuffer.push key
+        _hedgebuffer.length = 0
+        _hedgebuffer.push '_isa'
+        _hedgebuffer.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         f = { "#{key}": ( ( x ) -> praise '^878-1^', rpr x; 'something' ), }[ key ]
         return target[ key ] = new Proxy f, sub_proxy_cfg
@@ -109,16 +109,17 @@ class @Intertype extends Intertype_abc
     count = 0
     sub_proxy_cfg =
       get: ( target, key ) =>
-        process.exit 111 if count++ > 10
-        return undefined if key is Symbol.toStringTag
         # debug '^878-2^', target, rpr key
-        @_hedgebuffer.push key
+        # process.exit 111 if count++ > 100
+        return undefined if key is Symbol.toStringTag
+        _hedgebuffer.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        f =  ( x ) ->
-          debug '^878-3^', @_hedgebuffer
-          method_name = @_hedgebuffer.shift()
-          return @[ method_name ] @_hedgebuffer..., x
-        f = { "#{key}": f, }[ key ]
+        f = { "#{key}": ( x ) ->
+            method_name = _hedgebuffer.shift()
+            debug '^878-3^', { method_name, _hedgebuffer, }
+            return @[ method_name ] _hedgebuffer..., x
+            }[ key ]
+        debug '^878-4^', f
         return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
     GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
@@ -130,8 +131,8 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
     GUY.props.hide @, 'groups',       {}
-    GUY.props.hide @, '_hedgebuffer', []
-    debug '^878-4^', @_hedgebuffer
+    # GUY.props.hide @, '_hedgebuffer', []
+    _hedgebuffer = []
     #.......................................................................................................
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
