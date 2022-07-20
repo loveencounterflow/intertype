@@ -14,6 +14,7 @@ ITYP                      = @
 types                     = new ( require 'intertype-legacy' ).Intertype()
 @defaults                 = {}
 { to_width }              = require 'to-width'
+deep_copy                 = structuredClone
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -104,7 +105,10 @@ class @Intertype extends Intertype_abc
           self.state.method = method_name
           self.state.hedges = [ key, ]
           return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-          f = { "#{key}": ( ( x ) -> warn '^878-1^', rpr x; 'something' ), }[ key ]
+          if method_name is '_new'
+            f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P..., key ), }[ key ]
+          else
+            f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
           return target[ key ] = new Proxy f, sub_proxy_cfg
     #.......................................................................................................
     sub_proxy_cfg =
@@ -122,6 +126,7 @@ class @Intertype extends Intertype_abc
     # GUY.props.hide @, 'isa',          new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'isa',          new Proxy {}, get_base_proxy_cfg '_isa'
     GUY.props.hide @, 'validate',     new Proxy {}, get_base_proxy_cfg '_validate'
+    GUY.props.hide @, 'new',          new Proxy {}, get_base_proxy_cfg '_new'
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
@@ -217,6 +222,20 @@ class @Intertype extends Intertype_abc
     qtype = [ hedges..., type, ].join @cfg.sep
     xr    = to_width ( rpr x ), 100
     throw new E.Intertype_ETEMPTBD '^intertype@1^', "not a valid #{qtype}"
+
+  #---------------------------------------------------------------------------------------------------------
+  _new: ( hedges..., type, x ) ->
+    if x?
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "extra arguments not implemented, got #{rpr x}"
+    if hedges.length > 0
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "method `new` allows no hedges, got #{rpr hedges}"
+    unless ( type_cfg = GUY.props.get @registry, type, null )?
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknon type #{rpr type}"
+    return null       if type is null
+    return undefined  if type is undefined
+    unless ( R = GUY.props.get type_cfg, 'default', null )?
+      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknon type #{rpr type} does not have a default value"
+    return deep_copy R
 
   #---------------------------------------------------------------------------------------------------------
   type_of:                    H.type_of
