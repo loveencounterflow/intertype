@@ -109,9 +109,7 @@ class @Intertype_hedges extends GUY.props.Strict_owner
       return H.signals.false_and_break unless x instanceof Set
       return H.signals.process_set_elements
     #.......................................................................................................
-    positive0:  ( x ) ->
-      # debug GUY.trm.reverse GUY.trm.yellow '^positive0@453^', rpr x
-      x >= 0
+    positive0:  ( x ) -> x >= 0
     positive1:  ( x ) -> x >  0
     negative0:  ( x ) -> x <= 0
     negative1:  ( x ) -> x <  0
