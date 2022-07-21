@@ -231,6 +231,7 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** consider to turn all hedges into strict owners
 * **[–]** can we generate random data based on a type declaration (like [Clojure `spec`]
   does)[https://youtu.be/B_Farscj0hY?t=1562]
+* **[–]** use sets not arrays when testing for extraneous keys in `Type_cfg.constructor()`
 
 ## Is Done
 
