@@ -218,7 +218,7 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _validate: ( hedges..., type, x ) ->
-    return true if @_isa hedges..., type, x
+    return x if @_isa hedges..., type, x
     qtype = [ hedges..., type, ].join @cfg.sep
     xr    = to_width ( rpr x ), 100
     throw new E.Intertype_ETEMPTBD '^intertype@1^', "not a valid #{qtype}: #{xr}"
