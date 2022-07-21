@@ -9,8 +9,10 @@ A JavaScript type checker with helpers to implement own types and do object shap
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [InterType](#intertype)
+  - [Motivation](#motivation)
   - [Hedges](#hedges)
   - [Intertype `state` Property](#intertype-state-property)
+  - [Intertype `create`](#intertype-create)
   - [Type Declarations](#type-declarations)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -19,6 +21,15 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 
 # InterType
+
+## Motivation
+
+* structural typing
+* inspired by [Typed Clojure](https://typedclojure.org), also see [*The Value of
+  Values*](https://www.youtube.com/watch?v=-6BsiVyC1kM)
+* most of the time used to perform a 'lower bounds' check of Plain Old Dictionaries (objects), i.e. objects
+  must satisfy all key/constraint checks of a given type declaration, but object may have additional
+  key/value pairs
 
 ## Hedges
 
@@ -70,6 +81,34 @@ validate            nonempty                            odd             negative
   chain of hedges (including the type), in this case `[ 'optional', 'positive0', 'integer', ]`
 * type testing methods are allowed to set or manipulate the `types.state.data` value; this can be used as a
   side channel e.g. to cache intermediate and ancillary results from an expensive testing method
+
+## Intertype `create`
+
+* returns deep copy (structural clone) of `default` member of type declaration
+* in the case of objects, uses `Object.assign()` to apply optional `cfg`
+* all types can (and maybe should) have a `default` value:
+  * `types.create.text()` returns `''`
+  * `types.create.integer()` and `types.create.float()` return `0`
+  * `types.create.object()` returns `{}`
+  * `types.create.list()` returns `[]`
+  * and so on
+* no implicit type coercion
+* `types.create.quantity()` (for which see below) has default `{ value: 0, unit: null, }` which does
+  not satisfy the constraint `isa.nonempty.text x.unit`, so causes an error
+* but `types.create.quantity { unit: 'km', }` works because `Object.assign { value: 0, unit: null, }, {
+  unit: 'km', }` gives `{ value: 0, unit: 'km', }` which does satisfy all constraints of `quantity`
+
+```coffee
+types.declare.quantity
+  test: [
+    ( x ) -> @isa.object        x
+    ( x ) -> @isa.float         x.value
+    ( x ) -> @isa.nonempty.text x.unit
+    ]
+  default:
+    value:    0
+    unit:     null
+```
 
 ## Type Declarations
 
@@ -150,6 +189,10 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     solution how to make combinatorics work, write up in [Gaps &
     Islands](https://github.com/loveencounterflow/gaps-and-islands)
 * **[–]** flatten type entries in registry to be simple `Type_cfg` instances
+* **[–]** implement
+  * **[–]** declarative freezing
+  * **[–]** declarative sealing
+  * **[–]** declarative validation of absence of extraneous (enumerable) properties
 
 ## Is Done
 
