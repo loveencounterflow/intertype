@@ -18,7 +18,7 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
 @domenic_denicola_device  = ( x ) => x?.constructor?.name ? './.'
 @mark_miller_device       = ( x ) => ( Object::toString.call x ).slice 8, -1
 @mark_miller_device_2     = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
-@js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
+@js_type_of               = ( x ) => Object::toString.call x
 
 
 #===========================================================================================================
