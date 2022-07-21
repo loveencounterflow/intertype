@@ -105,7 +105,7 @@ class @Intertype extends Intertype_abc
           self.state.method = method_name
           self.state.hedges = [ key, ]
           return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-          if method_name is '_new'
+          if method_name is '_create'
             f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
           else
             f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
@@ -126,7 +126,7 @@ class @Intertype extends Intertype_abc
     # GUY.props.hide @, 'isa',          new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'isa',          new Proxy {}, get_base_proxy_cfg '_isa'
     GUY.props.hide @, 'validate',     new Proxy {}, get_base_proxy_cfg '_validate'
-    GUY.props.hide @, 'new',          new Proxy {}, get_base_proxy_cfg '_new'
+    GUY.props.hide @, 'create',       new Proxy {}, get_base_proxy_cfg '_create'
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
@@ -224,7 +224,7 @@ class @Intertype extends Intertype_abc
     throw new E.Intertype_ETEMPTBD '^intertype@1^', "not a valid #{qtype}"
 
   #---------------------------------------------------------------------------------------------------------
-  _new: ( type, cfg ) ->
+  _create: ( type, cfg ) ->
     unless ( type_cfg = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
     return null       if type is null
