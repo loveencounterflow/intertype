@@ -15,12 +15,21 @@ types                     = new ( require 'intertype-legacy' ).Intertype()
 @defaults                 = {}
 { to_width }              = require 'to-width'
 deep_copy                 = structuredClone
+equals                    = require '../deps/jkroso-equals'
 
+#-----------------------------------------------------------------------------------------------------------
+types.declare 'deep_boolean', ( x ) -> x in [ 'deep', false, true, ]
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Type_cfg_constructor_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
+  # "@isa.deep_boolean x.copy":                 ( x ) -> @isa.boolean x.copy
+  # "@isa.boolean x.seal":                      ( x ) -> @isa.boolean x.seal
+  "@isa.deep_boolean x.freeze":               ( x ) -> @isa.deep_boolean x.freeze
+  "@isa.boolean x.extras":                    ( x ) -> @isa.boolean x.extras
+  "if extras is false, default must be an object": \
+    ( x ) -> ( x.extras ) or ( @isa.object x.default )
   "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
   "( @isa.function x.test ) or ( @isa_list_of.function x.test )": \
     ( x ) -> ( @isa.function x.test ) or ( @isa_list_of.function x.test )
@@ -35,6 +44,10 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   test:             null
   ### `default` omitted on purpose ###
   create:           null
+  # copy:             false
+  # seal:             false
+  freeze:           false
+  extras:           true
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Intertype_constructor_cfg', tests:
@@ -70,18 +83,24 @@ class @Type_cfg extends Intertype_abc
     ### TAINT ensure type_cfg does not contain `type`, `name` ###
     super()
     GUY.props.hide @, 'hub', hub
-    cfg         = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
-    cfg.groups  = @_compile_groups cfg.groups
+    cfg                   = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
+    cfg.groups            = @_compile_groups cfg.groups
+    if types.isa.list cfg.test then tests = ( f.bind hub for f in cfg.test )
+    else                            tests = [ ( cfg.test.bind hub ), ]
     types.validate.Type_cfg_constructor_cfg cfg
-    if types.isa.list cfg.test
-      _test       = ( f.bind hub for f in cfg.test )
-      cfg.test    = ( x ) => _test.every ( f ) -> f x
-    else
-      cfg.test    = cfg.test.bind hub
-    cfg.size    = 'length' if cfg.isa_collection and not cfg.size?
-    cfg.size   ?= null
-    @[ k ]      = v for k, v of cfg
-    return GUY.lft.freeze @
+    #.......................................................................................................
+    if not cfg.extras
+      keys                = ( k for k of cfg.default ).sort()
+      @[ H.signals.keys ] = keys
+      tests.push ( x ) -> equals ( k for k of x ).sort(), keys
+    cfg.test              = ( x ) => tests.every ( f ) -> f x
+    #.......................................................................................................
+    ### TAINT not used by `size_of()` ###
+    cfg.size              = 'length' if cfg.isa_collection and not cfg.size?
+    cfg.size             ?= null
+    #.......................................................................................................
+    @[ k ]                = v for k, v of cfg
+    return self = GUY.lft.freeze @
 
   #---------------------------------------------------------------------------------------------------------
   _compile_groups: ( groups ) ->
@@ -252,9 +271,13 @@ class @Intertype extends Intertype_abc
     else
       R = structuredClone R
     #.......................................................................................................
+    if      type_cfg.freeze is true   then R = Object.freeze R
+    else if type_cfg.freeze is 'deep' then R = GUY.lft.freeze GUY.lft._deep_copy R
+    #.......................................................................................................
     return @_validate type, R
 
   #---------------------------------------------------------------------------------------------------------
+  equals:                     H.equals
   type_of:                    H.type_of
   size_of:                    H.size_of
   _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
