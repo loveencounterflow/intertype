@@ -119,16 +119,16 @@ class @Intertype extends Intertype_abc
     super()
     self = @
     #.......................................................................................................
-    GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
-    GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
-    # GUY.props.hide @, 'isa',          new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'isa',          new Proxy {}, @_get_hedge_base_proxy_cfg self, '_isa'
-    GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg self, '_validate'
-    GUY.props.hide @, 'create',       new Proxy {}, @_get_hedge_base_proxy_cfg self, '_create'
-    GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
-    GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'types',        types
-    GUY.props.hide @, 'groups',       {}
+    GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
+    GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedges()
+    # GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'isa',      new Proxy {}, @_get_hedge_base_proxy_cfg self, '_isa'
+    GUY.props.hide @, 'validate', new Proxy {}, @_get_hedge_base_proxy_cfg self, '_validate'
+    GUY.props.hide @, 'create',   new Proxy {}, @_get_hedge_base_proxy_cfg self, '_create'
+    GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
+    GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'types',    types
+    GUY.props.hide @, 'groups',   {}
     @state =
       data:     null
       method:   null
