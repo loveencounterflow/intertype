@@ -228,11 +228,7 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     Islands](https://github.com/loveencounterflow/gaps-and-islands)
 * **[–]** flatten type entries in registry to be simple `Type_cfg` instances
 * **[–]** implement `or` as in `types.isa.integer.or.text 'x'`
-* **[–]** implement
-  * **[+]** declarative freezing
-  * **[–]** declarative sealing
-  * **[+]** declarative validation of absence of extraneous (enumerable) properties
-  * **[+]** declarative object creation with class declaration property `create` (must be function)
+* **[–]** consider to turn all hedges into strict owners
 * **[–]** can we generate random data based on a type declaration (like [Clojure `spec`]
   does)[https://youtu.be/B_Farscj0hY?t=1562]
 
@@ -258,3 +254,8 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[+]** implement `create()`
 * **[+]** provide methods for the ubiquitous `validate.$TYPE ( cfg = { defaults.$TYPE..., cfg..., } )` as
   `cfg = types.get_defaults.$TYPE cfg`
+* **[+]** implement
+  * **[+]** declarative freezing
+  * <del>**[–]** declarative sealing</del>
+  * **[+]** declarative validation of absence of extraneous (enumerable) properties
+  * **[+]** declarative object creation with class declaration property `create` (must be function)
