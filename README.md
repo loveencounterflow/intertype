@@ -14,7 +14,9 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Intertype `state` Property](#intertype-state-property)
   - [Intertype `create`](#intertype-create)
   - [Intertype `validate`](#intertype-validate)
+  - [Intertype `equals()`](#intertype-equals)
   - [Type Declarations](#type-declarations)
+    - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
   - [To Do](#to-do)
   - [Is Done](#is-done)
 
@@ -136,6 +138,11 @@ types.declare.quantity
   passed; if argument was found to violate a constraint, an error mmust be thrown
 * convenient for writing postconditions, as in `f = ( a, b ) -> validate.integer a * b`.
 
+## Intertype `equals()`
+
+* a 'deep equals' implementation (see [`jseq`](https://github.com/loveencounterflow/jseq), gleaned from
+  [`jkroso/equals`](https://github.com/jkroso/equals))
+
 ## Type Declarations
 
 ```coffee
@@ -166,6 +173,20 @@ log '^1-1^', isa.xy_quantity null
 log '^1-1^', isa.xy_quantity 42
 log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 ```
+
+### Settings `copy`, `freeze`, and `seal`
+
+* settings which affect how the returned by `create` will be treated:
+  * `copy` and `seal` are under consideration
+  * `freeze`:
+    * `false` (default): returned object will be non-frozen, non-sealed (like most objects have always been
+      in JS)
+    * `true`: returned value will be a shallow freeze (implemented with
+      [`Object.freeze()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze))
+    * `deep`: returned value will be a deep-frozen version of the result returned by `{ defaults..., cfg...,
+      }`. **Note** that in this preliminary version we will always freeze a deep copy (structural clone) of
+      the `cfg` value so in no case will any nested list or object of the original `cfg` get inadvertantly
+      frozen
 
 ## To Do
 
@@ -208,10 +229,10 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** flatten type entries in registry to be simple `Type_cfg` instances
 * **[–]** implement `or` as in `types.isa.integer.or.text 'x'`
 * **[–]** implement
-  * **[–]** declarative freezing
+  * **[+]** declarative freezing
   * **[–]** declarative sealing
-  * **[–]** declarative validation of absence of extraneous (enumerable) properties
-  * **[–]** declarative object creation with class declaration property `create` (must be function)
+  * **[+]** declarative validation of absence of extraneous (enumerable) properties
+  * **[+]** declarative object creation with class declaration property `create` (must be function)
 * **[–]** can we generate random data based on a type declaration (like [Clojure `spec`]
   does)[https://youtu.be/B_Farscj0hY?t=1562]
 
