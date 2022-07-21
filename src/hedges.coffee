@@ -75,6 +75,7 @@ class @Intertype_hedges extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   @hedges: GUY.lft.freeze [
+    # { terms: [ null, ],                                                     groups: [ 'bottom',       ], }
     { terms: [ null, 'optional', ],                                         groups: [ 'other',        ], }
     { terms: [
       null,
