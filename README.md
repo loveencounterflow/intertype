@@ -171,9 +171,12 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** add `defaults` parameter to `declare`
 * **[–]** make it so that type declarations can be queried / viewed / checked by user, especially `defaults`
   must be retrievable so they can be referenced from new type declarations
-* **[–]** rename group `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does
-  not cover imaginary, complex numbers. Observe we now have `BigInt`s
-  pre-generating literally hundreds of hedgpath chains
+* **[–]** numeric types:
+  * **[–]** rename group `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does
+    not cover imaginary, complex numbers. Observe we now have `BigInt`s
+    pre-generating literally hundreds of hedgpath chains
+  * **[–]** consider `float` (includes `infinity`) vs `ffloat` ('**f**inite' float, excludes `infinity`)
+    (longer name, more restricted)
 * **[–]** fix naming of type test functions (always `test`, should be name of type)
 * **[–]** use 'auto-vivification' for hedgepaths as outlined in
   [`hengist/dev/intertype`](https://github.com/loveencounterflow/hengist/blob/40ec7b9cec3afc72c389a0d2889d4bab7babc893/dev/intertype/src/_ng.test.coffee#L813)
@@ -193,6 +196,7 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   * **[–]** declarative freezing
   * **[–]** declarative sealing
   * **[–]** declarative validation of absence of extraneous (enumerable) properties
+  * **[–]** declarative object creation with class declaration property `create` (must be function)
 
 ## Is Done
 
