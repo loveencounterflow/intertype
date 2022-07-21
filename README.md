@@ -13,6 +13,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Hedges](#hedges)
   - [Intertype `state` Property](#intertype-state-property)
   - [Intertype `create`](#intertype-create)
+  - [Intertype `validate`](#intertype-validate)
   - [Type Declarations](#type-declarations)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -25,8 +26,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 ## Motivation
 
 * structural typing
-* inspired by [Typed Clojure](https://typedclojure.org), also see [*The Value of
-  Values*](https://www.youtube.com/watch?v=-6BsiVyC1kM)
+* inspired by [Clojure spec](https://typedclojure.org)[https://www.youtube.com/watch?v=B_Farscj0hY]
 * most of the time used to perform a 'lower bounds' check of Plain Old Dictionaries (objects), i.e. objects
   must satisfy all key/constraint checks of a given type declaration, but object may have additional
   key/value pairs
@@ -110,6 +110,32 @@ types.declare.quantity
     unit:     null
 ```
 
+* `create()` is of great help when writing functions with a configuration object (here always called `cfg`).
+  Where in earlier versions of this library one had to write:
+
+  ```coffee
+  f = ( cfg ) ->
+    types.validate.foobar ( cfg = { defaults.foobar..., cfg..., } )
+    ...
+  ```
+
+  now one can write more succinctly:
+
+  ```coffee
+  f = ( cfg ) ->
+    cfg = types.create.foobar cfg
+    ...
+  ```
+
+  and have reference to defaults, assignment from structured value and validation all wrapped up inside
+  one call to a single method.
+
+## Intertype `validate`
+
+* a validator is a function that accepts exactly one argument which it will return to signal validation has
+  passed; if argument was found to violate a constraint, an error mmust be thrown
+* convenient for writing postconditions, as in `f = ( a, b ) -> validate.integer a * b`.
+
 ## Type Declarations
 
 ```coffee
@@ -166,9 +192,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     * `something`: `( x ) -> x?`
     * `nothing`:   `( x ) -> not x?`
 * **[–]** allow to derive types, including derivation of defaults
-* **[–]** provide methods for the ubiquitous `validate.$TYPE ( cfg = { defaults.$TYPE..., cfg..., } )` as
-  `cfg = types.get_defaults.$TYPE cfg`
-* **[–]** add `defaults` parameter to `declare`
 * **[–]** make it so that type declarations can be queried / viewed / checked by user, especially `defaults`
   must be retrievable so they can be referenced from new type declarations
 * **[–]** numeric types:
@@ -177,26 +200,20 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     pre-generating literally hundreds of hedgpath chains
   * **[–]** consider `float` (includes `infinity`) vs `ffloat` ('**f**inite' float, excludes `infinity`)
     (longer name, more restricted)
-* **[–]** fix naming of type test functions (always `test`, should be name of type)
-* **[–]** use 'auto-vivification' for hedgepaths as outlined in
-  [`hengist/dev/intertype`](https://github.com/loveencounterflow/hengist/blob/40ec7b9cec3afc72c389a0d2889d4bab7babc893/dev/intertype/src/_ng.test.coffee#L813)
-  * <del>**[–]** how to finalize hedges?</del>
-    * <del>**[–]** demand to declare types with hedgepaths? `types.declare.empty.list`? `types.declare 'empty',
-      'list'`?</del>
-    * <del>**[–]** possible to 'auto-vivify' hedgepaths?</del>
-    * <del>**[–]** scrap hedgepaths, replace by `isa.$TYPE x, cfg` API? or `isa.$TYPE P..., x` where P may be any
-      number of modifiers as in `isa.list 'optional', 'empty', x`</del>
 * **[–]** salvage
   * from [farewell-commit of generated
     hedgepaths](https://github.com/loveencounterflow/intertype/tree/c541c4a38bb047fd0cb65b4697c54028dffc2a4f)
     solution how to make combinatorics work, write up in [Gaps &
     Islands](https://github.com/loveencounterflow/gaps-and-islands)
 * **[–]** flatten type entries in registry to be simple `Type_cfg` instances
+* **[–]** implement `or` as in `types.isa.integer.or.text 'x'`
 * **[–]** implement
   * **[–]** declarative freezing
   * **[–]** declarative sealing
   * **[–]** declarative validation of absence of extraneous (enumerable) properties
   * **[–]** declarative object creation with class declaration property `create` (must be function)
+* **[–]** can we generate random data based on a type declaration (like [Clojure `spec`]
+  does)[https://youtu.be/B_Farscj0hY?t=1562]
 
 ## Is Done
 
@@ -207,3 +224,16 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   ⁂sigh⁂
 * **[+]** in keeping with APIs for `isa[ typename ]` (i.e. `isa.integer &c`) and `validate[ typename ]`,
   implement the same for `declare` as in `declare.my_type cfg`
+* **[+]** use 'auto-vivification' for hedgepaths as outlined in
+  [`hengist/dev/intertype`](https://github.com/loveencounterflow/hengist/blob/40ec7b9cec3afc72c389a0d2889d4bab7babc893/dev/intertype/src/_ng.test.coffee#L813)
+  * <del>**[–]** how to finalize hedges?</del>
+    * <del>**[–]** demand to declare types with hedgepaths? `types.declare.empty.list`? `types.declare 'empty',
+      'list'`?</del>
+    * <del>**[–]** possible to 'auto-vivify' hedgepaths?</del>
+    * <del>**[–]** scrap hedgepaths, replace by `isa.$TYPE x, cfg` API? or `isa.$TYPE P..., x` where P may be any
+      number of modifiers as in `isa.list 'optional', 'empty', x`</del>
+* **[+]** fix naming of type test functions (always `test`, should be name of type)
+* **[+]** add `default` parameter to `declare`
+* **[+]** implement `create()`
+* **[+]** provide methods for the ubiquitous `validate.$TYPE ( cfg = { defaults.$TYPE..., cfg..., } )` as
+  `cfg = types.get_defaults.$TYPE cfg`
