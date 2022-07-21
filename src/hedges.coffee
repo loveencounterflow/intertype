@@ -94,10 +94,15 @@ class @Intertype_hedges extends GUY.props.Strict_owner
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
   _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
-    optional:   ( x ) ->
+    optional: ( x ) ->
       # debug GUY.trm.reverse GUY.trm.yellow '^optional@453^', rpr x, @
       return H.signals.true_and_break unless x?
       return true
+    # #.......................................................................................................
+    # or: ( x ) ->
+    #   ############ ### hedge rows are short-cut when any intermediate result has been `false` so if we ###
+    #   return H.signals.true_and_break unless x?
+    #   return true
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
     empty:      ( x ) -> ( H.size_of x, null ) is 0

@@ -123,6 +123,7 @@ class @Intertype extends Intertype_abc
     get_base_proxy_cfg = ( method_name ) ->
       return
         get: ( target, key ) =>
+          debug '^345345-1^', rpr key
           return undefined if key is Symbol.toStringTag
           self.state.method = method_name
           self.state.hedges = [ key, ]
@@ -135,6 +136,7 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     sub_proxy_cfg =
       get: ( target, key ) =>
+        debug '^345345-2^', rpr key
         return undefined if key is Symbol.toStringTag
         self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
