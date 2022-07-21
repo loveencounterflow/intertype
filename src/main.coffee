@@ -232,9 +232,10 @@ class @Intertype extends Intertype_abc
     # R = GUY.props.get type_cfg, 'default', null
     if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "type #{rpr type} does not have a default value"
-    if cfg?
-      return Object.assign ( structuredClone R ), cfg
-    return structuredClone R
+    R = structuredClone R
+    R = Object.assign ( R ), cfg if cfg?
+    @_validate type, R
+    return R
     # return structuredClone new ( R ).constructor().valueOf()
 
   #---------------------------------------------------------------------------------------------------------
