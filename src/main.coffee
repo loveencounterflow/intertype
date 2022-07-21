@@ -119,38 +119,12 @@ class @Intertype extends Intertype_abc
     super()
     self = @
     #.......................................................................................................
-    ### TAINT ideally would put this stuff elsewhere ###
-    get_base_proxy_cfg = ( method_name ) ->
-      return
-        get: ( target, key ) =>
-          debug '^345345-1^', rpr key
-          return undefined if key is Symbol.toStringTag
-          self.state.method = method_name
-          self.state.hedges = [ key, ]
-          return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-          if method_name is '_create'
-            f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
-          else
-            f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
-          return target[ key ] = new Proxy f, sub_proxy_cfg
-    #.......................................................................................................
-    sub_proxy_cfg =
-      get: ( target, key ) =>
-        debug '^345345-2^', rpr key
-        return undefined if key is Symbol.toStringTag
-        self.state.hedges.push key
-        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        f = { "#{key}": ( x ) ->
-            return self[ self.state.method ] self.state.hedges..., x
-            }[ key ]
-        return target[ key ] = new Proxy f, sub_proxy_cfg
-    #.......................................................................................................
     GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
     # GUY.props.hide @, 'isa',          new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'isa',          new Proxy {}, get_base_proxy_cfg '_isa'
-    GUY.props.hide @, 'validate',     new Proxy {}, get_base_proxy_cfg '_validate'
-    GUY.props.hide @, 'create',       new Proxy {}, get_base_proxy_cfg '_create'
+    GUY.props.hide @, 'isa',          new Proxy {}, @_get_hedge_base_proxy_cfg self, '_isa'
+    GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg self, '_validate'
+    GUY.props.hide @, 'create',       new Proxy {}, @_get_hedge_base_proxy_cfg self, '_create'
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',        types
@@ -169,6 +143,34 @@ class @Intertype extends Intertype_abc
     GUY.lft.freeze @groups
     #.......................................................................................................
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  ### TAINT ideally would put this stuff elsewhere ###
+  _get_hedge_base_proxy_cfg: ( self, method_name ) ->
+    #.......................................................................................................
+    sub_proxy_cfg =
+      get: ( target, key ) =>
+        debug '^345345-2^', rpr key
+        return undefined if key is Symbol.toStringTag
+        self.state.hedges.push key
+        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        f = { "#{key}": ( x ) ->
+            return self[ self.state.method ] self.state.hedges..., x
+            }[ key ]
+        return target[ key ] = new Proxy f, sub_proxy_cfg
+    #.......................................................................................................
+    return
+      get: ( target, key ) =>
+        debug '^345345-1^', rpr key
+        return undefined if key is Symbol.toStringTag
+        self.state.method = method_name
+        self.state.hedges = [ key, ]
+        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        if method_name is '_create'
+          f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
+        else
+          f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
+        return target[ key ] = new Proxy f, sub_proxy_cfg
 
   #---------------------------------------------------------------------------------------------------------
   _declare: ( type, type_cfg ) ->
