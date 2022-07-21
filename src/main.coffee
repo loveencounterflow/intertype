@@ -227,9 +227,6 @@ class @Intertype extends Intertype_abc
   _create: ( type, cfg ) ->
     unless ( type_cfg = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
-    return null       if type is null
-    return undefined  if type is undefined
-    # R = GUY.props.get type_cfg, 'default', null
     if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "type #{rpr type} does not have a default value"
     R = structuredClone R
