@@ -21,6 +21,7 @@ deep_copy                 = structuredClone
 types.declare 'Type_cfg_constructor_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
+  "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
   "( @isa.function x.test ) or ( @isa_list_of.function x.test )": \
     ( x ) -> ( @isa.function x.test ) or ( @isa_list_of.function x.test )
   "x.groups is a nonempty text or a nonempty list of nonempty texts": ( x ) ->
@@ -32,6 +33,8 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   groups:           'other'
   name:             null
   test:             null
+  ### `default` omitted on purpose ###
+  create:           null
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Intertype_constructor_cfg', tests:
@@ -225,19 +228,31 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _create: ( type, cfg ) ->
+    create = null
+    #.......................................................................................................
     unless ( type_cfg = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
-    if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
-      throw new E.Intertype_ETEMPTBD '^intertype@1^', "type #{rpr type} does not have a default value"
-    if cfg?
-      switch H.js_type_of R
-        when '[object Object]'  then  R = { ( structuredClone R )..., cfg..., }
-        when '[object Array]'   then  R = [ ( structuredClone R )..., cfg..., ]
-        else R = cfg
+    #.......................................................................................................
+    ### Try to get `create` method, or, should that fail, the `default` value. Throw error when neither
+    `create` nor `default` are given: ###
+    if ( create = GUY.props.get type_cfg, 'create', null ) is null
+      if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
+        throw new E.Intertype_ETEMPTBD '^intertype@1^', \
+          "type #{rpr type} does not have a `default` value or a `create()` method"
+    #.......................................................................................................
+    else
+      ### If `create` is given, call it to obtain default value: ###
+      R = create.call @, cfg
+    #.......................................................................................................
+    if ( not create? ) and cfg?
+      if ( t = H.js_type_of R ) is '[object Object]' or t is '[object Array]'
+        R = Object.assign ( structuredClone R ), cfg
+      else
+        R = cfg
     else
       R = structuredClone R
-    @_validate type, R
-    return R
+    #.......................................................................................................
+    return @_validate type, R
 
   #---------------------------------------------------------------------------------------------------------
   type_of:                    H.type_of
