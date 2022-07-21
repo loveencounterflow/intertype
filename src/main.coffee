@@ -229,11 +229,15 @@ class @Intertype extends Intertype_abc
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
     if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "type #{rpr type} does not have a default value"
-    R = structuredClone R
-    R = Object.assign ( R ), cfg if cfg?
+    if cfg?
+      switch H.js_type_of R
+        when '[object Object]'  then  R = { ( structuredClone R )..., cfg..., }
+        when '[object Array]'   then  R = [ ( structuredClone R )..., cfg..., ]
+        else R = cfg
+    else
+      R = structuredClone R
     @_validate type, R
     return R
-    # return structuredClone new ( R ).constructor().valueOf()
 
   #---------------------------------------------------------------------------------------------------------
   type_of:                    H.type_of
