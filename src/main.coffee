@@ -210,9 +210,9 @@ class @Intertype extends Intertype_abc
         else
           throw new E.Intertype_ETEMPTBD '^intertype@1^', "illegal return value from `_test_hedge()`: #{rpr type}"
     #.......................................................................................................
-    unless ( typetest = GUY.props.get @isa, type, null )?
+    unless ( type_cfg = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
-    verdict = typetest x
+    verdict = type_cfg.test x
     return @_protocol_isa { term: type, x, value: H.signals.nothing, verdict, }
 
   #---------------------------------------------------------------------------------------------------------
