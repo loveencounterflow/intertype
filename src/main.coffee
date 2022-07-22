@@ -149,17 +149,6 @@ class @Intertype extends Intertype_abc
   ### TAINT ideally would put this stuff elsewhere ###
   _get_hedge_base_proxy_cfg: ( self, method_name ) ->
     #.......................................................................................................
-    sub_proxy_cfg =
-      get: ( target, key ) =>
-        debug '^345345-2^', rpr key
-        return undefined if key is Symbol.toStringTag
-        self.state.hedges.push key
-        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        f = { "#{key}": ( x ) ->
-            return self[ self.state.method ] self.state.hedges..., x
-            }[ key ]
-        return target[ key ] = new Proxy f, sub_proxy_cfg
-    #.......................................................................................................
     return
       get: ( target, key ) =>
         debug '^345345-1^', rpr key
@@ -171,7 +160,21 @@ class @Intertype extends Intertype_abc
           f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
         else
           f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
-        return target[ key ] = new Proxy f, sub_proxy_cfg
+        return target[ key ] = new Proxy f, @_get_hedge_sub_proxy_cfg self
+
+  #---------------------------------------------------------------------------------------------------------
+  ### TAINT ideally would put this stuff elsewhere ###
+  _get_hedge_sub_proxy_cfg: ( self ) ->
+    return
+      get: ( target, key ) =>
+        debug '^345345-2^', rpr key
+        return undefined if key is Symbol.toStringTag
+        self.state.hedges.push key
+        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        f = { "#{key}": ( x ) ->
+            return self[ self.state.method ] self.state.hedges..., x
+            }[ key ]
+        return target[ key ] = new Proxy f, @_get_hedge_sub_proxy_cfg self
 
   #---------------------------------------------------------------------------------------------------------
   _declare: ( type, type_cfg ) ->
