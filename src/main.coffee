@@ -152,7 +152,11 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     return
       get: ( target, key ) =>
-        return undefined if key is Symbol.toStringTag
+        return undefined          if key is Symbol.toStringTag
+        return target.constructor if key is 'constructor'
+        return target.toString    if key is 'toString'
+        return target.call        if key is 'call'
+        return target.apply       if key is 'apply'
         self.state.method = method_name
         self.state.hedges = [ key, ]
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
@@ -167,7 +171,11 @@ class @Intertype extends Intertype_abc
   _get_hedge_sub_proxy_cfg: ( self ) ->
     return
       get: ( target, key ) =>
-        return undefined if key is Symbol.toStringTag
+        return undefined          if key is Symbol.toStringTag
+        return target.constructor if key is 'constructor'
+        return target.toString    if key is 'toString'
+        return target.call        if key is 'call'
+        return target.apply       if key is 'apply'
         self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         f = { "#{key}": ( x ) ->
