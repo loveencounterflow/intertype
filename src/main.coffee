@@ -140,6 +140,7 @@ class @Intertype extends Intertype_abc
       hedges:   []
     #.......................................................................................................
     @_register_groups()
+    @_register_hedges()
     #.......................................................................................................
     return undefined
 
@@ -152,6 +153,14 @@ class @Intertype extends Intertype_abc
           R = @groups[ group ].has @type_of x
           return @_protocol_isa { term: group, x, value: H.signals.nothing, verdict: R, }
     GUY.lft.freeze @groups
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _register_hedges: ->
+    for hedge, test of @_hedges._hedgemethods
+      debug hedge, test
+      do ( hedge, test ) =>
+        @declare hedge, { test, }
     return null
 
   #---------------------------------------------------------------------------------------------------------
