@@ -92,6 +92,7 @@ class @Type_cfg extends Intertype_abc
     if not cfg.extras
       keys                = ( k for k of cfg.default ).sort()
       @[ H.signals.keys ] = keys
+      ### TAINT should use sets not arrays ###
       tests.push ( x ) -> equals ( k for k of x ).sort(), keys
     cfg.test              = ( x ) => tests.every ( f ) -> f x
     #.......................................................................................................
