@@ -208,7 +208,8 @@ class @Intertype extends Intertype_abc
               return false
           return true
         else
-          throw new E.Intertype_ETEMPTBD '^intertype@1^', "illegal return value from `_test_hedge()`: #{rpr type}"
+          throw new E.Intertype_ETEMPTBD '^intertype@1^', \
+            "illegal return value from `_test_hedge()`: #{rpr type}"
     #.......................................................................................................
     unless ( type_cfg = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
