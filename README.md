@@ -190,10 +190,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 
 ## To Do
 
-* **[–]** make hedgepaths configurable—**hedges need an opt-in**
-  * using depth (length) of hedgepath; default depth is 0
-  * using *wildcard hedgepath pattern* (provided by [`picomatch`]()https://github.com/micromatch/picomatch)
-  * both at instantiation time for all builtins and declaration time for the type being declared
 * **[–]** allow to filter out builtin types
 * **[–]** implement sum types (a.k.a. tagged union, variant, variant record, choice type, discriminated
   union, disjoint union, or coproduct :-O) as in `isa.integer.or.optional.nonempty.text`
@@ -203,8 +199,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** "a group is a set of types. A group's `groups` property is itself, so group `collection` is
   groupmember of group `collection`, meaning there are tests for `isa.collection`, `isa.empty.collection`
   and so on."
-* **[–]** eliminate hedgepaths that end in a hedge instead of in a type (or group). So we don't allow to
-  test for `empty x`, only for `empty.collection x`, `empty.any x` &c
 * **[–]** special types:
   * groups
   * hedges
@@ -213,8 +207,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     * `something`: `( x ) -> x?`
     * `nothing`:   `( x ) -> not x?`
 * **[–]** allow to derive types, including derivation of defaults
-* **[–]** make it so that type declarations can be queried / viewed / checked by user, especially `defaults`
-  must be retrievable so they can be referenced from new type declarations
 * **[–]** numeric types:
   * **[–]** rename group `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does
     not cover imaginary, complex numbers. Observe we now have `BigInt`s
@@ -226,7 +218,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     hedgepaths](https://github.com/loveencounterflow/intertype/tree/c541c4a38bb047fd0cb65b4697c54028dffc2a4f)
     solution how to make combinatorics work, write up in [Gaps &
     Islands](https://github.com/loveencounterflow/gaps-and-islands)
-* **[–]** flatten type entries in registry to be simple `Type_cfg` instances
 * **[–]** implement `or` as in `types.isa.integer.or.text 'x'`
 * **[–]** consider to turn all hedges into strict owners
 * **[–]** can we generate random data based on a type declaration (like [Clojure `spec`]
@@ -234,6 +225,12 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** use sets not arrays when testing for extraneous keys in `Type_cfg.constructor()`
 * **[–]** offer a way to collect all errors in validation ('slow fail') instead of bailing out on first
   error ('fast fail') ([see HN post](https://news.ycombinator.com/item?id=32179856#32180458))
+* **[–]** <del>make it so that type declarations can be queried / viewed / checked by user, especially
+  `defaults` must be retrievable so they can be referenced from new type declarations</del> <ins>offer API
+  to retrieve, review, print, document type declarations</ins>
+* **[–]** try to find a way to treat hedges, types equally—there shouldn't be any (apparent at least)
+  difference since in a hedgerow like `isa.nonempty.text.or.optional.integer x` the types and hedges proper
+  both appear all over the place
 
 ## Is Done
 
@@ -262,3 +259,10 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   * <del>**[–]** declarative sealing</del>
   * **[+]** declarative validation of absence of extraneous (enumerable) properties
   * **[+]** declarative object creation with class declaration property `create` (must be function)
+* **[+]** <del>make hedgepaths configurable—**hedges need an opt-in**</del>
+  * <del>using depth (length) of hedgepath; default depth is 0</del>
+  * <del>using *wildcard hedgepath pattern* (provided by [`picomatch`]()https://github.com/micromatch/picomatch)</del>
+  * <del>both at instantiation time for all builtins and declaration time for the type being declared</del>
+* **[+]** <del>eliminate hedgepaths that end in a hedge instead of in a type (or group). So we don't allow to
+  test for `empty x`, only for `empty.collection x`, `empty.any x` &c</del>
+* **[+]** flatten type entries in registry to be simple `Type_cfg` instances
