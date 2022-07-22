@@ -60,7 +60,7 @@ class @Intertype_hedges extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   get_hedgepaths: ( compiled_hedges ) ->
-    throw new Error "not implemented: get_hedgepaths()"
+    throw new E.Intertype_ETEMPTBD '^intertype.hedges@1^', "not implemented: get_hedgepaths()"
     return [] unless ( hedgematch = @cfg.hedgematch )?
     R = ( x.flat() for x in @_combine compiled_hedges )
     unless hedgematch is '*'
