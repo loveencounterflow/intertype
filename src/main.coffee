@@ -158,7 +158,6 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _register_hedges: ->
     for hedge, test of @_hedges._hedgemethods
-      debug hedge, test
       do ( hedge, test ) =>
         @declare hedge, { test, }
     return null
