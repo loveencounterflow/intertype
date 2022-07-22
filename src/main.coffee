@@ -94,7 +94,8 @@ class @Type_cfg extends Intertype_abc
       @[ H.signals.keys ] = keys
       ### TAINT should use sets not arrays ###
       tests.push ( x ) -> equals ( k for k of x ).sort(), keys
-    cfg.test              = ( x ) => tests.every ( f ) -> f x
+    test      = ( x ) => tests.every ( f ) -> f x
+    cfg.test  = new Proxy test, hub._get_hedge_sub_proxy_cfg hub
     #.......................................................................................................
     ### TAINT not used by `size_of()` ###
     cfg.size              = 'length' if cfg.isa_collection and not cfg.size?
@@ -151,7 +152,6 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     return
       get: ( target, key ) =>
-        debug '^345345-1^', rpr key
         return undefined if key is Symbol.toStringTag
         self.state.method = method_name
         self.state.hedges = [ key, ]
@@ -167,7 +167,6 @@ class @Intertype extends Intertype_abc
   _get_hedge_sub_proxy_cfg: ( self ) ->
     return
       get: ( target, key ) =>
-        debug '^345345-2^', rpr key
         return undefined if key is Symbol.toStringTag
         self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
@@ -219,7 +218,9 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _test_hedge: ( hedge, x ) ->
     unless ( hedgetest = GUY.props.get @_hedges._hedgemethods, hedge, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge #{rpr hedge}"
+      unless ( type_cfg = GUY.props.get @registry, hedge, null )?
+        throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge or type #{rpr hedge}"
+      hedgetest = type_cfg.test
     #.......................................................................................................
     switch R = hedgetest.call @, x
       when H.signals.true_and_break         then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
