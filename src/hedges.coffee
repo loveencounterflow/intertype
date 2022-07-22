@@ -98,11 +98,8 @@ class @Intertype_hedges extends GUY.props.Strict_owner
       # debug GUY.trm.reverse GUY.trm.yellow '^optional@453^', rpr x, @
       return H.signals.true_and_break unless x?
       return true
-    # #.......................................................................................................
-    # or: ( x ) ->
-    #   ############ ### hedge rows are short-cut when any intermediate result has been `false` so if we ###
-    #   return H.signals.true_and_break unless x?
-    #   return true
+    #.......................................................................................................
+    or: ( x ) -> throw new E.Intertype_ETEMPTBD '^intertype.hedges@2^', "hedge `or` not supposed to be called directly"
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
     empty:      ( x ) -> ( H.size_of x, null ) is 0
