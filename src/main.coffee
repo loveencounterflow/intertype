@@ -139,6 +139,12 @@ class @Intertype extends Intertype_abc
       method:   null
       hedges:   []
     #.......................................................................................................
+    @_register_groups()
+    #.......................................................................................................
+    return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _register_groups: ->
     for group from @_hedges._get_groupnames()
       @groups[ group ] = new Set()
       do ( group ) =>
@@ -146,8 +152,7 @@ class @Intertype extends Intertype_abc
           R = @groups[ group ].has @type_of x
           return @_protocol_isa { term: group, x, value: H.signals.nothing, verdict: R, }
     GUY.lft.freeze @groups
-    #.......................................................................................................
-    return undefined
+    return null
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT ideally would put this stuff elsewhere ###
