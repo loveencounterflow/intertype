@@ -208,7 +208,7 @@ class @Intertype extends Intertype_abc
     type_cfg            = new ITYP.Type_cfg @, type_cfg
     @registry[  type ]  = type_cfg
     @isa[       type ]  = type_cfg.test
-    @validate[  type ]  = ( x ) => @_validate type, x
+    @validate[  type ]  = new Proxy ( ( x ) => @_validate type, x ), @_get_hedge_sub_proxy_cfg @
     for group in type_cfg.groups
       @_add_type_to_group group, type
     return null
