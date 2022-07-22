@@ -232,6 +232,8 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** can we generate random data based on a type declaration (like [Clojure `spec`]
   does)[https://youtu.be/B_Farscj0hY?t=1562]
 * **[–]** use sets not arrays when testing for extraneous keys in `Type_cfg.constructor()`
+* **[–]** offer a way to collect all errors in validation ('slow fail') instead of bailing out on first
+  error ('fast fail') ([see HN post](https://news.ycombinator.com/item?id=32179856#32180458))
 
 ## Is Done
 
