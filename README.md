@@ -10,7 +10,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 - [InterType](#intertype)
   - [Motivation](#motivation)
-  - [Hedges](#hedges)
+  - [Hedgerows](#hedgerows)
   - [Intertype `state` Property](#intertype-state-property)
   - [Intertype `create`](#intertype-create)
   - [Intertype `validate`](#intertype-validate)
@@ -33,7 +33,63 @@ A JavaScript type checker with helpers to implement own types and do object shap
   must satisfy all key/constraint checks of a given type declaration, but object may have additional
   key/value pairs
 
-## Hedges
+## Hedgerows
+
+* simplest form: test for a value; preferred form is to use property accessor syntax (a.k.a. 'dot
+  notation'), e.g. `isa.integer x` (equivalent to `isa[ 'integer' ] x`)
+
+* these accessors are called 'hedges'
+
+* hedges can be combined in so-called 'hedgerows', e.g. `isa.positive0.integer x` tests whether `x >= 0`
+
+* hedgerows can be arbitrarily long, e.g. `isa.optional.nonempty.list_of.optional.negative1.integer x`
+
+* whether one wants lomng hedgerows or not is a matter of taste, but it will very probably be more
+  systematic and more readable to define meaningful intermediate types instead of using log hedgerows:
+
+  ```coffee
+  declare.xy_count        { test: ( ( x ) -> @isa.optional.set_of.negative1.integer   x ), }
+  declare.maybe_xy_counts { test: ( ( x ) -> @isa.optional.nonempty.list_of.xy_count  x ), }
+  ...
+  validate.maybe_xy_counts some_value
+  ```
+
+* in order to satisfy a hedgerow constraint, the value given must satisfy all individual terms, in the order
+  given. In other words, a hedgerow is a notation for a series of terms connected by logical conjunctions,
+  `a.b.c x ⇔ ( a x ) ∧ ( b x ) ∧ ( c x )` (in detail, `list_of` and `set_of` introduce a complication).
+
+  To re-use the slightly convoluted example from above, one can understand what
+  `isa.optional.nonempty.list_of.optional.negative1.integer x` means by rewriting it in pseudo-code along
+  the following lines:
+
+  ```coffee
+  test: ( x ) ->
+    return false unless isa.optional  x # `optional x` is satisfied if `x` is `undefined` or `null`, otherwise go on
+    return false unless isa.nonempty  x # `nonemtpy x` is true if `x` contains at least one element
+    return false unless isa.list      x # `list_of...` tests whether `x` is a list, ...
+    for each e in x:      # ... and then applies the rest of the hedgerow to each of its elements:
+      return false unless isa.optional  e # this `optional` clause is run against each element, so list may have `null` elements
+      return false unless isa.negative1 e # `negative1 x` tests for `x < 0`
+      return false unless isa.integer   e # `true` for whole numbers; uses `Number.isInteger()`
+    return true
+  ```
+
+* hedgerows will be evaluated in a 'short-circuited' manner like JavaScript logical operators; this means
+  that tests will only be performed up to the point where the result is definitely known. For example, if in
+  `z = ( a or b )` the left sub-expression has been found to be `true`, we already know that the outcome can
+  only be `true` as well, so we don't have to compute `b`. In `isa.optional.text x` we find that `x` is
+  `undefined` or `null` we are already done and can (and must) skip the test for `text`. Conversely, if we'd
+  find that `a` is `false` the second part of the disjunction could still be `true`, so we cannot
+  short-circuit but must evaluate the second part as well, and the same goes for `isa.optional.text x` if
+  `x?` (i.e. `x != null` or, even more explicitly, (JS) `( x !== null ) and ( x !== undefined )`).
+
+* a hedgerow may contain one or more `or` hedges that signify logical disjunction, e.g.
+  `isa.integer.or.nonempty.text.or.boolean x`. In this case, we partition the hedgerow into its constituent
+  terms: `( integer x ) ∨ ( nonempty.text ) ∨ ( boolean x )` and evaluate by walking through each
+  sub-hedgerow until it is either satisfied (which is when we can break the loop) or dissatisfied; in that
+  case, we jump forward to the next sub-hedgerow to repeat the same; when there are no more sub-hedgerows
+  left, the very last test then determines the result for the entire row.
+
 
 ```
 types.isa.integer                                           42
@@ -231,6 +287,11 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** try to find a way to treat hedges, types equally—there shouldn't be any (apparent at least)
   difference since in a hedgerow like `isa.nonempty.text.or.optional.integer x` the types and hedges proper
   both appear all over the place
+  * **[–]** in principle then, any combination of hedges proper and types becomes allowable; one could also
+    say: hedges become types and types are chainable, as in `validate.empty.text x` isnt categorically
+    different from `validate.text.integer x`, even if the latter reads non-sensically and can only ever fail
+    (because there's no overlap between text values and integer values). Could/should then rule out
+    non-sensical hedgerows by other means (i.e. a grammar that states what can go where)
 
 ## Is Done
 
