@@ -219,7 +219,12 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., type, x ) ->
-    for hedge, hedge_idx in hedges
+    hedge_idx       = -1
+    last_hedge_idx  = hedges.length - 1
+    loop
+      hedge_idx++
+      break if hedge_idx > last_hedge_idx
+      hedge = hedges[ hedge_idx ]
       switch R = @_test_hedge hedge, x
         when true                       then null
         when H.signals.true_and_break   then return true
