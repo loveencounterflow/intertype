@@ -97,7 +97,7 @@ class @Type_cfg extends Intertype_abc
       @[ H.signals.keys ] = keys
       ### TAINT should use sets not arrays ###
       tests.push ( x ) -> equals ( k for k of x ).sort(), keys
-    test      = ( x ) => tests.every ( f ) -> f x
+    test      = { "#{cfg.name}": ( ( x ) => tests.every ( f ) -> f x ) }[ cfg.name ]
     cfg.test  = new Proxy test, hub._get_hedge_sub_proxy_cfg hub
     #.......................................................................................................
     ### TAINT not used by `size_of()` ###
