@@ -11,6 +11,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [InterType](#intertype)
   - [Motivation](#motivation)
   - [Hedgerows](#hedgerows)
+    - [Diagram](#diagram)
+    - [xxx](#xxx)
   - [Intertype `state` Property](#intertype-state-property)
   - [Intertype `create`](#intertype-create)
   - [Intertype `validate`](#intertype-validate)
@@ -90,6 +92,64 @@ A JavaScript type checker with helpers to implement own types and do object shap
   case, we jump forward to the next sub-hedgerow to repeat the same; when there are no more sub-hedgerows
   left, the very last test then determines the result for the entire row.
 
+
+### Diagram
+
+```
+isa.text
+
+          text  is text       isnt text
+                return true   ATOERF¹
+
+             ⊙ return true     return false
+
+¹ATOERF:  Advance To OR, Else Return False
+```
+
+```
+isa.text.or.optional.list_of.positive1.integer
+
+          text  is text         isnt text
+                return true     ATOERF¹
+
+            or  ————————————————————————
+
+       integer  is integer      isnt integer
+                next            ATOERF¹
+
+             ⊙ return true     return false
+
+¹ATOERF:  Advance To OR, Else Return False
+```
+
+```
+isa.text.or.optional.list_of.positive1.integer
+
+          text  is text         isnt text
+                return true     ATOERF¹
+
+            or  ————————————————————————
+
+      optional  not x?          x?
+                return true     next
+
+list_of:  list  is list         isnt list
+                switch to EM²   ATOERF¹
+
+     positive1  e > 0           not ( e > 0 )
+                next            ATOERF¹
+
+       integer  is integer      isnt integer
+                next            ATOERF¹
+
+             ⊙ return true     return false
+
+¹ATOERF:  Advance To OR, Else Return False
+²EM:      Elements Mode
+```
+
+
+### xxx
 
 ```
 types.isa.integer                                           42
