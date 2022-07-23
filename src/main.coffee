@@ -180,7 +180,7 @@ class @Intertype extends Intertype_abc
           f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
         else
           f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
-        GUY.props.hide self, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
+        GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
   #---------------------------------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ class @Intertype extends Intertype_abc
         f = { "#{key}": ( x ) ->
             return self[ self.state.method ] self.state.hedges..., x
             }[ key ]
-        GUY.props.hide self, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
+        GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
   #---------------------------------------------------------------------------------------------------------
