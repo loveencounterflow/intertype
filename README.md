@@ -149,6 +149,29 @@ list_of:  list  is list         isnt list
 ```
 
 
+[![](https://mermaid.ink/img/pako:eNp1kT0LwjAQhv9KuVHsoGMHQVAnQag6GZFgTi2YRNKrWIr_3TQfrYpmuj7PexfSa-CoBUIGJXHCWcHPhsv0PmYqsWc32CdpOkkKRXhG42H48KI8_HVKf7ku6_Qm38696INOaHMYedFWDqG8Ue2ZK-PdP7kd98ZjyinCB3V39niVe9jqOLqPdtT2fAzoROwPbV_PW-UOLKbLdSCtc8z-X0-c_ETxwBAkGskLYbfUtI4BXVAig8yWAk-8uhIDpp42Wt2E3eNcFKQNZCd-LXEIvCK9rtURMjIVxlBYdkg9XxLFn7U)](https://mermaid.live/edit#pako:eNp1kT0LwjAQhv9KuVHsoGMHQVAnQag6GZFgTi2YRNKrWIr_3TQfrYpmuj7PexfSa-CoBUIGJXHCWcHPhsv0PmYqsWc32CdpOkkKRXhG42H48KI8_HVKf7ku6_Qm38696INOaHMYedFWDqG8Ue2ZK-PdP7kd98ZjyinCB3V39niVe9jqOLqPdtT2fAzoROwPbV_PW-UOLKbLdSCtc8z-X0-c_ETxwBAkGskLYbfUtI4BXVAig8yWAk-8uhIDpp42Wt2E3eNcFKQNZCd-LXEIvCK9rtURMjIVxlBYdkg9XxLFn7U)
+
+```mermaid
+stateDiagram-v2
+    [*] --> integer
+    integer --> is_integer
+    integer --> no_integer
+    is_integer --> TRUE
+    no_integer --> or_1
+    or_1 --> empty
+    empty --> is_empty
+    empty --> no_empty
+    is_empty --> text
+    no_empty --> OR
+    text --> is_text
+    text --> no_text
+    no_text --> OR
+    is_text --> TRUE
+    OR --> FALSE
+    TRUE --> [*]
+    FALSE --> [*]
+```
+
 ### xxx
 
 ```
