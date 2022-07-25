@@ -161,6 +161,17 @@ list_of:  list  is list         isnt list
 | ═════════ | ═════════ | ═════════ |
 |           | -42       | TRUE      |
 
+| FALSE     | isa       | TRUE      |
+| ------:   | :-------: | :-----    |
+| ⬇⬇⬇       | negative1 |           |
+|           | integer   |           |
+| ───────── | OR        | ───────── |
+|           | optional  | ⬇         |
+| ⬇⬇⬇       | empty     |           |
+|           | text      |           |
+| ═════════ | ═════════ | ═════════ |
+| FALSE     | 'meep'    |           |
+
 
 
 
