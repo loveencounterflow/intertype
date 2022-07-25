@@ -169,8 +169,8 @@ Schema for `isa.negative1.integer.or.optional.empty.text 'meep'` (`false`): `'me
 `negative1` since it is not numeric, so the entire clause fails. We can again short-circuit, but *only up to
 the next or-clause*, symbolized by ▼▼. The next term is `optional`; since all values (including `null` and
 `undefined`) satisfy this constraint, we go to the next term, `empty`; since `'meep'.length` is `4`, this
-term fails, so we have to ▼ advance to the end of the current clause where we encounter the end of the
-hedgerow, so we can return `false`:
+term fails, so we have to ▼▼ advance to the end of the current clause which coincides with the end of the
+hedgerow, meaning we can return `false`:
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
@@ -186,8 +186,8 @@ hedgerow, so we can return `false`:
 
 Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`): `null` is not negative (and, of
 course, not positive either) so we can ▼▼ advance to the next 'gate'; there, `null` does fulfill `optional`
-(like any value) but with the 'special effect' that it causes a global short-circuit, meaning we can return
-`true` right away:
+(like any value) but with a 'special effect': `isa.optional null` and `isa.optional undefined` cause a
+global short-circuit, meaning we can return `true` right away and ignore any number of other constraints:
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
@@ -203,16 +203,16 @@ course, not positive either) so we can ▼▼ advance to the next 'gate'; there,
 This short-circuiting behavior of `optional` when seeing a nullish value is peculiar to `optional`; it is
 similar to there only being a single empty exemplar of collections (strings, lists, sets) except applying to
 all types: `( isa.empty.text a ) == ( isa.empty.text b )` entails `a == b == ''`; likewise, `(
-isa.optional.$TYPE_A a ) == ( isa.optional.$TYPE_B b )` entails `a == b == ''` *may* imply `a == b == null`,
-so when `a == null`, no other conjunctive constraint may cause the hedgerow to fail.
+isa.optional.$TYPE_A a ) == ( isa.optional.$TYPE_B b )` in conjunction with `( a == null )` implies `a ==
+b`, so as soon as we learn that `a == null` and a value has an `optional` allowance, no other constraint has
+to be considered.
 
-**Note** on `optional`: Optionality is the property of a compund type to be nullable (i.e. replaceable by
-`null` or `undefined`). As such, the types `optional.integer` and `optional.text` have `{ null, undefined }`
-as intersection of their domains, meaning that in the case of their
-disjunction—`isa.optional.integer.or.text`, `isa.integer.or.optional.text` and so on—are indistinguishable:
-all variations will, among (infinitely many) other values accept all of `null`, `undefined`, `1`, `42`,
-`'x'`, `'foobar'` and so on. Because of this one may want to restrict oneself to only allow `optional` as
-the *first* hedge, avoiding constructs like `isa.integer.or.optional.text` as a matter of style.
+**Note** on `optional`: The types `optional.integer` and `optional.text` have `{ null, undefined }` as
+intersection of their domains, meaning that in the case of their disjunction—`isa.optional.integer.or.text`,
+`isa.integer.or.optional.text` and so on—are indistinguishable: all variations will, among (infinitely many)
+other values accept all of `null`, `undefined`, `1`, `42`, `'x'`, `'foobar'` and so on. Because of this one
+may want to restrict oneself to only allow `optional` as the *first* hedge, avoiding constructs like
+`isa.integer.or.optional.text` as a matter of style.
 
 ### xxx
 
