@@ -149,48 +149,20 @@ list_of:  list  is list         isnt list
 ```
 
 
-[![](https://mermaid.ink/img/pako:eNp1kT0LwjAQhv9KuVHsoGMHQVAnQag6GZFgTi2YRNKrWIr_3TQfrYpmuj7PexfSa-CoBUIGJXHCWcHPhsv0PmYqsWc32CdpOkkKRXhG42H48KI8_HVKf7ku6_Qm38696INOaHMYedFWDqG8Ue2ZK-PdP7kd98ZjyinCB3V39niVe9jqOLqPdtT2fAzoROwPbV_PW-UOLKbLdSCtc8z-X0-c_ETxwBAkGskLYbfUtI4BXVAig8yWAk-8uhIDpp42Wt2E3eNcFKQNZCd-LXEIvCK9rtURMjIVxlBYdkg9XxLFn7U)](https://mermaid.live/edit#pako:eNp1kT0LwjAQhv9KuVHsoGMHQVAnQag6GZFgTi2YRNKrWIr_3TQfrYpmuj7PexfSa-CoBUIGJXHCWcHPhsv0PmYqsWc32CdpOkkKRXhG42H48KI8_HVKf7ku6_Qm38696INOaHMYedFWDqG8Ue2ZK-PdP7kd98ZjyinCB3V39niVe9jqOLqPdtT2fAzoROwPbV_PW-UOLKbLdSCtc8z-X0-c_ETxwBAkGskLYbfUtI4BXVAig8yWAk-8uhIDpp42Wt2E3eNcFKQNZCd-LXEIvCK9rtURMjIVxlBYdkg9XxLFn7U)
 
-```mermaid
-stateDiagram-v2
-    [*] --> integer
-    integer --> is_integer
-    integer --> no_integer
-    is_integer --> TRUE
-    no_integer --> or_1
-    or_1 --> empty
-    empty --> is_empty
-    empty --> no_empty
-    is_empty --> text
-    no_empty --> OR
-    text --> is_text
-    text --> no_text
-    no_text --> OR
-    is_text --> TRUE
-    OR --> FALSE
-    TRUE --> [*]
-    FALSE --> [*]
-```
+| FALSE   | isa       | TRUE   |
+| ------: | :-------: | :----- |
+|         | even      |        |
+|         | integer   |        |
+| ————    | OR        | ————   |
+|         | optional  |        |
+|         | empty     |        |
+|         | text      |        |
 
-```mermaid
-graph TD
-    int1[integer] -->|OK| or2[or]
-    int1 -->|NO| or2
-    or2 -->|OK| t
-    or2 -->|NO| empty2
-    empty2[empty] -->|OK| and21[and]
-    empty2[empty] -->|NO| and21
-    and21 -->|OK| text2
-    and21 -->|NO| f
-    text2[text] -->|OK| or3
-    text2[text] -->|NO| or3
-    or3 -->|OK| t
-    or3 -->|NO| f
-    t(true)
-    f(false)
-```
 
-![](artwork/intertype-hedgelogic.pdf)
+
+
+
 
 ### xxx
 
