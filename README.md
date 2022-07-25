@@ -154,7 +154,7 @@ list_of:  list  is list         isnt list
 | ------:   | :-------: | :-----    |
 |           | negative1 | ⬇         |
 |           | integer   | ⬇         |
-| ───────── | OR        | ───⬇⬇⬇─── |
+| ───────── | OR        | ⬇⬇⬇────── |
 |           | optional  |           |
 |           | empty     |           |
 |           | text      |           |
@@ -165,7 +165,7 @@ list_of:  list  is list         isnt list
 | ------:   | :-------: | :-----    |
 | ⬇⬇⬇       | negative1 |           |
 |           | integer   |           |
-| ───────── | OR        | ───────── |
+| ────────⬇ | OR        | ───────── |
 |           | optional  | ⬇         |
 | ⬇⬇⬇       | empty     |           |
 |           | text      |           |
