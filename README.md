@@ -150,16 +150,16 @@ list_of:  list  is list         isnt list
 
 
 
-|  FALSE  |    isa    |  TRUE  |
-| ------: | :-------: | :----- |
-|         | negative1 |        |
-|         |  integer  |        |
-|   ————  |     OR    |  ————  |
-|         |  optional |        |
-|         |   empty   |        |
-|         |    text   |        |
-|---------|-----------|--------|
-|         |       -42 |        |
+| FALSE     | isa       | TRUE      |
+| ------:   | :-------: | :-----    |
+|           | negative1 |           |
+|           | integer   |           |
+| ————      | OR        | ————      |
+|           | optional  |           |
+|           | empty     |           |
+|           | text      |           |
+| ═════════ | ═════════ | ═════════ |
+|           | -42       |           |
 
 
 
