@@ -152,14 +152,14 @@ list_of:  list  is list         isnt list
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
-|           | negative1 |           |
-|           | integer   |           |
-| ───────── | OR        | ───────── |
+|           | negative1 | ⬇         |
+|           | integer   | ⬇         |
+| ───────── | OR        | ───⬇⬇⬇─── |
 |           | optional  |           |
 |           | empty     |           |
 |           | text      |           |
 | ═════════ | ═════════ | ═════════ |
-|           | -42       |           |
+|           | -42       | TRUE      |
 
 
 
