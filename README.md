@@ -172,6 +172,26 @@ stateDiagram-v2
     FALSE --> [*]
 ```
 
+```mermaid
+graph TD
+    int1[integer] -->|OK| or2[or]
+    int1 -->|NO| or2
+    or2 -->|OK| t
+    or2 -->|NO| empty2
+    empty2[empty] -->|OK| and21[and]
+    empty2[empty] -->|NO| and21
+    and21 -->|OK| text2
+    and21 -->|NO| f
+    text2[text] -->|OK| or3
+    text2[text] -->|NO| or3
+    or3 -->|OK| t
+    or3 -->|NO| f
+    t(true)
+    f(false)
+```
+
+![](artwork/intertype-hedgelogic.pdf)
+
 ### xxx
 
 ```
