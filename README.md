@@ -148,7 +148,10 @@ list_of:  list  is list         isnt list
 ²EM:      Elements Mode
 ```
 
-Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`):
+Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`): Both `isa.negative1 -42` and
+`isa.integer -42` evaluate to `true`; since these terms are implicitly connected with `and`, we must
+evaluate them all to ensure no `false` term occurs; this is what the single triangle ▼ signifies, 'continue
+with next'. When we reach the `or` clause, though, we can short-circuit (▼▼▼) the evaluation and return `true`:
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
@@ -162,25 +165,33 @@ Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`):
 |           | -42       | TRUE      |
 
 
-Schema for `isa.negative1.integer.or.optional.empty.text 'meep'` (`false`):
+Schema for `isa.negative1.integer.or.optional.empty.text 'meep'` (`false`): `'meep'` cannot satisfy
+`negative1` since it is not numeric, so the entire clause fails. We can again short-circuit, but *only up to
+the next or-clause*, symbolized by ▼▼. The next term is `optional`; since all values (including `null` and
+`undefined`) satisfy this constraint, we go to the next term, `empty`; since `'meep'.length` is `4`, this
+term fails, so we have to ▼ advance to the end of the current clause where we encounter the end of the
+hedgerow, so we can return `false`:
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
-| ▼▼▼       | negative1 |           |
+| ▼▼        | negative1 |           |
 |           | integer   |           |
 | ────────▼ | OR        | ───────── |
 |           | optional  | ▼         |
-| ▼▼▼       | empty     |           |
+| ▼▼        | empty     |           |
 |           | text      |           |
 | ═════════ | ═════════ | ═════════ |
 | FALSE     | 'meep'    |           |
 
 
-Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`):
+Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`): `null` is not negative (and, of
+course, not positive either) so we can ▼▼ advance to the next 'gate'; there, `null` does fulfill `optional`
+(like any value) but with the 'special effect' that it causes a global short-circuit, meaning we can return
+`true` right away:
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
-| ▼▼▼       | negative1 |           |
+| ▼▼        | negative1 |           |
 |           | integer   |           |
 | ────────▼ | OR        | ───────── |
 |           | optional  | ▼▼▼       |
@@ -189,9 +200,17 @@ Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`):
 | ═════════ | ═════════ | ═════════ |
 |           | null      | TRUE      |
 
+This short-circuiting behavior of `optional` when seeing a nullish value is peculiar to `optional`; it is
+similar to there only being a single empty exemplar of collections (strings, lists, sets) except applying to
+all types.
 
-
-
+**Note** on `optional`: Optionality is the property of a compund type to be nullable (i.e. replaceable by
+`null` or `undefined`). As such, the types `optional.integer` and `optional.text` have `{ null, undefined }`
+as intersection of their domains, meaning that in the case of their
+disjunction—`isa.optional.integer.or.text`, `isa.integer.or.optional.text` and so on—are indistinguishable:
+all variations will, among (infinitely many) other values accept all of `null`, `undefined`, `1`, `42`,
+`'x'`, `'foobar'` and so on. Because of this one may want to restrict oneself to only allow `optional` as
+the *first* hedge, avoiding constructs like `isa.integer.or.optional.text` as a matter of style.
 
 ### xxx
 
@@ -396,6 +415,9 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     different from `validate.text.integer x`, even if the latter reads non-sensically and can only ever fail
     (because there's no overlap between text values and integer values). Could/should then rule out
     non-sensical hedgerows by other means (i.e. a grammar that states what can go where)
+* **[–]** make the name of the disjunction—by default, `'or'`—configurable
+* **[–]** allow to configure that `optional` shall only applay to `null`; additionaly or alternatively,
+  offer `nullable` as a hedge for the same purpose
 
 ## Is Done
 
