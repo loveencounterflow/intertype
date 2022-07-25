@@ -202,7 +202,9 @@ course, not positive either) so we can ▼▼ advance to the next 'gate'; there,
 
 This short-circuiting behavior of `optional` when seeing a nullish value is peculiar to `optional`; it is
 similar to there only being a single empty exemplar of collections (strings, lists, sets) except applying to
-all types.
+all types: `( isa.empty.text a ) == ( isa.empty.text b )` entails `a == b == ''`; likewise, `(
+isa.optional.$TYPE_A a ) == ( isa.optional.$TYPE_B b )` entails `a == b == ''` *may* imply `a == b == null`,
+so when `a == null`, no other conjunctive constraint may cause the hedgerow to fail.
 
 **Note** on `optional`: Optionality is the property of a compund type to be nullable (i.e. replaceable by
 `null` or `undefined`). As such, the types `optional.integer` and `optional.text` have `{ null, undefined }`
