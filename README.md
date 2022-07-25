@@ -148,31 +148,47 @@ list_of:  list  is list         isnt list
 ²EM:      Elements Mode
 ```
 
-
+Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`):
 
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
-|           | negative1 | ⬇         |
-|           | integer   | ⬇         |
-| ───────── | OR        | ⬇⬇⬇────── |
+|           | negative1 | ▼         |
+|           | integer   | ▼         |
+| ───────── | OR        | ▼▼▼────── |
 |           | optional  |           |
 |           | empty     |           |
 |           | text      |           |
 | ═════════ | ═════════ | ═════════ |
 |           | -42       | TRUE      |
 
+
+Schema for `isa.negative1.integer.or.optional.empty.text 'meep'` (`false`):
+
 | FALSE     | isa       | TRUE      |
 | ------:   | :-------: | :-----    |
-| ⬇⬇⬇       | negative1 |           |
+| ▼▼▼       | negative1 |           |
 |           | integer   |           |
-| ────────⬇ | OR        | ───────── |
-|           | optional  | ⬇         |
-| ⬇⬇⬇       | empty     |           |
+| ────────▼ | OR        | ───────── |
+|           | optional  | ▼         |
+| ▼▼▼       | empty     |           |
 |           | text      |           |
 | ═════════ | ═════════ | ═════════ |
 | FALSE     | 'meep'    |           |
 
-⇟⇩⤋↓▼🔻⏬🔽
+
+Schema for `isa.negative1.integer.or.optional.empty.text -42` (`true`):
+
+| FALSE     | isa       | TRUE      |
+| ------:   | :-------: | :-----    |
+| ▼▼▼       | negative1 |           |
+|           | integer   |           |
+| ────────▼ | OR        | ───────── |
+|           | optional  | ▼▼▼       |
+|           | empty     |           |
+|           | text      |           |
+| ═════════ | ═════════ | ═════════ |
+|           | null      | TRUE      |
+
 
 
 
