@@ -95,21 +95,21 @@ class @Intertype_hedges extends GUY.props.Strict_owner
   ### TAINT tack onto prototype as hidden ###
   _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
     optional: ( x ) ->
-      # debug GUY.trm.reverse GUY.trm.yellow '^optional@453^', rpr x, @
-      return H.signals.true_and_break unless x?
+      # debug GUY.trm.reverse GUY.trm.yellow '^optional@453^', (rpr x), ( not x? ), H.signals.return_true
+      return H.signals.return_true unless x?
       return true
     #.......................................................................................................
-    or: ( x ) -> throw new E.Intertype_ETEMPTBD '^intertype.hedges@2^', "hedge `or` not supposed to be called directly"
+    or:         ( x ) -> x is true
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
     empty:      ( x ) -> ( H.size_of x, null ) is 0
     nonempty:   ( x ) -> ( H.size_of x, null ) isnt 0
     #.......................................................................................................
     list_of:    ( x ) ->
-      return H.signals.false_and_break unless Array.isArray x
+      return H.signals.advance unless Array.isArray x
       return H.signals.process_list_elements
     set_of:     ( x ) ->
-      return H.signals.false_and_break unless x instanceof Set
+      return H.signals.advance unless x instanceof Set
       return H.signals.process_set_elements
     #.......................................................................................................
     positive0:  ( x ) -> x >= 0

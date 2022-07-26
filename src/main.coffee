@@ -8,7 +8,7 @@ GUY                       = require 'guy'
   warn
   urge
   help }                  = GUY.trm.get_loggers 'INTERTYPE'
-{ rpr   }                 = GUY.trm
+{ rpr }                   = GUY.trm
 #...........................................................................................................
 E                         = require './errors'
 H                         = require './helpers'
@@ -34,8 +34,11 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   "if extras is false, default must be an object": \
     ( x ) -> ( x.extras ) or ( @isa.object x.default )
   "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
-  "( @isa.function x.test ) or ( @isa_list_of.function x.test )": \
-    ( x ) -> ( @isa.function x.test ) or ( @isa_list_of.function x.test )
+  "x.test is a function or non-empty list of functions": ( x ) ->
+    return true if @isa.function x.test
+    return false unless @isa_list_of.function x.test
+    return false if x.test.length is 0
+    return true
   "x.groups is a nonempty text or a nonempty list of nonempty texts": ( x ) ->
     return true if @isa.nonempty_text x.groups
     return false unless @isa.list x.groups
@@ -84,21 +87,13 @@ class @Type_cfg extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( hub, cfg ) ->
     ### TAINT ensure type_cfg does not contain `type`, `name` ###
+    ### TAINT do not use `tests.every()` when only 1 test given ###
     super()
     GUY.props.hide @, 'hub', hub
     cfg                   = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
-    cfg.groups            = @_compile_groups cfg.groups
-    if types.isa.list cfg.test then tests = ( f.bind hub for f in cfg.test )
-    else                            tests = [ ( cfg.test.bind hub ), ]
     types.validate.Type_cfg_constructor_cfg cfg
-    #.......................................................................................................
-    if not cfg.extras
-      keys                = ( k for k of cfg.default ).sort()
-      @[ H.signals.keys ] = keys
-      ### TAINT should use sets not arrays ###
-      tests.push ( x ) -> equals ( k for k of x ).sort(), keys
-    test      = { "#{cfg.name}": ( ( x ) => tests.every ( f ) -> f x ) }[ cfg.name ]
-    cfg.test  = new Proxy test, hub._get_hedge_sub_proxy_cfg hub
+    cfg.groups            = @_compile_groups  cfg
+    cfg.test              = new Proxy ( @_compile_test hub, cfg ), hub._get_hedge_sub_proxy_cfg hub
     #.......................................................................................................
     ### TAINT not used by `size_of()` ###
     cfg.size              = 'length' if cfg.isa_collection and not cfg.size?
@@ -108,13 +103,32 @@ class @Type_cfg extends Intertype_abc
     return self = GUY.lft.freeze @
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_groups: ( groups ) ->
+  _compile_test: ( hub, cfg ) ->
+    ### TAINT integrate the below ###
+    # if not cfg.extras
+    #   keys                = ( k for k of cfg.default ).sort()
+    #   @[ H.signals.keys ] = keys
+    #   ### TAINT should use sets not arrays ###
+    #   tests.push ( x ) -> equals ( k for k of x ).sort(), keys
+    test = null
+    if types.isa.list cfg.test
+      unless cfg.test.length is 1
+        tests = ( f.bind hub for f in cfg.test )
+        test  = { "#{cfg.name}": ( ( x ) =>
+          for test in tests
+            return false if ( R = test x ) is false
+            return R unless R is true
+          return true )
+          }[ cfg.name ]
+        return test
+      test = cfg.test[ 0 ]
+    test ?= cfg.test
+    return { "#{cfg.name}": ( ( x ) => test.call hub, x ), }[ cfg.name ]
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_groups: ( cfg ) ->
     warn GUY.trm.reverse "^_compile_groups@1^ should validate groups"
-    R = if ( types.isa.text groups ) then groups.split /\s*,\s*/ else groups
-    # for group in R
-    #   continue if GUY.props.has @hub._hedges.hedgepaths, group
-    #   throw new E.Intertype_ETEMPTBD '^intertype/Type_cfg^', "unknown hedge group #{rpr group}"
-    return R
+    return if ( types.isa.text cfg.groups ) then cfg.groups.split /\s*,\s*/ else cfg.groups
 
 #===========================================================================================================
 class @Intertype extends Intertype_abc
@@ -220,50 +234,72 @@ class @Intertype extends Intertype_abc
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _isa: ( hedges..., type, x ) ->
+  _isa: ( hedges..., x ) ->
+    debug '^423-1^',  GUY.trm.reverse [ hedges..., x, ]
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
+    advance         = false
+    R               = true
+    #.......................................................................................................
     loop
       hedge_idx++
       break if hedge_idx > last_hedge_idx
       hedge = hedges[ hedge_idx ]
-      switch R = @_test_hedge hedge, x
-        when true                       then null
-        when H.signals.true_and_break   then return true
-        when H.signals.false_and_break  then return false
-        when false                      then return false
-        when H.signals.process_list_elements, H.signals.process_set_elements
-          tail_hedges = hedges[ hedge_idx + 1 .. ]
-          for e from x
-            unless @_isa tail_hedges..., type, e
-              return false
-          return true
-        else
-          throw new E.Intertype_ETEMPTBD '^intertype@1^', \
-            "illegal return value from `_test_hedge()`: #{rpr type}"
-    #.......................................................................................................
-    unless ( type_cfg = GUY.props.get @registry, type, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
-    verdict = type_cfg.test x
-    return @_protocol_isa { term: type, x, value: H.signals.nothing, verdict, }
-
-  #---------------------------------------------------------------------------------------------------------
-  _test_hedge: ( hedge, x ) ->
-    unless ( hedgetest = GUY.props.get @_hedges._hedgemethods, hedge, null )?
+      #.....................................................................................................
+      if advance
+        continue unless hedge is 'or'
+      #.....................................................................................................
+      if hedge is 'or'
+        debug '^423-2^', GUY.trm.gold ( GUY.trm.reverse rpr hedge ), GUY.trm.truth R
+        return R if R
+        R = true
+        continue
+      #.....................................................................................................
       unless ( type_cfg = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge or type #{rpr hedge}"
-      hedgetest = type_cfg.test
-    #.......................................................................................................
-    switch R = hedgetest.call @, x
-      when H.signals.true_and_break         then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
-      when H.signals.false_and_break        then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
-      when false                            then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: false, }
-      when true                             then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
-      when H.signals.process_list_elements  then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
-      when H.signals.process_set_elements   then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
-    #.......................................................................................................
-    throw new E.Intertype_internal_error '^intertype@1^', \
-      "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
+      #.....................................................................................................
+      result = type_cfg.test.call @, x
+      debug '^423-3^', type_cfg.test, GUY.trm.gold ( GUY.trm.reverse rpr [ hedge, x, result, ] )
+      switch result
+        when H.signals.return_true            then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+        # when H.signals.advance                then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+        # when H.signals.process_list_elements  then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+        # when H.signals.process_set_elements   then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+        when false
+          @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: false, }
+          advance = true
+          R       = false
+          continue
+        when true
+          @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+          continue
+      #.....................................................................................................
+      throw new E.Intertype_internal_error '^intertype@1^', \
+        "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
+
+      # urge '^423-4^', result, R = R and result
+      # return R if R
+    return R
+    #   switch R = @_test_hedge hedge, x
+    #     when true                       then verdict = verdict and true
+    #     when H.signals.return_true      then return true
+    #     when H.signals.advance          then return false
+    #     when false                      then return false
+    #     when H.signals.process_list_elements, H.signals.process_set_elements
+    #       tail_hedges = hedges[ hedge_idx + 1 .. ]
+    #       for e from x
+    #         unless @_isa tail_hedges..., type, e
+    #           return false
+    #       return true
+    #     else
+    #       throw new E.Intertype_ETEMPTBD '^intertype@1^', \
+    #         "illegal return value from `_test_hedge()`: #{rpr type}"
+    # #.......................................................................................................
+    # unless ( type_cfg = GUY.props.get @registry, type, null )?
+    #   throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
+    # verdict = type_cfg.test x
+    # return @_protocol_isa { term: type, x, value: H.signals.nothing, verdict, }
+
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ({ term, x, value, verdict }) ->
@@ -276,7 +312,7 @@ class @Intertype extends Intertype_abc
     else
       groups  = null
       src     = null
-    debug GUY.trm.gold '^_protocol_isa@1^', { term, groups, x, value, verdict, src, }
+    # debug GUY.trm.gold '^_protocol_isa@1^', { term, groups, x, value, verdict, src, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
