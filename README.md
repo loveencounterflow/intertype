@@ -214,6 +214,20 @@ other values accept all of `null`, `undefined`, `1`, `42`, `'x'`, `'foobar'` and
 may want to restrict oneself to only allow `optional` as the *first* hedge, avoiding constructs like
 `isa.integer.or.optional.text` as a matter of style.
 
+Schema for `isa.nonempty.text.or.list_of.nonempty.text [ 'helo', 'world', ]` (`true`):
+
+| FALSE     | isa                  | TRUE      |
+| ------:   | :-------:            | :-----    |
+|           | nonempty             | ▼         |
+| ▼▼        | text                 |           |
+| ────────▼ | OR                   | ───────── |
+|           | list_of              | ▼         |
+|           | Ⓔ nonempty           | ▼         |
+|           | Ⓔ text               | ▼         |
+| ═════════ | ═════════            | ═════════ |
+|           | [ 'helo', 'world', ] | TRUE      |
+
+
 ### xxx
 
 ```
@@ -420,6 +434,8 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** make the name of the disjunction—by default, `'or'`—configurable
 * **[–]** allow to configure that `optional` shall only applay to `null`; additionaly or alternatively,
   offer `nullable` as a hedge for the same purpose
+* **[–]** consider to change `list_of`, `set_of` into `list.of`, `set.of`, allow for all collections
+  (`text.of`, `object.of`, `map.of`)
 
 ## Is Done
 
