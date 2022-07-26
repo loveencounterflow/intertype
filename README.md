@@ -67,7 +67,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   ```coffee
   test: ( x ) ->
     return false unless isa.optional  x # `optional x` is satisfied if `x` is `undefined` or `null`, otherwise go on
-    return false unless isa.nonempty  x # `nonemtpy x` is true if `x` contains at least one element
+    return false unless isa.nonempty  x # `nonempty x` is true if `x` contains at least one element
     return false unless isa.list      x # `list_of...` tests whether `x` is a list, ...
     for each e in x:      # ... and then applies the rest of the hedgerow to each of its elements:
       return false unless isa.optional  e # this `optional` clause is run against each element, so list may have `null` elements
@@ -214,7 +214,14 @@ other values accept all of `null`, `undefined`, `1`, `42`, `'x'`, `'foobar'` and
 may want to restrict oneself to only allow `optional` as the *first* hedge, avoiding constructs like
 `isa.integer.or.optional.text` as a matter of style.
 
-Schema for `isa.nonempty.text.or.list_of.nonempty.text [ 'helo', 'world', ]` (`true`):
+Schema for `isa.nonempty.text.or.list_of.nonempty.text [ 'helo', 'world', ]` (`true`): `nonempty` gives
+`true` for `[ 'helo', 'world', ]`, but since this is a `list` rather than a `text`, the first clause fails
+nonetheless. Next up is `list_of`, which first calls `isa.list [ 'helo', 'world', ]`; that being true, it
+then switches to element mode, meaning that rather than applaying the remaining tests against the argument
+passed in (the list), they will be applied to each *element* of the collection; this is here symbolized by
+`∈ nonempty` and `∈ text`; in total, four tests will be performed: `isa.nonempty 'helo'`, `isa.text 'helo'`,
+`isa.nonempty 'world'`, and `isa.text 'world'`, all of which return `true`, which leads to the entire
+compound type being satisfied:
 
 | FALSE     | isa                  | TRUE      |
 | ------:   | :-------:            | :-----    |
@@ -226,6 +233,21 @@ Schema for `isa.nonempty.text.or.list_of.nonempty.text [ 'helo', 'world', ]` (`t
 |           | ∈ text               | ▼         |
 | ═════════ | ═════════            | ═════════ |
 |           | [ 'helo', 'world', ] | TRUE      |
+
+Observe that in a compound type, once the mode has been switched to  element testing mode `∈`, there's no
+going back, so `isa.list_of.text.or.integer` is fundamentally different from `isa.integer.or.list_of.text`:
+the first will be true for all lists that contain nothing but strings and integer numbers, the second will
+be true for all values that are either an integer or a list of zero or more strings. This is a shortcoming
+of the current algorithm and may be fixed in the future; currently, there's no way to write `(
+isa.set_of.text x ) or ( isa.list_of.text x )` in a single go. Should you need such a type, it will probably
+be best to give the type a name, as in
+
+```coffee
+declare.set_or_list test: ( x ) -> ( isa.set_of.text x ) or ( isa.list_of.text x )
+...
+isa.nonempty.set_or_list [ 'a', 'b', ]  # true
+isa.set_or_list.or.integer 123          # true
+```
 
 
 ### xxx
