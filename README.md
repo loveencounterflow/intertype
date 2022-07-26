@@ -222,8 +222,8 @@ Schema for `isa.nonempty.text.or.list_of.nonempty.text [ 'helo', 'world', ]` (`t
 | ▼▼        | text                 |           |
 | ────────▼ | OR                   | ───────── |
 |           | list_of              | ▼         |
-|           | Ⓔ nonempty           | ▼         |
-|           | Ⓔ text               | ▼         |
+|           | ∈ nonempty           | ▼         |
+|           | ∈ text               | ▼         |
 | ═════════ | ═════════            | ═════════ |
 |           | [ 'helo', 'world', ] | TRUE      |
 
