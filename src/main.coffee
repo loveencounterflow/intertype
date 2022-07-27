@@ -268,7 +268,6 @@ class @Intertype extends Intertype_abc
           if hedge_idx is last_hedge_idx
             throw new E.Intertype_ETEMPTBD '^intertype.isa@2^', \
               "hedgerow cannot end with `of`, must be succeeded by hedge"
-          ### TAINT check for preceding type being a collection? ###
           # element_mode = true
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
