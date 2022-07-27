@@ -214,6 +214,13 @@ class @Intertype extends Intertype_abc
         return target.apply       if key is 'apply'
         self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        #...................................................................................................
+        ### check for preceding type being iterable when building hedgerow with `of`: ###
+        if key is 'of'
+          unless self.groups.collection.has target.name
+            throw new E.Intertype_ETEMPTBD '^intertype.isa@2^', \
+              "expected type before `of` to be a collection, got #{rpr target.name}"
+        #...................................................................................................
         f = { "#{key}": ( x ) ->
           return self[ self.state.method ] self.state.hedges..., x
           }[ key ]
