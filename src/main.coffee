@@ -237,11 +237,13 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
+    debug '^423-1^',  GUY.trm.reverse [ hedges..., x, ]
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
     advance         = false
     is_terminal     = false
     R               = true
+    # element_mode    = false
     #.......................................................................................................
     loop
       hedge_idx++
@@ -254,9 +256,22 @@ class @Intertype extends Intertype_abc
         continue unless hedge is 'or'
       advance = false
       #.....................................................................................................
-      if hedge is 'or'
-        R = true
-        continue
+      switch hedge
+        #...................................................................................................
+        when 'of'
+          if hedge_idx is 0
+            throw new E.Intertype_ETEMPTBD '^intertype@1^', "hedgerow cannot start with `of`, must be preceded by collection name"
+          if hedge_idx is last_hedge_idx
+            throw new E.Intertype_ETEMPTBD '^intertype@1^', "hedgerow cannot end with `of`, must be succeeded by hedge"
+          ### TAINT check for preceding type being a collection? ###
+          # element_mode = true
+          for element from x
+            return false if ( @_isa hedges[ hedge_idx + 1 .. ], element ) is false
+          return true
+        #...................................................................................................
+        when 'or'
+          R = true
+          continue
       #.....................................................................................................
       unless ( type_cfg = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge or type #{rpr hedge}"
