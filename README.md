@@ -10,6 +10,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 - [InterType](#intertype)
   - [Motivation](#motivation)
+  - [Contracts of Type Tests and the Verbs `isa`, `validate`](#contracts-of-type-tests-and-the-verbs-isa-validate)
   - [Hedgerows](#hedgerows)
     - [Diagram](#diagram)
     - [xxx](#xxx)
@@ -34,6 +35,15 @@ A JavaScript type checker with helpers to implement own types and do object shap
 * most of the time used to perform a 'lower bounds' check of Plain Old Dictionaries (objects), i.e. objects
   must satisfy all key/constraint checks of a given type declaration, but object may have additional
   key/value pairs
+
+## Contracts of Type Tests and the Verbs `isa`, `validate`
+
+* A type test (TT) is a function that accepts a single argument and returns a boolean.
+* A TT is not allowed to throw an exception or return anything else but `true` or `false`.
+* However, when called in the context of a hedgerow as in `isa.collection.of.type x`, an exception may be
+  thrown, e.g. when `of` is preceded by a non-iterable type name (cf the non-sensical
+  `isa.integer.of.integer 42`) or when a tyxpe name is altogether unknown. This is not the type test, this
+  is the verb `isa` complaining about a malformed chain of type tests.
 
 ## Hedgerows
 
