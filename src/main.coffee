@@ -268,8 +268,13 @@ class @Intertype extends Intertype_abc
           ### TAINT check for preceding type being a collection? ###
           # element_mode = true
           tail_hedges = hedges[ hedge_idx + 1 .. ]
-          for element from x
-            return false if ( @_isa tail_hedges..., element ) is false
+          try
+            for element from x
+              return false if ( @_isa tail_hedges..., element ) is false
+          catch error
+            throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
+            throw new E.Intertype_ETEMPTBD '^intertype.isa@3^', \
+              "`of` must be preceded by collection name, got #{rpr hedges[ hedge_idx - 1 ]}"
           return true
         #...................................................................................................
         when 'or'
