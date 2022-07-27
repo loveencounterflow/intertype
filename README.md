@@ -44,6 +44,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 * A type test (TT) is a function that accepts a single argument and returns a boolean.
 * A TT is not allowed to throw an exception or return anything else but `true` or `false`.
+* An exception may be made when a TT is called with more than one or zero arguments
 
 ### `isa`
 
