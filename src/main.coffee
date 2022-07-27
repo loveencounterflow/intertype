@@ -235,7 +235,6 @@ class @Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
-    debug '^423-1^',  GUY.trm.reverse [ hedges..., x, ]
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
     advance         = false
@@ -245,20 +244,15 @@ class @Intertype extends Intertype_abc
     loop
       hedge_idx++
       if hedge_idx > last_hedge_idx
-        debug '^423-1^', "reached end of hedgerow", R
         return R
       hedge       = hedges[ hedge_idx ]
       is_terminal = ( hedges[ hedge_idx + 1 ] is 'or' ) or ( hedge_idx is last_hedge_idx )
       #.....................................................................................................
       if advance
-        debug '^423-1^', "advance -> continue"
         continue unless hedge is 'or'
-      debug '^423-1^', "end of advance" if advance
       advance = false
       #.....................................................................................................
       if hedge is 'or'
-        debug '^423-2^', GUY.trm.gold ( GUY.trm.reverse rpr hedge ), GUY.trm.truth R
-        # return R if R
         R = true
         continue
       #.....................................................................................................
@@ -266,7 +260,6 @@ class @Intertype extends Intertype_abc
         throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
       result = type_cfg.test.call @, x
-      debug '^423-3^', type_cfg.test, GUY.trm.gold ( GUY.trm.reverse rpr [ hedge, x, result, ] )
       switch result
         when H.signals.return_true
           return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
@@ -280,35 +273,13 @@ class @Intertype extends Intertype_abc
           continue
         when true
           @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
-          debug '^324^', is_terminal
           return true if is_terminal
           continue
       #.....................................................................................................
       throw new E.Intertype_internal_error '^intertype@1^', \
         "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
-
-      # urge '^423-4^', result, R = R and result
-      # return R if R
+    #.......................................................................................................
     return R
-    #   switch R = @_test_hedge hedge, x
-    #     when true                       then verdict = verdict and true
-    #     when H.signals.return_true      then return true
-    #     when H.signals.advance          then return false
-    #     when false                      then return false
-    #     when H.signals.process_list_elements, H.signals.process_set_elements
-    #       tail_hedges = hedges[ hedge_idx + 1 .. ]
-    #       for e from x
-    #         unless @_isa tail_hedges..., type, e
-    #           return false
-    #       return true
-    #     else
-    #       throw new E.Intertype_ETEMPTBD '^intertype@1^', \
-    #         "illegal return value from `_test_hedge()`: #{rpr type}"
-    # #.......................................................................................................
-    # unless ( type_cfg = GUY.props.get @registry, type, null )?
-    #   throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
-    # verdict = type_cfg.test x
-    # return @_protocol_isa { term: type, x, value: H.signals.nothing, verdict, }
 
 
   #---------------------------------------------------------------------------------------------------------
