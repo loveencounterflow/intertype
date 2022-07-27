@@ -476,6 +476,9 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   offer `nullable` as a hedge for the same purpose
 * **[–]** consider to change `list_of`, `set_of` into `list.of`, `set.of`, allow for all collections
   (`text.of`, `object.of`, `map.of`)
+* **[–]** reconsider role of groups in type declarations
+  * **[–]** change `collection` to `iterable`, b/c their distinguishing mark is that they can be iterated
+    over by virtue of `x[ Symbol.iterator ]` returning a function
 
 ## Is Done
 
