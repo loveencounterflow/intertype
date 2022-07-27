@@ -277,7 +277,7 @@ class @Intertype extends Intertype_abc
           continue
       #.....................................................................................................
       unless ( type_cfg = GUY.props.get @registry, hedge, null )?
-        throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown hedge or type #{rpr hedge}"
+        throw new E.Intertype_ETEMPTBD '^intertype.isa@3^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
       result = type_cfg.test.call @, x
       switch result
