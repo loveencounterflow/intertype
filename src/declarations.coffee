@@ -18,12 +18,12 @@
     test:     ( x ) -> ( typeof x ) is 'string'
     default:  ''
   #.........................................................................................................
-  declare.codepoint_text
+  declare.codepoint
     groups:   'other'
     test:     ( x ) -> /^.$/u.test x
     default:  '\x00'
   #.........................................................................................................
-  declare.codepoint_number
+  declare.codepointid
     groups:   'other'
     test:     ( x ) -> @isa.integer x and ( 0x00000 <= x <= 0x1ffff )
     default:  '\x00'
