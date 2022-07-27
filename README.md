@@ -11,12 +11,14 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [InterType](#intertype)
   - [Motivation](#motivation)
   - [Contracts of Type Tests and the Verbs `isa`, `validate`](#contracts-of-type-tests-and-the-verbs-isa-validate)
+    - [Type Tests](#type-tests)
+    - [`isa`](#isa)
+  - [`validate`](#validate)
   - [Hedgerows](#hedgerows)
     - [Diagram](#diagram)
     - [xxx](#xxx)
   - [Intertype `state` Property](#intertype-state-property)
   - [Intertype `create`](#intertype-create)
-  - [Intertype `validate`](#intertype-validate)
   - [Intertype `equals()`](#intertype-equals)
   - [Type Declarations](#type-declarations)
     - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
@@ -38,12 +40,23 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 ## Contracts of Type Tests and the Verbs `isa`, `validate`
 
+### Type Tests
+
 * A type test (TT) is a function that accepts a single argument and returns a boolean.
 * A TT is not allowed to throw an exception or return anything else but `true` or `false`.
+
+### `isa`
+
 * However, when called in the context of a hedgerow as in `isa.collection.of.type x`, an exception may be
   thrown, e.g. when `of` is preceded by a non-iterable type name (cf the non-sensical
   `isa.integer.of.integer 42`) or when a tyxpe name is altogether unknown. This is not the type test, this
   is the verb `isa` complaining about a malformed chain of type tests.
+
+## `validate`
+
+* `validate` is a verb that performs an `isa` test; should that return `false`, an exception is thrown; if
+  it returns `true`, *the tested value* will be returned.
+* convenient for writing postconditions, as in `f = ( a, b ) -> validate.integer a * b`.
 
 ## Hedgerows
 
@@ -358,12 +371,6 @@ types.declare.quantity
 
   and have reference to defaults, assignment from structured value and validation all wrapped up inside
   one call to a single method.
-
-## Intertype `validate`
-
-* a validator is a function that accepts exactly one argument which it will return to signal validation has
-  passed; if argument was found to violate a constraint, an error mmust be thrown
-* convenient for writing postconditions, as in `f = ( a, b ) -> validate.integer a * b`.
 
 ## Intertype `equals()`
 
