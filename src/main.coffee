@@ -313,7 +313,6 @@ class @Intertype extends Intertype_abc
     else
       groups  = null
       src     = null
-    # debug GUY.trm.gold '^_protocol_isa@1^', { term, groups, x, value, verdict, src, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
