@@ -277,7 +277,7 @@ class @Intertype extends Intertype_abc
           continue
       #.....................................................................................................
       unless ( type_cfg = GUY.props.get @registry, hedge, null )?
-        throw new E.Intertype_ETEMPTBD '^intertype.isa@3^', "unknown hedge or type #{rpr hedge}"
+        throw new E.Intertype_ETEMPTBD '^intertype.isa@4^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
       result = type_cfg.test.call @, x
       switch result
@@ -296,7 +296,7 @@ class @Intertype extends Intertype_abc
           return true if is_terminal
           continue
       #.....................................................................................................
-      throw new E.Intertype_internal_error '^intertype.isa@4^', \
+      throw new E.Intertype_internal_error '^intertype.isa@5^', \
         "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
     #.......................................................................................................
     return R
@@ -327,7 +327,7 @@ class @Intertype extends Intertype_abc
     create = null
     #.......................................................................................................
     unless ( type_cfg = GUY.props.get @registry, type, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype@7^', "unknown type #{rpr type}"
+      throw new E.Intertype_ETEMPTBD '^intertype.create@7^', "unknown type #{rpr type}"
     #.......................................................................................................
     ### Try to get `create` method, or, should that fail, the `default` value. Throw error when neither
     `create` nor `default` are given: ###
@@ -361,7 +361,7 @@ class @Intertype extends Intertype_abc
 
   #-----------------------------------------------------------------------------------------------------------
   _walk_hedgepaths: ( cfg ) ->
-    throw new Error "^intertype._walk_hedgepaths@1^ not implemented"
+    throw new Error "^intertype._walk_hedgepaths@9^ not implemented"
     # cfg = { ITYP.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
     # yield from GUY.props.walk_tree @isa, cfg
     # return null
