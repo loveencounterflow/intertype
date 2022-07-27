@@ -267,8 +267,9 @@ class @Intertype extends Intertype_abc
               "hedgerow cannot end with `of`, must be succeeded by hedge"
           ### TAINT check for preceding type being a collection? ###
           # element_mode = true
+          tail_hedges = hedges[ hedge_idx + 1 .. ]
           for element from x
-            return false if ( @_isa hedges[ hedge_idx + 1 .. ], element ) is false
+            return false if ( @_isa tail_hedges..., element ) is false
           return true
         #...................................................................................................
         when 'or'
