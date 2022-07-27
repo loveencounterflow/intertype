@@ -112,9 +112,11 @@ class @Intertype_hedges extends GUY.props.Strict_owner
       return H.signals.advance unless x instanceof Set
       return H.signals.process_set_elements
     #.......................................................................................................
-    positive0:  ( x ) -> x >= 0
-    positive1:  ( x ) -> x >  0
-    negative0:  ( x ) -> x <= 0
-    negative1:  ( x ) -> x <  0
+    even:       ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) is   0
+    odd:        ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) isnt 0
+    positive0:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >= 0 ) )
+    positive1:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >  0 ) )
+    negative0:  ( x ) -> ( x is -Infinity ) or ( ( Number.isFinite x ) and ( x <= 0 ) )
+    negative1:  ( x ) -> ( x is -Infinity ) or ( ( Number.isFinite x ) and ( x <  0 ) )
 
 
