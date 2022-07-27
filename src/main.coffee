@@ -239,19 +239,26 @@ class @Intertype extends Intertype_abc
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
     advance         = false
+    is_terminal     = false
     R               = true
     #.......................................................................................................
     loop
       hedge_idx++
-      break if hedge_idx > last_hedge_idx
-      hedge = hedges[ hedge_idx ]
+      if hedge_idx > last_hedge_idx
+        debug '^423-1^', "reached end of hedgerow", R
+        return R
+      hedge       = hedges[ hedge_idx ]
+      is_terminal = ( hedges[ hedge_idx + 1 ] is 'or' ) or ( hedge_idx is last_hedge_idx )
       #.....................................................................................................
       if advance
+        debug '^423-1^', "advance -> continue"
         continue unless hedge is 'or'
+      debug '^423-1^', "end of advance" if advance
+      advance = false
       #.....................................................................................................
       if hedge is 'or'
         debug '^423-2^', GUY.trm.gold ( GUY.trm.reverse rpr hedge ), GUY.trm.truth R
-        return R if R
+        # return R if R
         R = true
         continue
       #.....................................................................................................
@@ -261,7 +268,8 @@ class @Intertype extends Intertype_abc
       result = type_cfg.test.call @, x
       debug '^423-3^', type_cfg.test, GUY.trm.gold ( GUY.trm.reverse rpr [ hedge, x, result, ] )
       switch result
-        when H.signals.return_true            then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+        when H.signals.return_true
+          return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
         # when H.signals.advance                then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
         # when H.signals.process_list_elements  then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
         # when H.signals.process_set_elements   then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
@@ -272,6 +280,8 @@ class @Intertype extends Intertype_abc
           continue
         when true
           @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+          debug '^324^', is_terminal
+          return true if is_terminal
           continue
       #.....................................................................................................
       throw new E.Intertype_internal_error '^intertype@1^', \
