@@ -260,9 +260,11 @@ class @Intertype extends Intertype_abc
         #...................................................................................................
         when 'of'
           if hedge_idx is 0
-            throw new E.Intertype_ETEMPTBD '^intertype@1^', "hedgerow cannot start with `of`, must be preceded by collection name"
+            throw new E.Intertype_ETEMPTBD '^intertype.isa@1^', \
+              "hedgerow cannot start with `of`, must be preceded by hedge"
           if hedge_idx is last_hedge_idx
-            throw new E.Intertype_ETEMPTBD '^intertype@1^', "hedgerow cannot end with `of`, must be succeeded by hedge"
+            throw new E.Intertype_ETEMPTBD '^intertype.isa@2^', \
+              "hedgerow cannot end with `of`, must be succeeded by hedge"
           ### TAINT check for preceding type being a collection? ###
           # element_mode = true
           for element from x
@@ -293,7 +295,7 @@ class @Intertype extends Intertype_abc
           return true if is_terminal
           continue
       #.....................................................................................................
-      throw new E.Intertype_internal_error '^intertype@1^', \
+      throw new E.Intertype_internal_error '^intertype.isa@4^', \
         "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
     #.......................................................................................................
     return R
@@ -318,20 +320,20 @@ class @Intertype extends Intertype_abc
     return x if @_isa hedges..., type, x
     qtype = [ hedges..., type, ].join @cfg.sep
     xr    = to_width ( rpr x ), 100
-    throw new E.Intertype_ETEMPTBD '^intertype@1^', "not a valid #{qtype}: #{xr}"
+    throw new E.Intertype_ETEMPTBD '^intertype.validate@6^', "not a valid #{qtype}: #{xr}"
 
   #---------------------------------------------------------------------------------------------------------
   _create: ( type, cfg ) ->
     create = null
     #.......................................................................................................
     unless ( type_cfg = GUY.props.get @registry, type, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype@1^', "unknown type #{rpr type}"
+      throw new E.Intertype_ETEMPTBD '^intertype@7^', "unknown type #{rpr type}"
     #.......................................................................................................
     ### Try to get `create` method, or, should that fail, the `default` value. Throw error when neither
     `create` nor `default` are given: ###
     if ( create = GUY.props.get type_cfg, 'create', null ) is null
       if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
-        throw new E.Intertype_ETEMPTBD '^intertype@1^', \
+        throw new E.Intertype_ETEMPTBD '^intertype.create@8^', \
           "type #{rpr type} does not have a `default` value or a `create()` method"
     #.......................................................................................................
     else
@@ -359,7 +361,7 @@ class @Intertype extends Intertype_abc
 
   #-----------------------------------------------------------------------------------------------------------
   _walk_hedgepaths: ( cfg ) ->
-    throw new Error "^_walk_hedgepaths@1^ not implemented"
+    throw new Error "^intertype._walk_hedgepaths@1^ not implemented"
     # cfg = { ITYP.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
     # yield from GUY.props.walk_tree @isa, cfg
     # return null
