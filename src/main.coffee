@@ -215,8 +215,8 @@ class @Intertype extends Intertype_abc
         self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         f = { "#{key}": ( x ) ->
-            return self[ self.state.method ] self.state.hedges..., x
-            }[ key ]
+          return self[ self.state.method ] self.state.hedges..., x
+          }[ key ]
         GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
