@@ -256,6 +256,7 @@ class @Intertype extends Intertype_abc
       is_terminal = ( hedges[ hedge_idx + 1 ] is 'or' ) or ( hedge_idx is last_hedge_idx )
       #.....................................................................................................
       if advance
+        return false if is_terminal
         continue unless hedge is 'or'
       advance = false
       #.....................................................................................................
