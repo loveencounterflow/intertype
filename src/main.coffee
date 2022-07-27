@@ -13,6 +13,7 @@ GUY                       = require 'guy'
 E                         = require './errors'
 H                         = require './helpers'
 HEDGES                    = require './hedges'
+DECLARATIONS              = require './declarations'
 ITYP                      = @
 types                     = new ( require 'intertype-legacy' ).Intertype()
 @defaults                 = {}
@@ -156,6 +157,7 @@ class @Intertype extends Intertype_abc
     @_register_groups()
     @_register_hedges()
     #.......................................................................................................
+    DECLARATIONS._provisional_declare_basic_types @
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
