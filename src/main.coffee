@@ -57,6 +57,9 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   extras:           true
 
 #-----------------------------------------------------------------------------------------------------------
+types.declare 'Intertype_iterable', ( x ) -> x? and x[ Symbol.iterator ]?
+
+#-----------------------------------------------------------------------------------------------------------
 types.declare 'Intertype_constructor_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
