@@ -33,6 +33,12 @@
     test:     ( x ) -> Array.isArray x
     default:  ''
   #.........................................................................................................
+  declare.set
+    groups:   'collection'
+    test:     ( x ) -> x instanceof Set
+    # default:  ''
+    create:   ( cfg = [] ) -> new Set cfg
+  #.........................................................................................................
   declare.integer
     groups:   'number'
     test:     ( x ) -> Number.isInteger x
