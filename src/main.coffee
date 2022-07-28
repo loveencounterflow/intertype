@@ -183,6 +183,8 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   ### TAINT ideally would put this stuff elsewhere ###
   _get_hedge_base_proxy_cfg: ( self, method_name ) ->
+    # _method_name  = method_name
+    # _method_name  = "_#{method_name}" unless _method_name.startsWith '_'
     #.......................................................................................................
     return
       get: ( target, key ) =>
