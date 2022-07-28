@@ -203,7 +203,6 @@ class @Intertype extends Intertype_abc
         return R
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT ideally would put this stuff elsewhere ###
   _get_hedge_sub_proxy_cfg: ( self ) ->
     return
       get: ( target, key ) =>
