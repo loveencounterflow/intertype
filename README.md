@@ -479,6 +479,9 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** reconsider role of groups in type declarations
   * **[–]** change `collection` to `iterable`, b/c their distinguishing mark is that they can be iterated
     over by virtue of `x[ Symbol.iterator ]` returning a function
+* **[–]** implement `last_of()`, `first_of()`
+* **[–]** try to centralize hedgerow validation; happens in several places now
+* **[–]** implement aliases
 
 ## Is Done
 
