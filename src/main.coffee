@@ -248,8 +248,16 @@ class @Intertype extends Intertype_abc
     return null
 
   #---------------------------------------------------------------------------------------------------------
+  _validate_hedgerow: ( hedgerow ) ->
+    if ( hedgerow[ 0 ] in [ 'of', 'or', ] ) or ( hedgerow[ hedgerow.length - 1 ] in [ 'of', 'or', ] )
+      xr = rpr hedgerow.join @cfg.sep
+      throw new E.Intertype_ETEMPTBD '^intertype.validate_hedgerow@2^', \
+        "hedgerow cannot begin or end with `of` or `or`, must be surrounded by hedges, got #{xr}"
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
-    debug '^423-1^',  GUY.trm.reverse [ hedges..., x, ]
+    @_validate_hedgerow hedges
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
     advance         = false
@@ -272,9 +280,6 @@ class @Intertype extends Intertype_abc
       switch hedge
         #...................................................................................................
         when 'of'
-          if hedge_idx is last_hedge_idx
-            throw new E.Intertype_ETEMPTBD '^intertype.isa@2^', \
-              "hedgerow cannot end with `of`, must be succeeded by hedge"
           # element_mode = true
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
