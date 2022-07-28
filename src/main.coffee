@@ -198,6 +198,8 @@ class @Intertype extends Intertype_abc
         if key in [ 'of', 'or', ]
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
             "hedgerow cannot start with `#{key}`, must be preceeded by hedge"
+        unless ( GUY.props.get @registry, key, null )?
+          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         if method_name is '_create'
           f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
@@ -223,6 +225,9 @@ class @Intertype extends Intertype_abc
           unless self.groups.collection.has target.name
             throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@2^', \
               "expected type before `of` to be a collection, got #{rpr target.name}"
+        #...................................................................................................
+        unless ( GUY.props.get @registry, key, null )?
+          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
         #...................................................................................................
         f = { "#{key}": ( x ) ->
           return self[ self.state.method ] self.state.hedges..., x
