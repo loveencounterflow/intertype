@@ -217,7 +217,7 @@ class @Intertype extends Intertype_abc
         ### check for preceding type being iterable when building hedgerow with `of`: ###
         if key is 'of'
           unless self.groups.collection.has target.name
-            throw new E.Intertype_ETEMPTBD '^intertype.isa@2^', \
+            throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@2^', \
               "expected type before `of` to be a collection, got #{rpr target.name}"
         #...................................................................................................
         f = { "#{key}": ( x ) ->
