@@ -482,6 +482,8 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** implement `last_of()`, `first_of()`
 * **[–]** try to centralize hedgerow validation; happens in several places now
 * **[–]** implement aliases
+* **[–]** implement `isa`, `validate`, `create` as functions that accept hedgrow, value (i.e. can say both
+  `isa.list.of.integer []` and `isa 'list', 'of', 'integer', []`, maybe `isa.list.of' 'integer', []`, too)
 
 ## Is Done
 
