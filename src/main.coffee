@@ -194,6 +194,9 @@ class @Intertype extends Intertype_abc
         return target.apply       if key is 'apply'
         self.state.method = method_name
         self.state.hedges = [ key, ]
+        if key in [ 'of', 'or', ]
+          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
+            "hedgerow cannot start with `#{key}`, must be preceeded by hedge"
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         if method_name is '_create'
           f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
@@ -269,9 +272,6 @@ class @Intertype extends Intertype_abc
       switch hedge
         #...................................................................................................
         when 'of'
-          if hedge_idx is 0
-            throw new E.Intertype_ETEMPTBD '^intertype.isa@1^', \
-              "hedgerow cannot start with `of`, must be preceded by hedge"
           if hedge_idx is last_hedge_idx
             throw new E.Intertype_ETEMPTBD '^intertype.isa@2^', \
               "hedgerow cannot end with `of`, must be succeeded by hedge"
