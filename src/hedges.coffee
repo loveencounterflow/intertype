@@ -11,7 +11,6 @@ GUY                       = require 'guy'
 E                         = require './errors'
 H                         = require './helpers'
 L                         = @
-PMATCH                    = require 'picomatch'
 
 
 #===========================================================================================================
@@ -24,39 +23,10 @@ PMATCH                    = require 'picomatch'
 class @Intertype_hedges extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
-  @catchall_group: 'other'
-  @hedges: GUY.lft.freeze []
-
-  #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
     @cfg        = { L.defaults.combinator_cfg..., cfg..., }
-    # @hedgepaths = new GUY.props.Strict_owner()
-    # for groupname from @_get_groupnames()
-    #   compiled_hedges           = @_compile_hedges groupname, @constructor.hedges
-    #   hedgepaths                = @get_hedgepaths compiled_hedges
-    #   @hedgepaths[ groupname ]  = @_reduce_hedgepaths hedgepaths
     return undefined
-
-  #---------------------------------------------------------------------------------------------------------
-  _combine: ( terms ) => ( ( v for _, v of x ) for x in combinate terms )
-
-  #---------------------------------------------------------------------------------------------------------
-  _compile_hedges: ( groupname, hedges ) ->
-    R               = []
-    catchall_group  = @constructor.catchall_group
-    for hedge in hedges
-      unless catchall_group in hedge.groups
-        continue unless groupname in hedge.groups
-      target = []
-      R.push target
-      for termgroup in hedge.terms
-        # continue if termgroup? and @_has_conflicting_hedge_matchers
-        if Array.isArray termgroup
-          target.splice target.length - 1, 0, ( @get_hedgepaths termgroup )...
-        else
-          target.push termgroup
-    return R
 
   #---------------------------------------------------------------------------------------------------------
   get_hedgepaths: ( compiled_hedges ) ->
@@ -71,25 +41,6 @@ class @Intertype_hedges extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   _match_hedgepath: ( hedgepath, globpattern ) -> PMATCH.isMatch hedgepath, globpattern
-  _get_groupnames: -> GUY.lft.freeze new Set ( h.groups for h in @constructor.hedges ).flat()
-
-  #---------------------------------------------------------------------------------------------------------
-  @hedges: GUY.lft.freeze [
-    # { terms: [ null, ],                                                     groups: [ 'bottom',       ], }
-    { terms: [ null, 'optional', ],                                         groups: [ 'other',        ], }
-    { terms: [
-      null,
-      [ [ null, 'empty', 'nonempty', ]
-        [ 'list_of', 'set_of', ]
-        [ null, 'optional', ]
-        ], ],                                                               groups: [ 'other',        ], }
-    { terms: [ null, 'empty', 'nonempty', ],                                groups: [ 'collection',   ], }
-    { terms: [ null, 'positive0', 'positive1', 'negative0', 'negative1', ], groups: [ 'number',       ], }
-    ]
-
-  # #---------------------------------------------------------------------------------------------------------
-  # @groups_of_groups:
-  #   collection:       [ ]
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
