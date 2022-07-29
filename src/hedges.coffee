@@ -105,12 +105,6 @@ class @Intertype_hedges extends GUY.props.Strict_owner
     empty:      ( x ) -> ( H.size_of x, null ) is 0
     nonempty:   ( x ) -> ( H.size_of x, null ) isnt 0
     #.......................................................................................................
-    list_of:    ( x ) ->
-      return H.signals.advance unless Array.isArray x
-      return H.signals.process_list_elements
-    set_of:     ( x ) ->
-      return H.signals.advance unless x instanceof Set
-      return H.signals.process_set_elements
     #.......................................................................................................
     even:       ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) is   0
     odd:        ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) isnt 0
