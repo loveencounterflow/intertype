@@ -60,6 +60,10 @@
     test:       ( x ) -> ( Number.isFinite x ) or ( typeof x is 'bigint' )
     default:    0
   #.........................................................................................................
+  declare.float
+    test:     ( x ) -> Number.isFinite x
+    default:  0
+  #.........................................................................................................
   declare.bigint
     test:       ( x ) -> typeof x is 'bigint'
     default:    0n
