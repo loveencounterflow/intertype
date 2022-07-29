@@ -5,7 +5,6 @@
   { declare } = hub
   #.........................................................................................................
   declare.null
-    # groups:   'bottom'
     test:     ( x ) -> x is null
     default:  null
   #.........................................................................................................
@@ -14,43 +13,39 @@
     default:  false
   #.........................................................................................................
   declare.text
-    groups:   'collection'
+    collection: true
     test:     ( x ) -> ( typeof x ) is 'string'
     default:  ''
   #.........................................................................................................
   declare.codepoint
-    groups:   'other'
     test:     ( x ) -> /^.$/u.test x
     default:  '\x00'
   #.........................................................................................................
   declare.codepointid
-    groups:   'other'
     test:     ( x ) -> @isa.integer x and ( 0x00000 <= x <= 0x1ffff )
     default:  '\x00'
   #.........................................................................................................
   declare.list
-    groups:   'collection'
+    collection: true
     test:     ( x ) -> Array.isArray x
     default:  ''
   #.........................................................................................................
   declare.set
-    groups:   'collection'
+    collection: true
     test:     ( x ) -> x instanceof Set
     # default:  ''
     create:   ( cfg = [] ) -> new Set cfg
   #.........................................................................................................
   declare.integer
-    groups:   'number'
     test:     ( x ) -> Number.isInteger x
     default:  0
   #.........................................................................................................
   declare.negatable # numeric? numeral?
-    groups:   'number'
     test:     ( x ) -> ( typeof x ) is ( typeof -x )
     default:  0
   #.........................................................................................................
   declare.sized
-    groups:   'collection'
+    collection: true
     test:     ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
   #.........................................................................................................
   declare.iterable
