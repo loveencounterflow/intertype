@@ -433,11 +433,8 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** implement hedges `odd`, `even`; valid for `float`s but do imply those numbers will be integer
 * **[–]** implement diagnostic API, primarily to check for existence of hedged types; allow to distinguish
   between standard types and user-defined types
-* **[–]** "a group is a set of types. A group's `groups` property is itself, so group `collection` is
-  groupmember of group `collection`, meaning there are tests for `isa.collection`, `isa.empty.collection`
-  and so on."
 * **[–]** special types:
-  * groups
+  * <del>groups</del>
   * hedges
   * existential / quantified:
     * `anything`:  `( x ) -> true`
@@ -445,9 +442,9 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
     * `nothing`:   `( x ) -> not x?`
 * **[–]** allow to derive types, including derivation of defaults
 * **[–]** numeric types:
-  * **[–]** rename group `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does
-    not cover imaginary, complex numbers. Observe we now have `BigInt`s
-    pre-generating literally hundreds of hedgpath chains
+  * **[–]** rename `number` to `real`? to avoid conflict with JS `Number` and to clarify that this does not
+    cover imaginary, complex numbers. Observe we now have `BigInt`s pre-generating literally hundreds of
+    hedgpath chains
   * **[–]** consider `float` (includes `infinity`) vs `ffloat` ('**f**inite' float, excludes `infinity`)
     (longer name, more restricted)
 * **[–]** salvage
@@ -478,9 +475,6 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   offer `nullable` as a hedge for the same purpose
 * **[–]** consider to change `list_of`, `set_of` into `list.of`, `set.of`, allow for all collections
   (`text.of`, `object.of`, `map.of`)
-* **[–]** reconsider role of groups in type declarations
-  * **[–]** change `collection` to `iterable`, b/c their distinguishing mark is that they can be iterated
-    over by virtue of `x[ Symbol.iterator ]` returning a function
 * **[–]** implement `last_of()`, `first_of()`
 * **[–]** try to centralize hedgerow validation; happens in several places now
 * **[–]** implement aliases
@@ -521,3 +515,11 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[+]** <del>eliminate hedgepaths that end in a hedge instead of in a type (or group). So we don't allow to
   test for `empty x`, only for `empty.collection x`, `empty.any x` &c</del>
 * **[+]** flatten type entries in registry to be simple `Type_cfg` instances
+* **[+]** <del>"a group is a set of types. A group's `groups` property is itself, so group `collection` is
+  groupmember of group `collection`, meaning there are tests for `isa.collection`, `isa.empty.collection`
+  and so on."</del>
+* **[+]** <del>reconsider role of groups in type declarations</del> <ins>removed groups altogether, keeping
+  boolean property `collection`</ins>
+* **[+]** <del>change `collection` to `iterable`, b/c their distinguishing mark is that they can be iterated
+  over by virtue of `x[ Symbol.iterator ]` returning a function</del> <ins>make `collection` a boolean
+  property of type configuration, implement type `iterable`</ins>
