@@ -136,6 +136,7 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedges()
+    GUY.props.hide @, '_collections', new Set()
     GUY.props.hide @, '_signals', H.signals
     # GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'isa',      new Proxy {}, @_get_hedge_base_proxy_cfg @, '_isa'
@@ -204,7 +205,7 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
         #...................................................................................................
         ### check for preceding type being iterable when building hedgerow with `of`: ###
-        if ( key is 'of' ) and ( not type_cfg.collection )
+        if ( key is 'of' ) and ( not @_collections.has target.name )
           throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@2^', \
             "expected type before `of` to be a collection, got #{rpr target.name}"
         #...................................................................................................
@@ -223,6 +224,7 @@ class @Intertype extends Intertype_abc
     @registry[  type ]  = type_cfg
     @isa[       type ]  = type_cfg.test
     @validate[  type ]  = new Proxy ( ( x ) => @_validate type, x ), @_get_hedge_sub_proxy_cfg @
+    @_collections.add type if type_cfg.collection
     return null
 
   #---------------------------------------------------------------------------------------------------------
