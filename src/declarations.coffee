@@ -19,6 +19,9 @@
   declare.boolean
     test:       ( x ) -> ( x is true ) or ( x is false )
     default:    false
+  declare.bottom
+    test:       ( x ) -> ( x is undefined ) or ( x is null )
+    default:    undefined
   #.........................................................................................................
   declare.text
     collection: true
@@ -55,6 +58,9 @@
   declare.object
     test:       ( x ) -> x? and ( typeof x ) is 'object'
     default:    {}
+  declare.container
+    test:       ( x ) -> ( typeof x ) isnt 'string' and ( @iterable x ) and ( @sized x )
+    default:    []
 
   #---------------------------------------------------------------------------------------------------------
   # Numeric Types
