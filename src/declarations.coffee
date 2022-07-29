@@ -65,17 +65,13 @@
     default:    0
   #.........................................................................................................
   declare.even default: 0, test: ( x ) ->
-    if ( Number.isInteger x )
-      return ( x % 2  ) is   0
-    else if typeof x is 'bigint'
-      return ( x % 2n ) is   0n
+    if ( Number.isInteger x )     then return ( x % 2  ) is   0
+    else if typeof x is 'bigint'  then return ( x % 2n ) is   0n
     return false
   #.........................................................................................................
   declare.odd  default: 1, test: ( x ) ->
-    if ( Number.isInteger x )
-      return ( x % 2  ) isnt 0
-    else if typeof x is 'bigint'
-      return ( x % 2n ) isnt 0n
+    if ( Number.isInteger x )     then return ( x % 2  ) isnt 0
+    else if typeof x is 'bigint'  then return ( x % 2n ) isnt 0n
     return false
 
   #.........................................................................................................
