@@ -14,14 +14,14 @@
   declare.undefined
     test:       ( x ) -> x is undefined
     default:    undefined
-
   #.........................................................................................................
-  declare.boolean
-    test:       ( x ) -> ( x is true ) or ( x is false )
-    default:    false
   declare.bottom
     test:       ( x ) -> ( x is undefined ) or ( x is null )
     default:    undefined
+
+
+  #---------------------------------------------------------------------------------------------------------
+  # Textual Types
   #.........................................................................................................
   declare.text
     collection: true
@@ -35,6 +35,9 @@
   declare.codepointid
     test:       ( x ) -> @isa.integer x and ( 0x00000 <= x <= 0x1ffff )
     default:    '\x00'
+
+  #---------------------------------------------------------------------------------------------------------
+  # Container Types
   #.........................................................................................................
   declare.list
     collection: true
@@ -46,6 +49,8 @@
     test:       ( x ) -> x instanceof Set
     create:     ( cfg = [] ) -> new Set cfg
   #.........................................................................................................
+  ### NOTE we use `GUY.props.get() for `sized` but direct property access for `iterable` b/c
+  `GUY.props.Strict_owner` special-cases access to `Symbol.iterator` (allowing it although not set) ###
   declare.sized
     collection: true
     test:       ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
@@ -55,9 +60,6 @@
     test:       ( x ) -> x? and x[ Symbol.iterator ]?
     default:    []
   #.........................................................................................................
-  declare.object
-    test:       ( x ) -> x? and ( typeof x ) is 'object'
-    default:    {}
   declare.container
     test:       ( x ) -> ( typeof x ) isnt 'string' and ( @iterable x ) and ( @sized x )
     default:    []
@@ -95,8 +97,21 @@
     else if typeof x is 'bigint'  then return ( x % 2n ) isnt 0n
     return false
 
+  #---------------------------------------------------------------------------------------------------------
+  # Other Types
+  #.........................................................................................................
+  declare.boolean
+    test:       ( x ) -> ( x is true ) or ( x is false )
+    default:    false
+  #.........................................................................................................
+  declare.object
+    test:       ( x ) -> x? and ( typeof x ) is 'object'
+    default:    {}
+
   #.........................................................................................................
   return null
+
+
 
 
 
