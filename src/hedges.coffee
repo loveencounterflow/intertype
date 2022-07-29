@@ -99,10 +99,8 @@ class @Intertype_hedges extends GUY.props.Strict_owner
     or:         ( x ) -> x is true
     of:         ( x ) -> H.signals.element_mode
     #.......................................................................................................
-    ### TAINT use `length` or `size` or custom method ###
     empty:      ( x ) -> ( H.size_of x, null ) is 0
     nonempty:   ( x ) -> ( H.size_of x, null ) isnt 0
-    #.......................................................................................................
     #.......................................................................................................
     even:       ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) is   0
     odd:        ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) isnt 0
