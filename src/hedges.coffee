@@ -97,6 +97,7 @@ class @Intertype_hedges extends GUY.props.Strict_owner
     optional:   ( x ) -> if x? then true else H.signals.return_true
     #.......................................................................................................
     or:         ( x ) -> x is true
+    of:         ( x ) -> H.signals.element_mode
     #.......................................................................................................
     ### TAINT use `length` or `size` or custom method ###
     empty:      ( x ) -> ( H.size_of x, null ) is 0
