@@ -53,11 +53,8 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
 @signals = GUY.lft.freeze new GUY.props.Strict_owner target:
   return_true:            Symbol 'return_true'
   advance:                Symbol 'advance'
-  element_mode:           Symbol 'element_mode'
-  # process_list_elements:  Symbol 'process_list_elements'
-  # process_set_elements:   Symbol 'process_set_elements'
+  # element_mode:           Symbol 'element_mode'
   nothing:                Symbol 'nothing'
-  keys:                   Symbol 'keys'
 
 #-----------------------------------------------------------------------------------------------------------
 @type_of = ( x ) ->
