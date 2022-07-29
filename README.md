@@ -52,6 +52,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
   thrown, e.g. when a type name is undeclared or `of` is preceded by a non-iterable type name (cf the
   non-sensical `isa.integer.of.integer 42`). This is not the type test, this is the verb `isa` complaining
   about a malformed chain of type tests.
+* It is not allowed to use a name in an `isa` (or `validate` or `create`) hedgrow without that name being
+  `declare`d prior to that.
 
 ## `validate`
 
