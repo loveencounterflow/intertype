@@ -12,6 +12,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Motivation](#motivation)
   - [Contracts of Type Tests and the Verbs `isa`, `validate`](#contracts-of-type-tests-and-the-verbs-isa-validate)
     - [Type Tests](#type-tests)
+    - [`declare`](#declare)
     - [`isa`](#isa)
   - [`validate`](#validate)
   - [Hedgerows](#hedgerows)
@@ -45,6 +46,92 @@ A JavaScript type checker with helpers to implement own types and do object shap
 * A type test (TT) is a function that accepts a single argument and returns a boolean.
 * A TT is not allowed to throw an exception or return anything else but `true` or `false`.
 * An exception may be made when a TT is called with more than one or zero arguments.
+
+### `declare`
+
+* may use property syntax or call with type name as first argument
+* `test` must bei either a function or a list of functions
+* if `test` is a list of functions, those functions will called in the order given when `isa[ type ] x` is
+  invoked; all calls must return `true` or `isa[ type ] x` will evaluate to `false`
+* `test` may be given as last argument or as the `test` property of an implicit or explicit object
+
+```coffee
+types.declare 'array',  ( x ) -> Array.isArray x
+types.declare 'array',  test: ( x ) -> Array.isArray x
+types.declare.array     ( x ) -> Array.isArray x
+types.declare.array     test: ( x ) -> Array.isArray x
+
+types.declare 'array',  collection: true, ( x ) -> Array.isArray x
+types.declare 'array',  collection: true, test: ( x ) -> Array.isArray x
+types.declare.array     collection: true, ( x ) -> Array.isArray x
+types.declare.array     collection: true, test: ( x ) -> Array.isArray x
+```
+
+```coffee
+types.declare.array
+  collection:   true
+  default:      []
+  test:         ( x ) -> Array.isArray x
+```
+
+* other type configuration options and their defaults:
+  * `default:     (N/A)`—value to use when calling `types.create.mytype()`
+  * `create:      null`—function to call for `types.create.mytype()`; if create is given, `default` will not
+    be used (but the `create` function may use it); can pass in a (possibly mandatory) configuration object,
+    e.g. `types.create.quantity { unit: 'meters', }` would make sense to create an object `{ value: 0, unit:
+    'meters', }`
+  * `freeze:      false`—whether `create` should deep-freeze the value
+  * `extras:      true`—whether extraneous object properties are allowed (see below)
+  * `collection:  false`—whether the type should be considered a collection, meaning it can be used with
+    hedges like `empty`, `nonempty`
+
+Like [Clojure spec](https://typedclojure.org)[https://www.youtube.com/watch?v=B_Farscj0hY], InterType
+normally assumes that the contracts of object (or 'structural') types (i.e. 'structs') should be
+'minimally-satisfying', meaning that an object will satisfy a type contract even if it has additional
+properties. As an example, let's define two 2D point types, `open_2d_point` and `closed_2d_point`:
+
+```coffee
+types = new ( require 'intertype' ).Intertype()
+{ isa
+  validate
+  declare
+  create  } = types
+
+declare.open_2d_point
+  default:  { x: 0, y: 0, }
+  test: [
+    ( x ) -> @isa.float x.x
+    ( x ) -> @isa.float x.y
+    ]
+declare.closed_2d_point
+  extras:   false
+  default:  { x: 0, y: 0, }
+  test: [
+    ( x ) -> @isa.float x.x
+    ( x ) -> @isa.float x.y
+    ]
+```
+
+Now we can create instances with `create` and validate them (which in this case is redundant as `create`
+already does that):
+
+```coffee
+o2p = create.open_2d_point()              # { x: 0, y: 0, }
+c2p = create.closed_2d_point { y: 42, }   # { x: 0, y: 42, }
+validate.open_2d_point    o2p             # OK
+validate.closed_2d_point  c2p             # OK
+```
+
+Since neither object is `seal`ed, we are free to add any properties; in the case of the 'open' type (where
+the default setting of `{ extras: true, }` is in effect), we still get past validation. However, the closed
+type does not validate anymore, as the `c2p` object has an extraneous property `z`:
+
+```coffee
+o2p.z = 123
+c2p.z = 123
+validate.open_2d_point    o2p             # OK
+validate.closed_2d_point  c2p             # !!! Validation Error !!!
+```
 
 ### `isa`
 
@@ -480,6 +567,10 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 * **[–]** implement aliases
 * **[–]** implement `isa`, `validate`, `create` as functions that accept hedgrow, value (i.e. can say both
   `isa.list.of.integer []` and `isa 'list', 'of', 'integer', []`, maybe `isa.list.of' 'integer', []`, too)
+* **[–]** currently `isa` &c call instance method `_isa` &c; make it so that `isa` calls `super()` and
+  define effective `isa()` in base class `Intertype_xxxxx extends Intertype_abc`, `Intertype extends
+  Intertype_xxxxx`.
+* **[–]** re-consider `seal`
 
 ## Is Done
 
