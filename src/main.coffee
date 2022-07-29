@@ -40,13 +40,10 @@ types.declare 'Type_cfg_constructor_cfg', tests:
     return false unless @isa_list_of.function x.test
     return false if x.test.length is 0
     return true
-  "x.groups is a nonempty text or a nonempty list of nonempty texts": ( x ) ->
-    return true if @isa.nonempty_text x.groups
-    return false unless @isa.list x.groups
-    return x.groups.every ( e ) => ( @isa.nonempty_text e ) and not ( /[\s,]/ ).test e
+  "x.groups is deprecated": ( x ) -> not x.groups?
+  "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
 #...........................................................................................................
 @defaults.Type_cfg_constructor_cfg =
-  groups:           'other'
   name:             null
   test:             null
   ### `default` omitted on purpose ###
@@ -55,6 +52,7 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   # seal:             false
   freeze:           false
   extras:           true
+  collection:       false
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'Intertype_iterable', ( x ) -> x? and x[ Symbol.iterator ]?
@@ -96,7 +94,6 @@ class @Type_cfg extends Intertype_abc
     GUY.props.hide @, 'hub', hub
     cfg                   = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
     types.validate.Type_cfg_constructor_cfg cfg
-    cfg.groups            = @_compile_groups  cfg
     cfg.test              = new Proxy ( @_compile_test hub, cfg ), hub._get_hedge_sub_proxy_cfg hub
     #.......................................................................................................
     ### TAINT not used by `size_of()` ###
@@ -129,10 +126,6 @@ class @Type_cfg extends Intertype_abc
     test ?= cfg.test
     return { "#{cfg.name}": ( ( x ) => test.call hub, x ), }[ cfg.name ]
 
-  #---------------------------------------------------------------------------------------------------------
-  _compile_groups: ( cfg ) ->
-    warn GUY.trm.reverse "^_compile_groups@1^ should validate groups"
-    return if ( types.isa.text cfg.groups ) then cfg.groups.split /\s*,\s*/ else cfg.groups
 
 #===========================================================================================================
 class @Intertype extends Intertype_abc
@@ -151,28 +144,14 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'declare',  new Proxy ( @_declare.bind @ ), get: ( _, type ) => ( cfg ) => @_declare.call @, type, cfg
     GUY.props.hide @, 'registry', new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'types',    types
-    GUY.props.hide @, 'groups',   {}
     @state =
       data:     null
       method:   null
       hedges:   []
     #.......................................................................................................
-    @_register_groups()
     @_register_hedges()
-    #.......................................................................................................
     DECLARATIONS._provisional_declare_basic_types @
     return undefined
-
-  #---------------------------------------------------------------------------------------------------------
-  _register_groups: ->
-    for group from @_hedges._get_groupnames()
-      @groups[ group ] = new Set()
-      do ( group ) =>
-        @declare group, groups: group, test: ( x ) =>
-          R = @groups[ group ].has @type_of x
-          return @_protocol_isa { term: group, x, value: H.signals.nothing, verdict: R, }
-    GUY.lft.freeze @groups
-    return null
 
   #---------------------------------------------------------------------------------------------------------
   _register_hedges: ->
@@ -221,14 +200,13 @@ class @Intertype extends Intertype_abc
         self.state.hedges.push key
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
-        ### check for preceding type being iterable when building hedgerow with `of`: ###
-        if key is 'of'
-          unless self.groups.collection.has target.name
-            throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@2^', \
-              "expected type before `of` to be a collection, got #{rpr target.name}"
-        #...................................................................................................
-        unless ( GUY.props.get @registry, key, null )?
+        unless ( type_cfg = GUY.props.get @registry, key, null )?
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
+        #...................................................................................................
+        ### check for preceding type being iterable when building hedgerow with `of`: ###
+        if ( key is 'of' ) and ( not type_cfg.collection )
+          throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@2^', \
+            "expected type before `of` to be a collection, got #{rpr target.name}"
         #...................................................................................................
         f = { "#{key}": ( x ) ->
           return self[ self.state.method ] self.state.hedges..., x
@@ -245,13 +223,6 @@ class @Intertype extends Intertype_abc
     @registry[  type ]  = type_cfg
     @isa[       type ]  = type_cfg.test
     @validate[  type ]  = new Proxy ( ( x ) => @_validate type, x ), @_get_hedge_sub_proxy_cfg @
-    for group in type_cfg.groups
-      @_add_type_to_group group, type
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _add_type_to_group: ( group, type ) ->
-    @groups[ group ].add type
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -331,13 +302,11 @@ class @Intertype extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ({ term, x, value, verdict }) ->
     if ( type_cfg = GUY.props.get @registry, term, null )?
-      groups  = type_cfg.groups ? null
       if ( test = GUY.props.get type_cfg, 'test', null )?
         src     = GUY.src.slug_from_simple_function { function: test, fallback: '???', }
       else
         src     = null
     else
-      groups  = null
       src     = null
     return verdict
 
