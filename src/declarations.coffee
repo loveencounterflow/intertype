@@ -44,13 +44,16 @@
     test:     ( x ) -> Number.isInteger x
     default:  0
   #.........................................................................................................
-  declare.iterable
   declare.negatable # numeric? numeral?
     groups:   'number'
     test:     ( x ) -> ( typeof x ) is ( typeof -x )
     default:  0
   #.........................................................................................................
+  declare.sized
     groups:   'collection'
+    test:     ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
+  #.........................................................................................................
+  declare.iterable
     test:     ( x ) -> x? and x[ Symbol.iterator ]?
   #.........................................................................................................
   declare.object
