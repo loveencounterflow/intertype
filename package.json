@@ -23,7 +23,6 @@
     "astring": "^1.8.3",
     "guy": "10.0.0",
     "intertype-legacy": "^7.7.1",
-    "picomatch": "^2.3.1",
     "to-width": "^1.2.0"
   }
 }

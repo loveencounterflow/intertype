@@ -7,7 +7,6 @@ specifiers:
   astring: ^1.8.3
   guy: 10.0.0
   intertype-legacy: ^7.7.1
-  picomatch: ^2.3.1
   to-width: ^1.2.0
 
 dependencies:
@@ -17,7 +16,6 @@ dependencies:
   astring: 1.8.3
   guy: 10.0.0_4prdxtoba2tordf5bhh3dou7hy
   intertype-legacy: 7.7.1
-  picomatch: 2.3.1
   to-width: 1.2.0
 
 packages:
@@ -87,11 +85,6 @@ packages:
 
   /multimix/5.0.0:
     resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
-    dev: false
-
-  /picomatch/2.3.1:
-    resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
-    engines: {node: '>=8.6'}
     dev: false
 
   /string-width/4.2.3:
