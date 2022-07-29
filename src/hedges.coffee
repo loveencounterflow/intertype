@@ -53,8 +53,6 @@ class @Intertype_hedges extends GUY.props.Strict_owner
     empty:      ( x ) -> ( H.size_of x, null ) is 0
     nonempty:   ( x ) -> ( H.size_of x, null ) isnt 0
     #.......................................................................................................
-    even:       ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) is   0
-    odd:        ( x ) -> ( Number.isInteger x ) and ( x %% 2 ) isnt 0
     positive0:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >= 0 ) )
     positive1:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >  0 ) )
     negative0:  ( x ) -> ( x is -Infinity ) or ( ( Number.isFinite x ) and ( x <= 0 ) )

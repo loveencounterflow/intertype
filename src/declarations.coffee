@@ -35,14 +35,6 @@
     test:       ( x ) -> x instanceof Set
     create:     ( cfg = [] ) -> new Set cfg
   #.........................................................................................................
-  declare.integer
-    test:       ( x ) -> Number.isInteger x
-    default:    0
-  #.........................................................................................................
-  declare.negatable # numeric? numeral?
-    test:       ( x ) -> ( typeof x ) is ( typeof -x )
-    default:    0
-  #.........................................................................................................
   declare.sized
     collection: true
     test:       ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
@@ -52,6 +44,40 @@
   #.........................................................................................................
   declare.object
     test:       ( x ) -> x? and ( typeof x ) is 'object'
+
+  #---------------------------------------------------------------------------------------------------------
+  # Numeric Types
+  #.........................................................................................................
+  declare.numeric
+    test:       ( x ) -> ( Number.isFinite x ) or ( typeof x is 'bigint' )
+    default:    0
+  #.........................................................................................................
+  declare.bigint
+    test:       ( x ) -> typeof x is 'bigint'
+    default:    0n
+  #.........................................................................................................
+  declare.integer
+    test:       ( x ) -> Number.isInteger x
+    default:    0
+  #.........................................................................................................
+  declare.negatable # numeric? numeral?
+    test:       ( x ) -> ( typeof x ) is ( typeof -x )
+    default:    0
+  #.........................................................................................................
+  declare.even default: 0, test: ( x ) ->
+    if ( Number.isInteger x )
+      return ( x % 2  ) is   0
+    else if typeof x is 'bigint'
+      return ( x % 2n ) is   0n
+    return false
+  #.........................................................................................................
+  declare.odd  default: 1, test: ( x ) ->
+    if ( Number.isInteger x )
+      return ( x % 2  ) isnt 0
+    else if typeof x is 'bigint'
+      return ( x % 2n ) isnt 0n
+    return false
+
   #.........................................................................................................
   return null
 
