@@ -36,7 +36,7 @@
   declare.list
     collection: true
     test:       ( x ) -> Array.isArray x
-    default:    ''
+    default:    []
   #.........................................................................................................
   declare.set
     collection: true
@@ -46,12 +46,15 @@
   declare.sized
     collection: true
     test:       ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
+    default:    []
   #.........................................................................................................
   declare.iterable
     test:       ( x ) -> x? and x[ Symbol.iterator ]?
+    default:    []
   #.........................................................................................................
   declare.object
     test:       ( x ) -> x? and ( typeof x ) is 'object'
+    default:    {}
 
   #---------------------------------------------------------------------------------------------------------
   # Numeric Types
