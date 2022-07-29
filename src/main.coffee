@@ -106,11 +106,11 @@ class @Type_cfg extends Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _compile_test: ( hub, cfg ) ->
     ### TAINT integrate the below ###
-    # if not cfg.extras
-    #   keys                = ( k for k of cfg.default ).sort()
-    #   @[ H.signals.keys ] = keys
-    #   ### TAINT should use sets not arrays ###
-    #   tests.push ( x ) -> equals ( k for k of x ).sort(), keys
+    if not cfg.extras
+      cfg.test            = [ cfg.test, ] unless types.isa.list cfg.test
+      keys                = ( k for k of cfg.default ).sort()
+      ### TAINT should use sets not arrays ###
+      cfg.test.unshift no_extras = ( x ) => equals ( k for k of x ).sort(), keys
     test = null
     if types.isa.list cfg.test
       unless cfg.test.length is 1
