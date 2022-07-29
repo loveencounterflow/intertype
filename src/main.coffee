@@ -143,6 +143,7 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     GUY.props.hide @, 'cfg',      { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',  new HEDGES.Intertype_hedges()
+    GUY.props.hide @, '_signals', H.signals
     # GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'isa',      new Proxy {}, @_get_hedge_base_proxy_cfg @, '_isa'
     GUY.props.hide @, 'validate', new Proxy {}, @_get_hedge_base_proxy_cfg @, '_validate'
