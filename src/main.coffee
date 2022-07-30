@@ -311,16 +311,9 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     return R
 
-
   #---------------------------------------------------------------------------------------------------------
-  _protocol_isa: ({ term, x, value, verdict }) ->
-    if ( type_cfg = GUY.props.get @registry, term, null )?
-      if ( test = GUY.props.get type_cfg, 'test', null )?
-        src     = GUY.src.slug_from_simple_function { function: test, fallback: '???', }
-      else
-        src     = null
-    else
-      src     = null
+  _protocol_isa: ({ term, x, value, verdict, }) ->
+    urge '^4535^', GUY.trm.reverse { term, x, value, verdict, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------

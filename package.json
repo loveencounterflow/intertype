@@ -17,10 +17,6 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "acorn": "^8.8.0",
-    "acorn-loose": "^8.3.0",
-    "acorn-walk": "^8.2.0",
-    "astring": "^1.8.3",
     "guy": "10.2.0",
     "intertype-legacy": "^7.7.1",
     "to-width": "^1.2.0"
