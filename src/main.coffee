@@ -35,7 +35,10 @@ types.declare 'Type_cfg_constructor_cfg', tests:
   "if extras is false, default must be an object": \
     ( x ) -> ( x.extras ) or ( @isa.object x.default )
   "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
-  "x.test is a function or non-empty list of functions": ( x ) ->
+  ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
+  ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
+  "x.test is an optional function or non-empty list of functions": ( x ) ->
+    return true unless x.test?
     return true if @isa.function x.test
     return false unless @isa_list_of.function x.test
     return false if x.test.length is 0
@@ -105,7 +108,7 @@ class @Type_cfg extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _compile_test: ( hub, cfg ) ->
-    ### TAINT integrate the below ###
+    cfg.test = @_compile_object_as_test hub, cfg unless cfg.test?
     if not cfg.extras
       cfg.test                    = [ cfg.test, ] unless types.isa.list cfg.test
       keys                        = ( k for k of cfg.default ).sort()
@@ -113,8 +116,9 @@ class @Type_cfg extends Intertype_abc
     test = null
     if types.isa.list cfg.test
       unless cfg.test.length is 1
-        tests = ( f.bind hub for f in cfg.test )
-        test  = { "#{cfg.name}": ( ( x ) =>
+        # fn_names  = ( f.name for f in cfg.test )
+        tests     = ( f.bind hub for f in cfg.test )
+        test      = { "#{cfg.name}": ( ( x ) =>
           for test in tests
             return false if ( R = test x ) is false
             return R unless R is true
@@ -123,7 +127,31 @@ class @Type_cfg extends Intertype_abc
         return test
       test = cfg.test[ 0 ]
     test ?= cfg.test
-    return { "#{cfg.name}": ( ( x ) => test.call hub, x ), }[ cfg.name ]
+    return { "#{cfg.name}": ( ( x ) => debug '^455-1^', { test, }; test.call hub, x ), }[ cfg.name ]
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_object_as_test: ( hub, cfg ) ->
+    type  = cfg.name
+    R     = []
+    for key, test of cfg
+      continue unless key.startsWith '$'
+      if types.isa.function test
+        R.push test
+        continue
+      field = key[ 1 .. ]
+      debug '^455-2^', { key, field, }
+      R.push @_test_from_text hub, type, field, test
+    debug '^455-3^', R
+    return R
+
+  #---------------------------------------------------------------------------------------------------------
+  _test_from_text: ( hub, type, field, property_chain ) ->
+    property_chain  = property_chain.split '.'
+    if field is ''
+      name = "#{type}:#{property_chain.join hub.cfg.sep}"
+      return { "#{name}": ( ( x ) -> @_isa property_chain..., x ), }[ name  ]
+    name = "#{type}.#{field}:#{property_chain.join hub.cfg.sep}"
+    return { "#{name}": ( ( x ) -> @_isa property_chain..., x[ name ] ), }[ name ]
 
 
 #===========================================================================================================
@@ -136,7 +164,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
     GUY.props.hide @, '_collections', new Set()
-    GUY.props.hide @, '_signals', H.signals
+    GUY.props.hide @, '_signals',     H.signals
     # GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'isa',          new Proxy {}, @_get_hedge_base_proxy_cfg @, '_isa'
     GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg @, '_validate'
@@ -155,7 +183,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: declare_getter
     #.......................................................................................................
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'types',        types
+    # GUY.props.hide @, 'types',        types
     @state =
       data:     null
       method:   null
