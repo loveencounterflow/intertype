@@ -148,7 +148,7 @@ class @Intertype extends Intertype_abc
         cfg = { test: cfg, }
       if test?
         if cfg?.test?
-          throw new E.Intertype_ETEMPTBD '^intertype.declare@2^', \
+          throw new E.Intertype_ETEMPTBD '^intertype.declare@1^', \
             "cannot give both positional and named argument test"
         cfg = { cfg..., test, }
       @_declare.call @, type, cfg
@@ -191,7 +191,7 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
             "hedgerow cannot start with `#{key}`, must be preceeded by hedge"
         unless ( GUY.props.get @registry, key, null )?
-          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
+          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@3^', "unknown hedge or type #{rpr key}"
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         if method_name is '_create'
           f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
@@ -217,7 +217,7 @@ class @Intertype extends Intertype_abc
         #...................................................................................................
         ### check for preceding type being iterable when building hedgerow with `of`: ###
         if ( key is 'of' ) and ( not @_collections.has target.name )
-          throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@2^', \
+          throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@5^', \
             "expected type before `of` to be a collection, got #{rpr target.name}"
         #...................................................................................................
         f = { "#{key}": ( x ) ->
@@ -242,7 +242,7 @@ class @Intertype extends Intertype_abc
   _validate_hedgerow: ( hedgerow ) ->
     if ( hedgerow[ 0 ] in [ 'of', 'or', ] ) or ( hedgerow[ hedgerow.length - 1 ] in [ 'of', 'or', ] )
       xr = rpr hedgerow.join @cfg.sep
-      throw new E.Intertype_ETEMPTBD '^intertype.validate_hedgerow@2^', \
+      throw new E.Intertype_ETEMPTBD '^intertype.validate_hedgerow@6^', \
         "hedgerow cannot begin or end with `of` or `or`, must be surrounded by hedges, got #{xr}"
     return null
 
@@ -278,7 +278,7 @@ class @Intertype extends Intertype_abc
               return false if ( @_isa tail_hedges..., element ) is false
           catch error
             throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
-            throw new E.Intertype_ETEMPTBD '^intertype.isa@3^', \
+            throw new E.Intertype_ETEMPTBD '^intertype.isa@7^', \
               "`of` must be preceded by collection name, got #{rpr hedges[ hedge_idx - 1 ]}"
           return true
         #...................................................................................................
@@ -287,7 +287,7 @@ class @Intertype extends Intertype_abc
           continue
       #.....................................................................................................
       unless ( type_cfg = GUY.props.get @registry, hedge, null )?
-        throw new E.Intertype_ETEMPTBD '^intertype.isa@4^', "unknown hedge or type #{rpr hedge}"
+        throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
       result = type_cfg.test.call @, x
       switch result
@@ -306,7 +306,7 @@ class @Intertype extends Intertype_abc
           return true if is_terminal
           continue
       #.....................................................................................................
-      throw new E.Intertype_internal_error '^intertype.isa@5^', \
+      throw new E.Intertype_internal_error '^intertype.isa@9^', \
         "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
     #.......................................................................................................
     return R
@@ -328,20 +328,20 @@ class @Intertype extends Intertype_abc
     return x if @_isa hedges..., type, x
     qtype = [ hedges..., type, ].join @cfg.sep
     xr    = to_width ( rpr x ), 100
-    throw new E.Intertype_ETEMPTBD '^intertype.validate@6^', "not a valid #{qtype}: #{xr}"
+    throw new E.Intertype_ETEMPTBD '^intertype.validate@10^', "not a valid #{qtype}: #{xr}"
 
   #---------------------------------------------------------------------------------------------------------
   _create: ( type, cfg ) ->
     create = null
     #.......................................................................................................
     unless ( type_cfg = GUY.props.get @registry, type, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype.create@7^', "unknown type #{rpr type}"
+      throw new E.Intertype_ETEMPTBD '^intertype.create@11^', "unknown type #{rpr type}"
     #.......................................................................................................
     ### Try to get `create` method, or, should that fail, the `default` value. Throw error when neither
     `create` nor `default` are given: ###
     if ( create = GUY.props.get type_cfg, 'create', null ) is null
       if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
-        throw new E.Intertype_ETEMPTBD '^intertype.create@8^', \
+        throw new E.Intertype_ETEMPTBD '^intertype.create@12^', \
           "type #{rpr type} does not have a `default` value or a `create()` method"
     #.......................................................................................................
     else
