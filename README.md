@@ -589,6 +589,23 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
       unit:     null
   ```
 
+* **[–]** in addition to single-`$`-prefixed keys, allow double-`$`-prefixed keys to allow arbitrary names
+  for arbitrary conditions; these should probably always use functions as values:
+
+  ```coffee
+  declare.foobar
+    $:                          'object'
+    $number:                    'optional.float'
+    $string:                    'optional.nonempty.text'
+    $$either_number_or_string:  ( x ) ->
+      ( x.number? or x.string? ) and not ( x.number? and x.string? )
+  ```
+
+
+* **[–]** implement 'checks', i.e. helpers to test for conditions like 'object has keys that conform to this
+  pattern' &c (?)
+
+
 ## Is Done
 
 * **[+]** <del>use
