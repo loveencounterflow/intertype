@@ -571,6 +571,23 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   define effective `isa()` in base class `Intertype_xxxxx extends Intertype_abc`, `Intertype extends
   Intertype_xxxxx`.
 * **[–]** re-consider `seal`
+* **[–]** implement type dependencies (both explicit and implicit), e.g. `codepoint` depends on `text` while
+  `codepointid` depends on `integer`
+* **[–]** clarify distinction between `container` and `collection` or remove one of them
+* **[–]** implement using the cfg directly for tests against object (struct) properties. Keys can be
+  anything but if they start with a `$` dollar sign the refer to the keys of the struct being described; `$`
+  refers to the struct itself; string values name an existing type. These additions make declarations highly
+  declarative and aid in providing automatic features (e.g. implicit type dependency):
+
+  ```coffee
+  declare.quantity
+    $:        'object'          # this could be implicit, judging by the use of any `$`-prefixed key
+    $value:   'float'
+    $unit:    'nonempty.text'
+    default:
+      value:    0
+      unit:     null
+  ```
 
 ## Is Done
 
