@@ -1,12 +1,12 @@
 lockfileVersion: 5.4
 
 specifiers:
-  guy: 10.2.0
+  guy: 11.1.1
   intertype-legacy: ^7.7.1
   to-width: ^1.2.0
 
 dependencies:
-  guy: 10.2.0
+  guy: 11.1.1
   intertype-legacy: 7.7.1
   to-width: 1.2.0
 
@@ -21,8 +21,8 @@ packages:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
     dev: false
 
-  /guy/10.2.0:
-    resolution: {integrity: sha512-tSulgHlEy/Bi8VyToFJxgJ+uL/sai+0HlAc5W4CuLZTpBDLOBlVy6Acd6CaEv7s6gt+sPztCPd+BQRQOhDt1rQ==}
+  /guy/11.1.1:
+    resolution: {integrity: sha512-slOTyg/Ajn43+pTvi+icSoed/a+FsPcyuMe7pH/qmGOdtiU4N2KePq/fETgJv8eJ+Oddsr7R9C7QCT3OxyfWhg==}
     peerDependencies:
       acorn: ^8.7.1
       acorn-loose: ^8.3.0
