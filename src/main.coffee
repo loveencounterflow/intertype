@@ -182,7 +182,7 @@ class @Intertype extends Intertype_abc
       @_declare.call @, type, cfg
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: declare_getter
     #.......................................................................................................
-    GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { reset: false, }
+    GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { oneshot: true, }
     # GUY.props.hide @, 'types',        types
     @state =
       data:     null
