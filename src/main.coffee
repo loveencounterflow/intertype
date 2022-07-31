@@ -20,6 +20,7 @@ types                     = new ( require 'intertype-legacy' ).Intertype()
 { to_width }              = require 'to-width'
 deep_copy                 = structuredClone
 equals                    = require '../deps/jkroso-equals'
+nameit                    = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 
 #-----------------------------------------------------------------------------------------------------------
 types.declare 'deep_boolean', ( x ) -> x in [ 'deep', false, true, ]
@@ -118,16 +119,15 @@ class @Type_cfg extends Intertype_abc
       unless cfg.test.length is 1
         # fn_names  = ( f.name for f in cfg.test )
         tests     = ( f.bind hub for f in cfg.test )
-        test      = { "#{cfg.name}": ( ( x ) =>
+        test      = nameit cfg.name, ( x ) =>
           for test in tests
             return false if ( R = test x ) is false
             return R unless R is true
-          return true )
-          }[ cfg.name ]
+          return true
         return test
       test = cfg.test[ 0 ]
     test ?= cfg.test
-    return { "#{cfg.name}": ( ( x ) => debug '^455-1^', { test, }; test.call hub, x ), }[ cfg.name ]
+    return nameit cfg.name, ( x ) => debug '^455-1^', { test, }; test.call hub, x
 
   #---------------------------------------------------------------------------------------------------------
   _compile_object_as_test: ( hub, cfg ) ->
@@ -149,9 +149,9 @@ class @Type_cfg extends Intertype_abc
     property_chain  = property_chain.split '.'
     if field is ''
       name = "#{type}:#{property_chain.join hub.cfg.sep}"
-      return { "#{name}": ( ( x ) -> @_isa property_chain..., x ), }[ name  ]
+      return nameit name, ( x ) -> @_isa property_chain..., x
     name = "#{type}.#{field}:#{property_chain.join hub.cfg.sep}"
-    return { "#{name}": ( ( x ) -> @_isa property_chain..., x[ name ] ), }[ name ]
+    return nameit name, ( x ) -> @_isa property_chain..., x[ name ]
 
 
 #===========================================================================================================
@@ -222,9 +222,9 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@3^', "unknown hedge or type #{rpr key}"
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         if method_name is '_create'
-          f = { "#{key}": ( ( cfg = null ) -> self[ self.state.method ] key, cfg ), }[ key ]
+          f = nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
         else
-          f = { "#{key}": ( ( P... ) -> self[ self.state.method ] P... ), }[ key ]
+          f = nameit key, ( P... ) -> self[ self.state.method ] P...
         GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
@@ -248,9 +248,7 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@5^', \
             "expected type before `of` to be a collection, got #{rpr target.name}"
         #...................................................................................................
-        f = { "#{key}": ( x ) ->
-          return self[ self.state.method ] self.state.hedges..., x
-          }[ key ]
+        f = nameit key, ( x ) -> self[ self.state.method ] self.state.hedges..., x
         GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
