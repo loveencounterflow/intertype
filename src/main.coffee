@@ -14,114 +14,15 @@ E                         = require './errors'
 H                         = require './helpers'
 HEDGES                    = require './hedges'
 DECLARATIONS              = require './declarations'
-ITYP                      = @
-types                     = new ( require 'intertype-legacy' ).Intertype()
-@defaults                 = {}
 { to_width }              = require 'to-width'
-deep_copy                 = structuredClone
-equals                    = require '../deps/jkroso-equals'
-nameit                    = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 
-#-----------------------------------------------------------------------------------------------------------
-types.declare 'deep_boolean', ( x ) -> x in [ 'deep', false, true, ]
-
-#-----------------------------------------------------------------------------------------------------------
-types.declare 'Type_cfg_constructor_cfg', tests:
-  "@isa.object x":                            ( x ) -> @isa.object x
-  "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
-  # "@isa.deep_boolean x.copy":                 ( x ) -> @isa.boolean x.copy
-  # "@isa.boolean x.seal":                      ( x ) -> @isa.boolean x.seal
-  "@isa.deep_boolean x.freeze":               ( x ) -> @isa.deep_boolean x.freeze
-  "@isa.boolean x.extras":                    ( x ) -> @isa.boolean x.extras
-  "if extras is false, default must be an object": \
-    ( x ) -> ( x.extras ) or ( @isa.object x.default )
-  "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
-  ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
-  ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
-  "x.test is an optional function or non-empty list of functions": ( x ) ->
-    return true unless x.test?
-    return true if @isa.function x.test
-    return false unless @isa_list_of.function x.test
-    return false if x.test.length is 0
-    return true
-  "x.groups is deprecated": ( x ) -> not x.groups?
-  "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
-#...........................................................................................................
-@defaults.Type_cfg_constructor_cfg =
-  name:             null
-  test:             null
-  ### `default` omitted on purpose ###
-  create:           null
-  # copy:             false
-  # seal:             false
-  freeze:           false
-  extras:           true
-  collection:       false
-
-#-----------------------------------------------------------------------------------------------------------
-types.declare 'Type_cfg_constructor_cfg_NG', tests:
-  "@isa.object x":                            ( x ) -> @isa.object x
-  "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
-  # "@isa.deep_boolean x.copy":                 ( x ) -> @isa.boolean x.copy
-  # "@isa.boolean x.seal":                      ( x ) -> @isa.boolean x.seal
-  "@isa.deep_boolean x.freeze":               ( x ) -> @isa.deep_boolean x.freeze
-  "@isa.boolean x.extras":                    ( x ) -> @isa.boolean x.extras
-  "if extras is false, default must be an object": \
-    ( x ) -> ( x.extras ) or ( @isa.object x.default )
-  "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
-  ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
-  ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
-  "x.test is an optional function or non-empty list of functions": ( x ) ->
-    return true unless x.test?
-    return true if @isa.function x.test
-    return false unless @isa_list_of.function x.test
-    return false if x.test.length is 0
-    return true
-  "x.groups is deprecated": ( x ) -> not x.groups?
-  "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
-#...........................................................................................................
-@defaults.Type_cfg_constructor_cfg_NG =
-  name:             null
-  test:             null
-  ### `default` omitted on purpose ###
-  create:           null
-  # copy:             false
-  # seal:             false
-  freeze:           false
-  extras:           true
-  collection:       false
-
-#-----------------------------------------------------------------------------------------------------------
-types.declare 'Intertype_iterable', ( x ) -> x? and x[ Symbol.iterator ]?
-
-#-----------------------------------------------------------------------------------------------------------
-types.declare 'Intertype_constructor_cfg', tests:
-  "@isa.object x":                            ( x ) -> @isa.object x
-  "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
-#...........................................................................................................
-@defaults.Intertype_constructor_cfg =
-  sep:              '.'
-
-# #-----------------------------------------------------------------------------------------------------------
-# types.declare 'Intertype_walk_hedgepaths_cfg', tests:
-#   "@isa.object x":                      ( x ) -> @isa.object x
-#   "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
-#   "@isa_optional.function x.evaluate":  ( x ) -> @isa_optional.function x.evaluate
-#   ### TAINT omitted other settings for `GUY.props.tree()` ###
-# #...........................................................................................................
-# @defaults.Intertype_walk_hedgepaths_cfg =
-#   sep:      @defaults.Intertype_constructor_cfg.sep
-#   evaluate: ({ owner, key, value, }) ->
-#     return 'take' if ( types.type_of value ) is 'function'
-#     return 'take' unless GUY.props.has_any_keys value
-#     return 'descend'
 
 #===========================================================================================================
 class Intertype_abc extends GUY.props.Strict_owner
 
 
 #===========================================================================================================
-class @Type_cfg extends Intertype_abc
+class Type_cfg extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( hub, cfg ) ->
@@ -129,8 +30,8 @@ class @Type_cfg extends Intertype_abc
     ### TAINT do not use `tests.every()` when only 1 test given ###
     super()
     GUY.props.hide @, 'hub', hub
-    cfg                   = { ITYP.defaults.Type_cfg_constructor_cfg..., cfg..., }
-    types.validate.Type_cfg_constructor_cfg cfg
+    cfg                   = { H.defaults.Type_cfg_constructor_cfg..., cfg..., }
+    H.types.validate.Type_cfg_constructor_cfg cfg
     cfg.test              = new Proxy ( @_compile_test hub, cfg ), hub._get_hedge_sub_proxy_cfg hub
     #.......................................................................................................
     ### TAINT not used by `size_of()` ###
@@ -144,15 +45,15 @@ class @Type_cfg extends Intertype_abc
   _compile_test: ( hub, cfg ) ->
     cfg.test = @_compile_object_as_test hub, cfg unless cfg.test?
     if not cfg.extras
-      cfg.test                    = [ cfg.test, ] unless types.isa.list cfg.test
+      cfg.test                    = [ cfg.test, ] unless H.types.isa.list cfg.test
       keys                        = ( k for k of cfg.default ).sort()
-      cfg.test.unshift no_extras  = ( x ) => equals ( k for k of x ).sort(), keys
+      cfg.test.unshift no_extras  = ( x ) => H.equals ( k for k of x ).sort(), keys
     test = null
-    if types.isa.list cfg.test
+    if H.types.isa.list cfg.test
       unless cfg.test.length is 1
         # fn_names  = ( f.name for f in cfg.test )
         tests     = ( f.bind hub for f in cfg.test )
-        test      = nameit cfg.name, ( x ) =>
+        test      = H.nameit cfg.name, ( x ) =>
           for test in tests
             return false if ( R = test x ) is false
             return R unless R is true
@@ -160,7 +61,7 @@ class @Type_cfg extends Intertype_abc
         return test
       test = cfg.test[ 0 ]
     test ?= cfg.test
-    return nameit cfg.name, ( x ) => test.call hub, x
+    return H.nameit cfg.name, ( x ) => test.call hub, x
 
   #---------------------------------------------------------------------------------------------------------
   _compile_object_as_test: ( hub, cfg ) ->
@@ -168,7 +69,7 @@ class @Type_cfg extends Intertype_abc
     R     = []
     for key, test of cfg
       continue unless key.startsWith '$'
-      if types.isa.function test
+      if H.types.isa.function test
         R.push test
         continue
       field = key[ 1 .. ]
@@ -180,19 +81,19 @@ class @Type_cfg extends Intertype_abc
     property_chain  = property_chain.split '.'
     if field is ''
       name = "#{type}:#{property_chain.join hub.cfg.sep}"
-      return nameit name, ( x ) -> @_isa property_chain..., x
+      return H.nameit name, ( x ) -> @_isa property_chain..., x
     name = "#{type}.#{field}:#{property_chain.join hub.cfg.sep}"
-    return nameit name, ( x ) -> @_isa property_chain..., x[ name ]
+    return H.nameit name, ( x ) -> @_isa property_chain..., x[ name ]
 
 
 #===========================================================================================================
-class @Intertype extends Intertype_abc
+class Intertype extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
     #.......................................................................................................
-    GUY.props.hide @, 'cfg',          { ITYP.defaults.Intertype_constructor_cfg..., cfg..., }
+    GUY.props.hide @, 'cfg',          { H.defaults.Intertype_constructor_cfg..., cfg..., }
     GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
     GUY.props.hide @, '_collections', new Set()
     GUY.props.hide @, '_signals',     H.signals
@@ -203,7 +104,7 @@ class @Intertype extends Intertype_abc
     #.......................................................................................................
     ### TAINT squeezing this in here for the moment, pending reformulation of `isa` &c to make them callable: ###
     declare_getter  = ( _, type ) => ( cfg, test = null ) =>
-      if types.isa.function cfg
+      if H.types.isa.function cfg
         cfg = { test: cfg, }
       if test?
         if cfg?.test?
@@ -214,7 +115,7 @@ class @Intertype extends Intertype_abc
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: declare_getter
     #.......................................................................................................
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { oneshot: true, }
-    # GUY.props.hide @, 'types',        types
+    # GUY.props.hide @, 'types',        H.types
     @state =
       data:     null
       method:   null
@@ -253,9 +154,9 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@3^', "unknown hedge or type #{rpr key}"
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         if method_name is '_create'
-          f = nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
+          f = H.nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
         else
-          f = nameit key, ( P... ) -> self[ self.state.method ] P...
+          f = H.nameit key, ( P... ) -> self[ self.state.method ] P...
         GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
@@ -279,7 +180,7 @@ class @Intertype extends Intertype_abc
           throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@5^', \
             "expected type before `of` to be a collection, got #{rpr target.name}"
         #...................................................................................................
-        f = nameit key, ( x ) -> self[ self.state.method ] self.state.hedges..., x
+        f = H.nameit key, ( x ) -> self[ self.state.method ] self.state.hedges..., x
         GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
         return R
 
@@ -288,7 +189,7 @@ class @Intertype extends Intertype_abc
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
     type_cfg            = { type_cfg..., name: type, }
-    type_cfg            = new ITYP.Type_cfg @, type_cfg
+    type_cfg            = new Type_cfg @, type_cfg
     @registry[  type ]  = type_cfg
     @isa[       type ]  = type_cfg.test
     @validate[  type ]  = new Proxy ( ( x ) => @_validate type, x ), @_get_hedge_sub_proxy_cfg @
@@ -407,7 +308,7 @@ class @Intertype extends Intertype_abc
       R = structuredClone R
     #.......................................................................................................
     if      type_cfg.freeze is true   then R = Object.freeze R
-    else if type_cfg.freeze is 'deep' then R = GUY.lft.freeze GUY.lft._deep_copy R
+    else if type_cfg.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R
     #.......................................................................................................
     return @_validate type, R
 
@@ -420,13 +321,16 @@ class @Intertype extends Intertype_abc
   #-----------------------------------------------------------------------------------------------------------
   _walk_hedgepaths: ( cfg ) ->
     throw new Error "^intertype._walk_hedgepaths@9^ not implemented"
-    # cfg = { ITYP.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
+    # cfg = { H.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
     # yield from GUY.props.walk_tree @isa, cfg
     # return null
 
 
 ############################################################################################################
-@defaults = GUY.lft.freeze @defaults
+@Intertype_abc  = Intertype_abc
+@Type_cfg       = Type_cfg
+@Intertype      = Intertype
+
 
 
 

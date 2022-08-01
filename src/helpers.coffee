@@ -7,10 +7,12 @@ GUY                       = require 'guy'
 misfit                    = Symbol 'misfit'
 notavalue                 = Symbol 'notavalue'
 E                         = require './errors'
+#...........................................................................................................
+@constructor_of_generators  = ( ( -> yield 42 )() ).constructor
+@deep_copy                  = structuredClone
+@equals                     = require '../deps/jkroso-equals'
+@nameit                     = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 
-###
-js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).toLowerCase().replace /\s+/g, ''
-###
 
 #===========================================================================================================
 # TYPE_OF FLAVORS
@@ -89,5 +91,107 @@ js_type_of               = ( x ) => ( ( Object::toString.call x ).slice 8, -1 ).
   return 'class'    if R is 'function' and x.toString().startsWith 'class '
   return R
 
+
+############################################################################################################
+# INTERNAL TYPES
+#===========================================================================================================
+@types                    = new ( require 'intertype-legacy' ).Intertype()
+@defaults                 = {}
+
 #-----------------------------------------------------------------------------------------------------------
-@constructor_of_generators = ( ( -> yield 42 )() ).constructor
+@types.declare 'deep_boolean', ( x ) -> x in [ 'deep', false, true, ]
+
+#-----------------------------------------------------------------------------------------------------------
+@types.declare 'Type_cfg_constructor_cfg', tests:
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
+  # "@isa.deep_boolean x.copy":                 ( x ) -> @isa.boolean x.copy
+  # "@isa.boolean x.seal":                      ( x ) -> @isa.boolean x.seal
+  "@isa.deep_boolean x.freeze":               ( x ) -> @isa.deep_boolean x.freeze
+  "@isa.boolean x.extras":                    ( x ) -> @isa.boolean x.extras
+  "if extras is false, default must be an object": \
+    ( x ) -> ( x.extras ) or ( @isa.object x.default )
+  "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
+  ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
+  ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
+  "x.test is an optional function or non-empty list of functions": ( x ) ->
+    return true unless x.test?
+    return true if @isa.function x.test
+    return false unless @isa_list_of.function x.test
+    return false if x.test.length is 0
+    return true
+  "x.groups is deprecated": ( x ) -> not x.groups?
+  "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
+#...........................................................................................................
+@defaults.Type_cfg_constructor_cfg =
+  name:             null
+  test:             null
+  ### `default` omitted on purpose ###
+  create:           null
+  # copy:             false
+  # seal:             false
+  freeze:           false
+  extras:           true
+  collection:       false
+
+#-----------------------------------------------------------------------------------------------------------
+@types.declare 'Type_cfg_constructor_cfg_NG', tests:
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa.nonempty_text x.name":                ( x ) -> @isa.nonempty_text x.name
+  # "@isa.deep_boolean x.copy":                 ( x ) -> @isa.boolean x.copy
+  # "@isa.boolean x.seal":                      ( x ) -> @isa.boolean x.seal
+  "@isa.deep_boolean x.freeze":               ( x ) -> @isa.deep_boolean x.freeze
+  "@isa.boolean x.extras":                    ( x ) -> @isa.boolean x.extras
+  "if extras is false, default must be an object": \
+    ( x ) -> ( x.extras ) or ( @isa.object x.default )
+  "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
+  ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
+  ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
+  "x.test is an optional function or non-empty list of functions": ( x ) ->
+    return true unless x.test?
+    return true if @isa.function x.test
+    return false unless @isa_list_of.function x.test
+    return false if x.test.length is 0
+    return true
+  "x.groups is deprecated": ( x ) -> not x.groups?
+  "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
+#...........................................................................................................
+@defaults.Type_cfg_constructor_cfg_NG =
+  name:             null
+  test:             null
+  ### `default` omitted on purpose ###
+  create:           null
+  # copy:             false
+  # seal:             false
+  freeze:           false
+  extras:           true
+  collection:       false
+
+#-----------------------------------------------------------------------------------------------------------
+@types.declare 'Intertype_iterable', ( x ) -> x? and x[ Symbol.iterator ]?
+
+#-----------------------------------------------------------------------------------------------------------
+@types.declare 'Intertype_constructor_cfg', tests:
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
+#...........................................................................................................
+@defaults.Intertype_constructor_cfg =
+  sep:              '.'
+
+# #-----------------------------------------------------------------------------------------------------------
+# @types.declare 'Intertype_walk_hedgepaths_cfg', tests:
+#   "@isa.object x":                      ( x ) -> @isa.object x
+#   "@isa_optional.nonempty_text x.sep":  ( x ) -> @isa_optional.nonempty_text x.sep
+#   "@isa_optional.function x.evaluate":  ( x ) -> @isa_optional.function x.evaluate
+#   ### TAINT omitted other settings for `GUY.props.tree()` ###
+# #...........................................................................................................
+# @defaults.Intertype_walk_hedgepaths_cfg =
+#   sep:      @defaults.Intertype_constructor_cfg.sep
+#   evaluate: ({ owner, key, value, }) ->
+#     return 'take' if ( types.type_of value ) is 'function'
+#     return 'take' unless GUY.props.has_any_keys value
+#     return 'descend'
+
+############################################################################################################
+@defaults = GUY.lft.freeze @defaults
+
