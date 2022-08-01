@@ -604,6 +604,7 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
 
 * **[–]** implement 'checks', i.e. helpers to test for conditions like 'object has keys that conform to this
   pattern' &c (?)
+* **[–]** turn `Type_cfg` instances into functions
 
 
 ## Is Done
