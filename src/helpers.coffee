@@ -155,6 +155,11 @@ E                         = require './errors'
     return true
   "x.groups is deprecated": ( x ) -> not x.groups?
   "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
+  "@isa_optional.function x.test":                  ( x ) -> @isa_optional.function x.test
+  "@isa optional list.of.function x.tests":         ( x ) ->
+    return true unless @isa.list x.tests
+    return @isa_list_of.function x.tests
+  "exactly one of x.test, x.tests must be given":   ( x ) -> ( x.test? and not x.tests? ) or ( not x.test? and x.tests? )
 #...........................................................................................................
 @defaults.Type_cfg_constructor_cfg_NG =
   name:             null
