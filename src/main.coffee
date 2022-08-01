@@ -18,12 +18,9 @@ DECLARATIONS              = require './declarations'
 { Type_factory }          = require './type-factory'
 
 
-#===========================================================================================================
-class Intertype_abc extends GUY.props.Strict_owner
-
 
 #===========================================================================================================
-class Type_cfg extends Intertype_abc
+class Type_cfg extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( hub, cfg ) ->
@@ -88,7 +85,7 @@ class Type_cfg extends Intertype_abc
 
 
 #===========================================================================================================
-class Intertype extends Intertype_abc
+class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
@@ -328,11 +325,9 @@ class Intertype extends Intertype_abc
 
 
 ############################################################################################################
-@Intertype_abc  = Intertype_abc
 @Type_cfg       = Type_cfg
 @Type_factory   = Type_factory
 @Intertype      = Intertype
-
 
 
 
