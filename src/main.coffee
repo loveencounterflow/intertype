@@ -127,7 +127,7 @@ class @Type_cfg extends Intertype_abc
         return test
       test = cfg.test[ 0 ]
     test ?= cfg.test
-    return nameit cfg.name, ( x ) => debug '^455-1^', { test, }; test.call hub, x
+    return nameit cfg.name, ( x ) => test.call hub, x
 
   #---------------------------------------------------------------------------------------------------------
   _compile_object_as_test: ( hub, cfg ) ->
@@ -139,9 +139,7 @@ class @Type_cfg extends Intertype_abc
         R.push test
         continue
       field = key[ 1 .. ]
-      debug '^455-2^', { key, field, }
       R.push @_test_from_text hub, type, field, test
-    debug '^455-3^', R
     return R
 
   #---------------------------------------------------------------------------------------------------------
