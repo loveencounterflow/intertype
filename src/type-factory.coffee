@@ -13,7 +13,30 @@ GUY                       = require 'guy'
 E                         = require './errors'
 H                         = require './helpers'
 
+###
 
+User-facing constraints on `Type_factory::constructor cfg`
+
+Constraints on `Type_factory::constructor cfg` after normalization:
+
+* exactly one of `type:function`, `types:list.of.function.or.object.of.function` must be given
+
+* if `type` is **not** given:
+
+  * if `types` does not contain a function named `$` (called the 'own-type declaration'), it will be created
+    as `$: ( x ) -> @isa.object x`, meaning the type declared implicitly describes an object. This typetest
+    will be prepended to any other declarations.
+
+  * The above entails that we may declare a type as
+      * `declare.t { tests: [], }` or
+      * `declare.t { tests: {}, }`
+    to obtain the same effect as
+      * `declare.t 'object'` or
+      * `declare.t ( x ) -> @isa.object x`
+
+* if `type` **is** given:
+
+###
 
 #===========================================================================================================
 class Type_factory extends H.Intertype_abc
