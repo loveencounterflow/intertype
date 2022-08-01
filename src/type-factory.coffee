@@ -12,20 +12,11 @@ GUY                       = require 'guy'
 #...........................................................................................................
 E                         = require './errors'
 H                         = require './helpers'
-HEDGES                    = require './hedges'
-DECLARATIONS              = require './declarations'
-ITYP                      = @
-types                     = new ( require 'intertype-legacy' ).Intertype()
-@defaults                 = {}
-{ to_width }              = require 'to-width'
-deep_copy                 = structuredClone
-equals                    = require '../deps/jkroso-equals'
-nameit                    = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 
 
 
 #===========================================================================================================
-class @Type extends Intertype_abc
+class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( hub ) ->
@@ -35,7 +26,7 @@ class @Type extends Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   create_type_cfg: ( cfg ) ->
-    types.validate.Type_cfg_constructor_cfg_NG cfg = { ITYP.defaults.Type_cfg_constructor_cfg_NG..., cfg..., }
+    H.types.validate.Type_cfg_constructor_cfg_NG cfg = { H.defaults.Type_cfg_constructor_cfg_NG..., cfg..., }
     name      = cfg.name
     R         = ( ( x ) -> x ** 2 ).bind @
     GUY.props.hide R, k, v for k, v of cfg
@@ -44,4 +35,7 @@ class @Type extends Intertype_abc
     return R
 
 
+
+############################################################################################################
+@Type_factory = Type_factory
 

@@ -15,6 +15,7 @@ H                         = require './helpers'
 HEDGES                    = require './hedges'
 DECLARATIONS              = require './declarations'
 { to_width }              = require 'to-width'
+{ Type_factory }          = require './type-factory'
 
 
 #===========================================================================================================
@@ -329,6 +330,7 @@ class Intertype extends Intertype_abc
 ############################################################################################################
 @Intertype_abc  = Intertype_abc
 @Type_cfg       = Type_cfg
+@Type_factory   = Type_factory
 @Intertype      = Intertype
 
 
