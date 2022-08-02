@@ -36,6 +36,67 @@
   * `declare.t { test: 'object', }`, or, even more explicitly
   * `declare { name: 't', test: 'object', }`.
 
+  The settings object is known as the 'type configuration' or (type) `cfg`.
+
+* Each type can be associated with one or more test functions. If only a single function is given, it may
+  come as last argument, possibly preceded by the `cfg`:
+
+  * `declare.t { collection: true, }, ( x ) -> ( @isa.list x ) and ( x.length > 0 )`
+
+* The above test has two terms coupled with a logical conjunction (`and`); these can be rewritten as two
+  (or any number of) tests:
+
+  ```coffee
+  declare.t { collection: true, }, [
+    ( x ) -> @isa.list x
+    ( x ) -> x.length > 0
+    ]
+  ```
+
+* It is preferrable that each individual test gets a name (which will later surface in eror messages when a
+  validation is not satisfied):
+
+  ```coffee
+  declare.t { collection: true, }, [
+    list      = ( x ) -> @isa.list x
+    nonempty  = ( x ) -> x.length > 0
+    ]
+  ```
+
+* But since we're naming things anyway, why not use object notation (shown here with implicit braces):
+
+  ```coffee
+  declare.t { collection: true, },
+    list:     ( x ) -> @isa.list x
+    nonempty: ( x ) -> x.length > 0
+  ```
+
+* It turns out that being empty or not is implemented as builtin types `empty` and `nonempty` in InterType,
+  so the second term may be rewritten as an `isa` test:
+
+  ```coffee
+  declare.t { collection: true, },
+    list:     ( x ) -> @isa.list x
+    nonempty: ( x ) -> @isa.nonempty x
+  ```
+
+  ...which, in turn—since the tests are now all non-compound and just applying `isa`—can be reduced to the
+  *names* of the types (much like we used `'object'`, above):
+
+  ```coffee
+  declare.t { collection: true, }, [
+    'list',
+    'nonempty',
+    ]
+  ```
+
+* A list of typenames may be reduced to a single string with typenames separated by dots (`.`):
+
+  * `declare.t { collection: true, }, 'list.nonempty'`, which is the implicit form of
+  * `declare.t { collection: true, test: 'list.nonempty' }`.
+
+
+
 
 ### Constraints on `Type_factory::constructor cfg` After Normalization:
 
