@@ -25,6 +25,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+* [Type Declarations](README-declare.md)
 
 # ▞ InterType
 
