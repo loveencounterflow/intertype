@@ -7,8 +7,8 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [User-facing constraints on `Type_factory::constructor cfg`](#user-facing-constraints-on-type_factoryconstructor-cfg)
-- [Constraints on `Type_factory::constructor cfg` after normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
+- [User-Facing Constraints on `Type_factory::constructor cfg`](#user-facing-constraints-on-type_factoryconstructor-cfg)
+- [Constraints on `Type_factory::constructor cfg` After Normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
 - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
 - [`declare`](#declare)
 
@@ -17,18 +17,17 @@
 
 
 
-### User-facing constraints on `Type_factory::constructor cfg`
+### User-Facing Constraints on `Type_factory::constructor cfg`
 
 * at the most basic level, a type may be declared with a single argument, the typename, either as first
   argument or in literal property syntax (dot notation), the latter being the preferred form:
 
   * `declare.t()` or, equivalently,
+  * `declare 't'`.
 
-  * `declare 't'`. In this case, type `object` is assumed, effectively making `t` an alias for `object`, so
-    the above declarations amount to:
+  When no test is declared, a test for type `object` is assumed, so the above declarations amount to:
 
   * `declare.t 'object'` or
-
   * `declare 't', 'object'`.
 
 * The notation `declare.t 'object'` is more explicitly written as
@@ -40,7 +39,7 @@
   * `declare { name: 't', test: 'object', }`.
 
 
-### Constraints on `Type_factory::constructor cfg` after normalization:
+### Constraints on `Type_factory::constructor cfg` After Normalization:
 
 * exactly one of `type:function` or `types:list.of.function.or.object.of.function` must be given
 
