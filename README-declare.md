@@ -131,7 +131,46 @@
   ```
 
 * The second kind of compound types—structs—requires more detail. A struct may or may not be of type
-  `object`; it consists as far as InterType is concerned, of *fields*, which are key / value pairs.
+  `object`; it consists—as far as validation is concerned—of *fields*, which are key / value pairs.
+  Therefore, in order to describe a struct exhaustively, at least one test for each field must be declared:
+
+  ```coffee
+  declare.unit 'nonempty.text'      # (may additionally want to look up in registry of known units)
+  declare.quantity [                # A quantity
+    ( x ) -> @isa.object  x         # is an object
+    ( x ) -> @isa.float   x.value   # whose `value` field is a floating point number, and
+    ( x ) -> @isa.unit    x.unit    # whose `unit` field is a nonempty text (a known unit name)
+    ]
+  ```
+
+  According to the rules detailed above, we may rewrite the declaration of `quantity` in a number of ways,
+  for example:
+
+  ```coffee
+  declare.quantity [
+    'object'
+    ( x ) -> @isa.float   x.value
+    ( x ) -> @isa.unit    x.unit
+    ]
+  ```
+
+  but that leaves us with unnamed tests (not good). Now there's a convention in InterType that allows to
+  formulate named tests in a very succinct way using the '$-notation' (Dollar notation) (also used e.g. by
+  PostgreSQL's [JSON path
+  syntax](https://www.postgresql.org/docs/current/functions-json.html#FUNCTIONS-SQLJSON-PATH)). The `$` key
+  here signifies the container, and, when it is followed by a fieldname, the corresponding field (duh). With
+  $-notation we can boil down our declaration quite a bit and get meaningful test names for free:
+
+  ```coffee
+  declare.quantity
+    $:            'object'
+    $value:       'float'
+    $unit:        'unit'
+  ```
+
+  Since `$` is a legal character for identifiers, there's no need for quotes.
+
+
 
 ### Constraints on `Type_factory::constructor cfg` After Normalization:
 
