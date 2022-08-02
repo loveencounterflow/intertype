@@ -53,7 +53,7 @@
     ]
   ```
 
-* It is preferrable that each individual test gets a name (which will later surface in eror messages when a
+* It is preferrable that each individual test get a name (which will later surface in eror messages when a
   validation is not satisfied):
 
   ```coffee
@@ -90,10 +90,12 @@
     ]
   ```
 
-* A list of typenames may be reduced to a single string with typenames separated by dots (`.`):
+* A list of typenames may be reduced to a single string with typenames separated by dots:
 
-  * `declare.t { collection: true, }, 'list.nonempty'`, which is the implicit form of
-  * `declare.t { collection: true, test: 'list.nonempty' }`.
+  ```coffee
+  declare.t { collection: true, }, 'list.nonempty'` # which is the implicit form of
+  declare.t { collection: true, test: 'list.nonempty' }`
+  ```
 
 
 

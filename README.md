@@ -476,6 +476,8 @@ types.declare.quantity
 * **[–]** implement 'checks', i.e. helpers to test for conditions like 'object has keys that conform to this
   pattern' &c (?)
 * **[–]** turn `Type_cfg` instances into functions
+* **[–]** document that `isa.optional.t x` is just a convenient way to write `isa.null.or.undefined.or.t x`,
+  which explains why a hedgrow can be short-circuited as soon as `not x?` has been found to be `true`
 
 
 ## Is Done
