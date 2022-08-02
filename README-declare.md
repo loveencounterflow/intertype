@@ -112,9 +112,9 @@
   detail that, depending on the combination of terms and the value being tested, a re-ordering may entail
   more or fewer tests to be run.
 
-* In addition to everything that has been said so far, there's a need to test compound values, both for
-  their 'outer' and their 'inner' types, that is to say, for the type of a container and the types of the
-  contents.
+* In addition to everything that has been said so far, there's a need to test and validate compound values,
+  both their 'outer' and their 'inner' types, that is to say, there's the type of a container and there are
+  the types of its contents.
 
   Compound data types can be separated into two main kinds:
   * the *collections* such as lists and sets of values (which are structured by indexes or values), and
