@@ -479,7 +479,14 @@ types.declare.quantity
 * **[–]** document that `isa.optional.t x` is just a convenient way to write `isa.null.or.undefined.or.t x`,
   which explains why a hedgrow can be short-circuited as soon as `not x?` has been found to be `true`
 * **[–]** implement `examine`, a non-throwing equivalent to `validate`, which returns the test clauses up to
-  the point of failure or `null`.
+  the point of failure or `null`. Variant: call it `fails`, returns `false` where `isa` had returned `true`,
+  non-empty list of tests otherwise:
+
+  ```coffee
+  if tests = fails.foobar x      # lists are truthy in JS
+    log tests.at -1              # print info about failed test
+  ```
+* **[–]** based on the above, provide nicely formatted error reports so users don't have to
 
 
 ## Is Done
