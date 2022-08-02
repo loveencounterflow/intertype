@@ -1,18 +1,21 @@
+
+
+## Type Declarations
+
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Type Declarations](#type-declarations)
-  - [User-facing constraints on `Type_factory::constructor cfg`](#user-facing-constraints-on-type_factoryconstructor-cfg)
-  - [Constraints on `Type_factory::constructor cfg` after normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
-  - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
-  - [`declare`](#declare)
+- [User-facing constraints on `Type_factory::constructor cfg`](#user-facing-constraints-on-type_factoryconstructor-cfg)
+- [Constraints on `Type_factory::constructor cfg` after normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
+- [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
+- [`declare`](#declare)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
 
-## Type Declarations
 
 ### User-facing constraints on `Type_factory::constructor cfg`
 
