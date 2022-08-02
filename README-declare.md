@@ -112,13 +112,17 @@
   detail that, depending on the combination of terms and the value being tested, a re-ordering may entail
   more or fewer tests to be run.
 
-* In addition to everything that has been said so far, there's a need to test compound values, and here
-  we're talking about two main types: the 'unstructured' *collections* such as lists and sets of values, and
-  the structured named '*objects*'—which, for the purposes of exposition (since 'everything is an object in
-  JavaScript', you know) are also called '*struct*(ured value)*s*', sometimes also 'records' or, in the
-  context of relational DBs, 'rows' or 'tuples'.
+* In addition to everything that has been said so far, there's a need to test compound values, both for
+  their 'outer' and their 'inner' types, that is to say, for the type of a container and the types of the
+  contents.
 
-* The first—collections—can be dealt with quickly: as soon as there's declared type that has the
+  Compound data types can be separated into two main kinds:
+  * the *collections* such as lists and sets of values (which are structured by indexes or values), and
+  * the *objects* (which are structered by keys, i.e. locally unique names). For the sake of exposition
+    (since 'everything is an object in JavaScript', you know) we may also call these '*structs*', short for
+    'structured value', sometimes also 'records' (or, in the context of relational DBs, 'rows' or 'tuples').
+
+* The first kind—collections—can be dealt with quickly: as soon as there's declared type that has the
   `collection` property (for which see the examples above), we can apply the pseudo-type `of` in
   declarations and type tests:
 
