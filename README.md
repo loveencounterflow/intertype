@@ -22,6 +22,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Intertype `create`](#intertype-create)
   - [Intertype `equals()`](#intertype-equals)
   - [Type Declarations](#type-declarations)
+    - [User-facing constraints on `Type_factory::constructor cfg`](#user-facing-constraints-on-type_factoryconstructor-cfg)
+    - [Constraints on `Type_factory::constructor cfg` after normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
     - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -468,6 +470,50 @@ types.declare.quantity
   [`jkroso/equals`](https://github.com/jkroso/equals))
 
 ## Type Declarations
+
+### User-facing constraints on `Type_factory::constructor cfg`
+
+* at the most basic level, a type may be declared with a single argument, the typename, either as first
+  argument or in literal property syntax (dot notation), the latter being the preferred form:
+
+  * `declare.t()` or, equivalently,
+
+  * `declare 't'`. In this case, type `object` is assumed, effectively making `t` an alias for `object`, so
+    the above declarations amount to:
+
+  * `declare.t 'object'` or
+
+  * `declare 't', 'object'`.
+
+* The notation `declare.t 'object'` is more explicitly written as
+
+  * `declare.t { test: 'object', }`
+
+  which, in turn, is short for
+
+  * `declare { name: 't', test: 'object', }`.
+
+
+### Constraints on `Type_factory::constructor cfg` after normalization:
+
+* exactly one of `type:function` or `types:list.of.function.or.object.of.function` must be given
+
+* if `type` is **not** given:
+
+  * if `types` does not contain a function named `$` (called the 'own-type declaration'), it will be created
+    as `$: ( x ) -> @isa.object x`, meaning the type declared implicitly describes an object. This typetest
+    will be prepended to any other declarations.
+
+  * The above entails that we may declare a type as
+      * `declare.t { tests: [], }` or
+      * `declare.t { tests: {}, }`
+    to obtain the same effect as
+      * `declare.t 'object'` or
+      * `declare.t ( x ) -> @isa.object x`
+
+* if `type` **is** given:
+
+------------------------------------------------------------------------------
 
 ```coffee
 'use strict'
