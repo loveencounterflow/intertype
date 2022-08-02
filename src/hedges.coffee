@@ -50,8 +50,8 @@ class @Intertype_hedges extends GUY.props.Strict_owner
     or:         ( x ) -> x is true
     of:         ( x ) -> H.signals.element_mode
     #.......................................................................................................
-    empty:      ( x ) -> ( H.size_of x, null ) is 0
-    nonempty:   ( x ) -> ( H.size_of x, null ) isnt 0
+    empty:      ( x ) -> ( R = H.size_of x, null )? and R is 0
+    nonempty:   ( x ) -> ( R = H.size_of x, null )? and R isnt 0
     #.......................................................................................................
     positive0:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >= 0 ) )
     positive1:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >  0 ) )
