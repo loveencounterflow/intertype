@@ -97,15 +97,37 @@
     'nonempty', ]
   ```
 
-* A list of typenames may be reduced to a single string with typenames separated by dots:
+* A list of typenames may be reduced to a single string with typenames separated by dots. This
+  notation—the so-called *hedgerow*—is the same as the one used with `isa`, `validate` and friends:
 
   ```coffee
   declare.t { collection: true, }, 'list.nonempty'        # which is the implicit form of
   declare.t { collection: true, test: 'list.nonempty' }
+  isa.nonempty.list [ 1, ]  # true
+  isa.nonempty.list []      # false
   ```
 
+  Observe that since (in the absence of a disjunction `or`) all tests are performed consecutively and the
+  first failing term will cause the entire hedgerow to fail, ordering of terms is irrelevant except for the
+  detail that, depending on the combination of terms and the value being tested, a re-ordering may entail
+  more or fewer tests to be run.
 
+* In addition to everything that has been said so far, there's a need to test compound values, and here
+  we're talking about two main types: the 'unstructured' *collections* such as lists and sets of values, and
+  the structured named '*objects*'—which, for the purposes of exposition (since 'everything is an object in
+  JavaScript', you know) are also called '*struct*(ured value)*s*', sometimes also 'records' or, in the
+  context of relational DBs, 'rows' or 'tuples'.
 
+* The first—collections—can be dealt with quickly: as soon as there's declared type that has the
+  `collection` property (for which see the examples above), we can apply the pseudo-type `of` in
+  declarations and type tests:
+
+  ```coffee
+  declare.foobar 'nonempty.list.of.integer.or.nonempty.text'
+  ```
+
+* The second kind of compound types—structs—requires more detail. A struct may or may not be of type
+  `object`; it consists as far as InterType is concerned, of *fields*, which are key / value pairs.
 
 ### Constraints on `Type_factory::constructor cfg` After Normalization:
 
