@@ -22,26 +22,34 @@
 * at the most basic level, a type may be declared with a single argument, the typename, either as first
   argument or in literal property syntax (dot notation), the latter being the preferred form:
 
-  * `declare.t()` or, equivalently,
-  * `declare 't'`.
+  ```coffee
+  declare.t()       # or, equivalently,
+  declare 't'
+  ```
 
   When no tests are declared, a test for type `object` is assumed, so the above declarations amount to:
 
-  * `declare.t 'object'` and
-  * `declare 't', 'object'`, respectively.
+  ```coffee
+  declare.t 'object'      # and
+  declare 't', 'object'
+  ```
 
 * The notation `declare.t 'object'`—where the first string names the type to be declared, and the second the
   constraints for that type—is more explicitly written as
 
-  * `declare.t { test: 'object', }`, or, even more explicitly
-  * `declare { name: 't', test: 'object', }`.
+  ```coffee
+  declare.t { test: 'object', }             # or, even more explicitly
+  declare { name: 't', test: 'object', }
+  ```
 
   The settings object is known as the 'type configuration' or (type) `cfg`.
 
 * Each type can be associated with one or more test functions. If only a single function is given, it may
   come as last argument, possibly preceded by the `cfg`:
 
-  * `declare.t { collection: true, }, ( x ) -> ( @isa.list x ) and ( x.length > 0 )`
+  ```coffee
+  declare.t { collection: true, }, ( x ) -> ( @isa.list x ) and ( x.length > 0 )
+  ```
 
 * The above test has two terms coupled with a logical conjunction (`and`); these can be rewritten as two
   (or any number of) tests:
@@ -86,15 +94,14 @@
   ```coffee
   declare.t { collection: true, }, [
     'list',
-    'nonempty',
-    ]
+    'nonempty', ]
   ```
 
 * A list of typenames may be reduced to a single string with typenames separated by dots:
 
   ```coffee
-  declare.t { collection: true, }, 'list.nonempty'` # which is the implicit form of
-  declare.t { collection: true, test: 'list.nonempty' }`
+  declare.t { collection: true, }, 'list.nonempty'        # which is the implicit form of
+  declare.t { collection: true, test: 'list.nonempty' }
   ```
 
 
