@@ -25,17 +25,15 @@
   * `declare.t()` or, equivalently,
   * `declare 't'`.
 
-  When no test is declared, a test for type `object` is assumed, so the above declarations amount to:
+  When no tests are declared, a test for type `object` is assumed, so the above declarations amount to:
 
-  * `declare.t 'object'` or
-  * `declare 't', 'object'`.
+  * `declare.t 'object'` and
+  * `declare 't', 'object'`, respectively.
 
-* The notation `declare.t 'object'` is more explicitly written as
+* The notation `declare.t 'object'`—where the first string names the type to be declared, and the second the
+  constraints for that type—is more explicitly written as
 
-  * `declare.t { test: 'object', }`
-
-  which, in turn, is short for
-
+  * `declare.t { test: 'object', }`, or, even more explicitly
   * `declare { name: 't', test: 'object', }`.
 
 
