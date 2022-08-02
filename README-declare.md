@@ -159,18 +159,39 @@
   PostgreSQL's [JSON path
   syntax](https://www.postgresql.org/docs/current/functions-json.html#FUNCTIONS-SQLJSON-PATH)). The `$` key
   here signifies the container, and, when it is followed by a fieldname, the corresponding field (duh). With
-  $-notation we can boil down our declaration quite a bit and get meaningful test names for free:
+  $-notation we can boil down our declarations quite a bit to a purely—pun intended—declarative style and
+  get meaningful test names for free:
 
   ```coffee
+  declare.unit 'nonempty.text'
   declare.quantity
-    $:            'object'
+    $:            'object'        # this line will be filled in if missing
     $value:       'float'
     $unit:        'unit'
   ```
 
-  Since `$` is a legal character for identifiers, there's no need for quotes.
+  > Note: Since `$` is a legal character for identifiers in JS, there's no need for quotes.
 
+  The note next to `S: 'object'` points out that when a type declaration uses keys with `$`s, but no
+  solitaire `$` key is present, `S: 'object'` will be assumed and a test to that effect will be prepended to
+  the struct's field tests.
 
+* By this point it should have become clear that declarations can and often are recursive. At some point one
+  could implement the functionality to allow full type declarations as right-hand-sides of e.g. field terms:
+
+  ```coffee
+  ### NOTE not currently supported ###
+  declare.rectangle
+    $color:         'colorname'
+    $border_radius: 'percentage.or.positive0.float'
+    $coordinates:
+      $top_left:
+        $x:             'float'
+        $y:             'float'
+      $bottom_right:
+        $x:             'float'
+        $y:             'float'
+  ```
 
 ### Constraints on `Type_factory::constructor cfg` After Normalization:
 
