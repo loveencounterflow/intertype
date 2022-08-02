@@ -8,6 +8,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
+  - [Quick Links](#quick-links)
 - [▞ InterType](#%E2%96%9E-intertype)
   - [Motivation](#motivation)
   - [Contracts of Type Tests and the Verbs `isa`, `validate`](#contracts-of-type-tests-and-the-verbs-isa-validate)
@@ -24,6 +25,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Is Done](#is-done)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Quick Links
 
 * [Type Declarations](README-declare.md)
 
