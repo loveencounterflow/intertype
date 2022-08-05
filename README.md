@@ -487,6 +487,9 @@ types.declare.quantity
     log tests.at -1              # print info about failed test
   ```
 * **[–]** based on the above, provide nicely formatted error reports so users don't have to
+* **[–]** implement `create` with hedges such that one can write things like
+  `create.nonempty.list.of.integer size: 5`; in this case, the `create` method of type `integer` should be
+  called with argument `{ hedges: [ 'nonempty', 'integer', ], size: 5, }`
 
 
 ## Is Done

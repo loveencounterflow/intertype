@@ -8,12 +8,12 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [User-Facing Constraints on `Type_factory::constructor cfg`](#user-facing-constraints-on-type_factoryconstructor-cfg)
+- [Summary of Signatures for `declare()`](#summary-of-signatures-for-declare)
 - [Constraints on `Type_factory::constructor cfg` After Normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
 - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
 - [`declare`](#declare)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 
 
 
@@ -38,20 +38,20 @@
   constraints for that type—is more explicitly written as
 
   ```coffee
-  declare.t { test: 'object', }             # or, even more explicitly
-  declare { name: 't', test: 'object', }
+  declare.t { isa: 'object', }             # or, even more explicitly
+  declare { name: 't', isa: 'object', }
   ```
 
   The settings object is known as the 'type configuration' or (type) `cfg`.
 
-* Each type can be associated with one or more test functions. If only a single function is given, it may
+* Each type can be associated with one or more isa-functions. If only a single function is given, it may
   come as last argument, possibly preceded by the `cfg`:
 
   ```coffee
   declare.t { collection: true, }, ( x ) -> ( @isa.list x ) and ( x.length > 0 )
   ```
 
-* The above test has two terms coupled with a logical conjunction (`and`); these can be rewritten as two
+<del>* The above test has two terms coupled with a logical conjunction (`and`); these can be rewritten as two
   (or any number of) tests:
 
   ```coffee
@@ -60,8 +60,9 @@
     ( x ) -> x.length > 0
     ]
   ```
+</del>
 
-* It is preferrable that each individual test get a name (which will later surface in eror messages when a
+<del>* It is preferrable that each individual test get a name (which will later surface in eror messages when a
   validation is not satisfied):
 
   ```coffee
@@ -70,16 +71,18 @@
     nonempty  = ( x ) -> x.length > 0
     ]
   ```
+</del>
 
-* But since we're naming things anyway, why not use object notation (shown here with implicit braces):
+<del>* But since we're naming things anyway, why not use object notation (shown here with implicit braces):
 
   ```coffee
   declare.t { collection: true, },
     list:     ( x ) -> @isa.list x
     nonempty: ( x ) -> x.length > 0
   ```
+</del>
 
-* It turns out that being empty or not is implemented as builtin types `empty` and `nonempty` in InterType,
+<del>* It turns out that being empty or not is implemented as builtin types `empty` and `nonempty` in InterType,
   so the second term may be rewritten as an `isa` test:
 
   ```coffee
@@ -92,10 +95,12 @@
   *names* of the types (much like we used `'object'`, above):
 
   ```coffee
+  ### NOTE not currently supported ###
   declare.t { collection: true, }, [
     'list',
     'nonempty', ]
   ```
+</del>
 
 * A list of typenames may be reduced to a single string with typenames separated by dots. This
   notation—the so-called *hedgerow*—is the same as the one used with `isa`, `validate` and friends:
@@ -158,23 +163,19 @@
   formulate named tests in a very succinct way using the '$-notation' (Dollar notation) (also used e.g. by
   PostgreSQL's [JSON path
   syntax](https://www.postgresql.org/docs/current/functions-json.html#FUNCTIONS-SQLJSON-PATH)). The `$` key
-  here signifies the container, and, when it is followed by a fieldname, the corresponding field (duh). With
-  $-notation we can boil down our declarations quite a bit to a purely—pun intended—declarative style and
-  get meaningful test names for free:
+  followed by a fieldname signifies the corresponding field:
 
   ```coffee
   declare.unit 'nonempty.text'
   declare.quantity
-    $:            'object'        # this line will be filled in if missing
+    isa:          'object'        # this line will be filled in if missing
     $value:       'float'
     $unit:        'unit'
   ```
 
-  > Note: Since `$` is a legal character for identifiers in JS, there's no need for quotes.
-
-  The note next to `S: 'object'` points out that when a type declaration uses keys with `$`s, but no
-  solitaire `$` key is present, `S: 'object'` will be assumed and a test to that effect will be prepended to
-  the struct's field tests.
+  The note next to `isa: 'object'` points out that when a type declaration uses keys with `$`s, but no `isa`
+  key is present, then `isa: 'object'` will be assumed and a test to that effect will be prepended to the
+  struct's field tests.
 
 * By this point it should have become clear that declarations can and often are recursive. At some point one
   could implement the functionality to allow full type declarations as right-hand-sides of e.g. field terms:
@@ -182,6 +183,7 @@
   ```coffee
   ### NOTE not currently supported ###
   declare.rectangle
+    collection:     false
     $color:         'colorname'
     $border_radius: 'percentage.or.positive0.float'
     $coordinates:
@@ -192,6 +194,25 @@
         $x:             'float'
         $y:             'float'
   ```
+
+### Summary of Signatures for `declare()`
+
+* **Arity 1**:
+  * `declare { name: 't', isa: 'object', }`
+  * `declare 't'                              ➔ declare { name: 't', isa: 'object', }`
+
+* **Arity 2**:
+  * `declare 't', 'object'                    ➔ declare { name: 't', isa: 'object', }`
+  * `declare 't', { isa: 'object', }          ➔ declare { name: 't', isa: 'object', }`
+  * `declare 't', { isa: 'object', }          ➔ declare { name: 't', isa: 'object', }`
+  * `declare 't', ( x ) -> true               ➔ declare { name: 't', isa: ( x ) -> true, }`
+  * <del>`declare 't', [ ( x ) -> true ]      ➔ declare { name: 't', isa: ( x ) -> true, }`</del>
+  * `declare { name: 't', collection: false, }, 'nonempty.list.of.integer'`
+  * `declare 't', { collection: false, $x: float, $y: float, }`
+  * `declare 't', { collection: false, fields: { x: float, y: float, }, }`
+
+* **Arity 3**:
+  * `declare 't', { collection: false, }, 'nonempty.list.of.integer'`
 
 ### Constraints on `Type_factory::constructor cfg` After Normalization:
 
