@@ -26,18 +26,82 @@ class Type_factory extends H.Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  create_type: ( cfg ) ->
-    ### normalization of `cfg`, i.e. reducing the different allowed shapes to a single one ###
-    H.types.validate.Type_cfg_constructor_cfg_NG cfg = { H.defaults.Type_cfg_constructor_cfg_NG..., cfg..., }
-    test = ( GUY.props.pluck_with_fallback cfg, null, 'test' ).test
-    return @_create_type test, cfg
+  _validate_name: ( name ) ->
+    return name if H.types.isa.nonempty_text name
+    throw new E.Intertype_ETEMPTBD '^tf@1^', \
+      "expected a nonempty text for new type name, got #{rpr name}"
 
   #---------------------------------------------------------------------------------------------------------
-  _create_type: ( test, cfg ) ->
-    if test?  then  cfg.tests = []
-    else            test      = @_create_test_walker cfg.name, cfg.tests
+  _validate_dsc: ( dsc ) ->
+    return dsc            if H.types.isa.object         dsc
+    return { isa: dsc, }  if H.types.isa.function       dsc
+    return { isa: dsc, }  if H.types.isa.nonempty_text  dsc
+    throw new E.Intertype_ETEMPTBD '^tf@2^', \
+      "expected an object, a function or a nonempty text for type description, got #{rpr dsc}"
+
+  #---------------------------------------------------------------------------------------------------------
+  _validate_isa: ( isa ) ->
+    return isa if H.types.isa.function      isa
+    return isa if H.types.isa.nonempty_text isa
+    throw new E.Intertype_ETEMPTBD '^tf@3^', \
+      "expected a function or a nonempty text for `isa`, got #{rpr isa}"
+
+  #---------------------------------------------------------------------------------------------------------
+  _normalize_type_cfg: ( P... ) ->
+    name  = null
+    dsc   = {}   ### short for type DeSCription ###
+    isa   = null
     #.......................................................................................................
-    R = test.bind @
+    switch arity = P.length
+      when 1
+        if H.types.isa.text P[ 0 ] then name  = @_validate_name P[ 0 ]
+        else                            dsc   = @_validate_dsc  P[ 0 ]
+      when 2
+        name    = @_validate_name P[ 0 ]
+        dsc     = @_validate_dsc  P[ 1 ]
+      when 3
+        name    = @_validate_name P[ 0 ]
+        dsc     = @_validate_dsc  P[ 1 ]
+        isa     = @_validate_isa  P[ 2 ]
+      else
+        throw new E.Intertype_ETEMPTBD '^tf@4^', "expected between 1 and 3 arguments, got #{arity}"
+    #.......................................................................................................
+    if isa?
+      if GUY.props.has dsc, 'isa'
+        throw new E.Intertype_ETEMPTBD '^tf@5^', "got two conflicting values for `isa`"
+      dsc.isa   = isa
+    #.......................................................................................................
+    if name?
+      if GUY.props.has dsc, 'name'
+        throw new E.Intertype_ETEMPTBD '^tf@6^', "got two conflicting values for `name`"
+      dsc.name  = name
+    #.......................................................................................................
+    fields = dsc.fields ? null
+    for key, value of dsc
+      continue unless key.startsWith '$'
+      if key is '$'
+        throw new E.Intertype_ETEMPTBD '^tf@7^', "found illegal key '$'"
+      nkey    = key[ 1 .. ]
+      fields ?= {}
+      if fields[ key ]?
+        throw new E.Intertype_ETEMPTBD '^tf@8^', "found duplicate key #{rpr key}"
+      delete dsc[ key ]
+      fields[ nkey ] = value
+    #.......................................................................................................
+    if fields?
+      dsc.fields  = fields
+      dsc.isa    ?= 'object'
+    dsc = { H.defaults.Type_factory_type_dsc..., dsc..., }
+    H.types.validate.Type_factory_type_dsc  dsc
+    #.......................................................................................................
+    return dsc
+
+  #---------------------------------------------------------------------------------------------------------
+  create_type: ( name, isa ) ->
+    icfg = @_normalize_type_cfg
+    #.......................................................................................................
+    cfg.tests  ?= [] ### TAINT move this to normalization ###
+    R           = R.bind @
     ### NOTE `hide()` uses `Object.defineProperty()`, so takes care of `name`: ###
     GUY.props.hide R, k, v for k, v of cfg # when not GUY.props.has R, k
     R = new GUY.props.Strict_owner { target: R, oneshot: true, }
