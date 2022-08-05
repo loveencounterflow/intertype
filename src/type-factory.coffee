@@ -76,6 +76,8 @@ class Type_factory extends H.Intertype_abc
         throw new E.Intertype_ETEMPTBD '^tf@6^', "got two conflicting values for `name`"
       dsc.name  = name
     #.......................................................................................................
+    ### Re-assemble fields in `fields` property, delete `$`-prefixed keys ###
+    ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
     fields = dsc.fields ? null
     for key, value of dsc
       continue unless key.startsWith '$'
