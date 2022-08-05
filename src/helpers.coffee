@@ -135,29 +135,33 @@ E                         = require './errors'
   collection:       false
 
 #-----------------------------------------------------------------------------------------------------------
-@types.declare 'Type_cfg_constructor_cfg_NG', tests:
-  "@isa.object x":                                  ( x ) -> @isa.object x
-  "@isa.nonempty_text x.name":                      ( x ) -> @isa.nonempty_text x.name
+@types.declare 'Type_factory_type_dsc', tests:
+  #.........................................................................................................
+  ### for later / under consideration ###
   # "@isa.deep_boolean x.copy":                       ( x ) -> @isa.boolean x.copy        # refers to result of `type.create()`
   # "@isa.boolean x.seal":                            ( x ) -> @isa.boolean x.seal        # refers to result of `type.create()`
-  "@isa.deep_boolean x.freeze":                     ( x ) -> @isa.deep_boolean x.freeze   # refers to result of `type.create()`
-  "@isa.boolean x.extras":                          ( x ) -> @isa.boolean x.extras        # refers to result of `type.create()`
-  "if extras is false, default must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.default )
-  "x.groups is deprecated":                         ( x ) -> not x.groups?
+  # "@isa.boolean x.oneshot":                         ( x ) -> @isa.boolean x.oneshot        # refers to result of `type.create()`
+  # "@isa.deep_boolean x.freeze":                     ( x ) -> @isa.deep_boolean x.freeze   # refers to result of `type.create()`
+  #.........................................................................................................
+  # "@isa.boolean x.extras":                          ( x ) -> @isa.boolean x.extras        # refers to result of `type.create()`
+  # "if extras is false, default must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.default )
+  # "@isa_optional.function x.create":                ( x ) -> @isa_optional.function x.create
+  #.........................................................................................................
+  "@isa.object x":                                  ( x ) -> @isa.object x
+  "@isa.nonempty_text x.name":                      ( x ) -> @isa.nonempty_text x.name
   "@isa.boolean x.collection":                      ( x ) -> @isa.boolean x.collection
-  "@isa_optional.function x.create":                ( x ) -> @isa_optional.function x.create
   ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
   ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
-  "@isa_optional.function x.test":                  ( x ) -> @isa_optional.function x.test
-  "@isa optional list.of.function x.tests":         ( x ) ->
-    return true unless @isa.list x.tests
-    return @isa_list_of.function x.tests
-  "exactly one of x.test, x.tests must be given":   ( x ) -> ( x.test? and not x.tests? ) or ( not x.test? and x.tests? )
+  "( @isa.function x.isa ) or ( @isa.nonempty_text x.isa )": \
+    ( x ) -> ( @isa.function x.isa ) or ( @isa.nonempty_text x.isa )
+  "@isa optional list.of.function x.fields":        ( x ) ->
+    return true unless @isa.list x.fields
+    return @isa_list_of.function x.fields
 #...........................................................................................................
-@defaults.Type_cfg_constructor_cfg_NG =
+@defaults.Type_factory_type_dsc =
   name:             null
-  test:             null
-  tests:            null
+  isa:              null
+  fields:           null
   collection:       false
   ### `default` omitted on purpose ###
   create:           null      # refers to result of `type.create()`
