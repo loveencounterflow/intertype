@@ -41,8 +41,8 @@ class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _validate_isa: ( isa ) ->
-    return isa if H.types.isa.function      isa
-    return isa if H.types.isa.nonempty_text isa
+    return isa  if H.types.isa.function       isa
+    return isa  if H.types.isa.nonempty_text  isa
     throw new E.Intertype_ETEMPTBD '^tf@3^', \
       "expected a function or a nonempty text for `isa`, got #{rpr isa}"
 
