@@ -150,10 +150,7 @@ E                         = require './errors'
   "@isa.object x":                                  ( x ) -> @isa.object x
   "@isa.nonempty_text x.name":                      ( x ) -> @isa.nonempty_text x.name
   "@isa.boolean x.collection":                      ( x ) -> @isa.boolean x.collection
-  ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
-  ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
-  "( @isa.function x.isa ) or ( @isa.nonempty_text x.isa )": \
-    ( x ) -> ( @isa.function x.isa ) or ( @isa.nonempty_text x.isa )
+  "@isa.function x.isa":                            ( x ) -> @isa.function x.isa
   "@isa optional list.of.function x.fields":        ( x ) ->
     return true unless @isa.list x.fields
     return @isa_list_of.function x.fields
