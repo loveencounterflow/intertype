@@ -93,14 +93,19 @@ class Type_factory extends H.Intertype_abc
     if fields?
       dsc.fields  = fields
       dsc.isa    ?= 'object'
+    #.......................................................................................................
+    if H.types.isa.text dsc.isa
+      dsc.isa     = @_test_from_hedgepath dsc.isa
+    #.......................................................................................................
     dsc = { H.defaults.Type_factory_type_dsc..., dsc..., }
     H.types.validate.Type_factory_type_dsc  dsc
     #.......................................................................................................
     return dsc
 
   #---------------------------------------------------------------------------------------------------------
-  create_type: ( name, isa ) ->
-    icfg = @_normalize_type_cfg
+  create_type: ( P... ) ->
+    dsc     = @_normalize_type_cfg P...
+    dsc.isa = H.nameit dsc.name, dsc.isa.bind @hub
     #.......................................................................................................
     cfg.tests  ?= [] ### TAINT move this to normalization ###
     R           = R.bind @
