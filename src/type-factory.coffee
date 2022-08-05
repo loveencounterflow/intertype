@@ -115,7 +115,12 @@ class Type_factory extends H.Intertype_abc
     return R
 
   #---------------------------------------------------------------------------------------------------------
-  _create_test_walker: ( name, tests ) -> H.nameit name, ( x ) =>
+  _test_from_hedgepath: ( hedgepath ) ->
+    hedges  = hedgepath.split @hub.cfg.sep
+    H.nameit hedgepath, ( x ) -> @_isa hedgpath..., x
+
+  #---------------------------------------------------------------------------------------------------------
+  _create_test_walker: ( tests ) -> ( x ) =>
     for f in tests
       return false if ( R = f x ) is false
       return R unless R is true
