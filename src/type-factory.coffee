@@ -23,6 +23,7 @@ class Type_factory extends H.Intertype_abc
   constructor: ( hub ) ->
     super()
     @hub = hub
+    @cfg = GUY.lft.freeze { rename: [ 'isa', '', ], }
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
