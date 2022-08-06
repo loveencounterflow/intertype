@@ -77,23 +77,7 @@ class Type_factory extends H.Intertype_abc
         throw new E.Intertype_ETEMPTBD '^tf@6^', "got two conflicting values for `name`"
       dsc.name  = name
     #.......................................................................................................
-    ### Re-assemble fields in `fields` property, delete `$`-prefixed keys ###
-    ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
-    fields = dsc.fields ? null
-    for key, value of dsc
-      continue unless key.startsWith '$'
-      if key is '$'
-        throw new E.Intertype_ETEMPTBD '^tf@7^', "found illegal key '$'"
-      nkey    = key[ 1 .. ]
-      fields ?= {}
-      if fields[ key ]?
-        throw new E.Intertype_ETEMPTBD '^tf@8^', "found duplicate key #{rpr key}"
-      delete dsc[ key ]
-      fields[ nkey ] = value
-    #.......................................................................................................
-    if fields?
-      dsc.fields  = fields
-      dsc.isa    ?= 'object'
+    @_assemble_fields dsc
     #.......................................................................................................
     if dsc.isa?
       if H.types.isa.text dsc.isa
@@ -105,6 +89,43 @@ class Type_factory extends H.Intertype_abc
     H.types.validate.Type_factory_type_dsc  dsc
     #.......................................................................................................
     return dsc
+
+  #---------------------------------------------------------------------------------------------------------
+  _assemble_fields: ( dsc ) ->
+    ### Re-assemble fields in `fields` property, delete `$`-prefixed keys ###
+    fields = dsc.fields ? null
+    for key, field_dsc of dsc
+      continue unless key.startsWith '$'
+      if key is '$'
+        throw new E.Intertype_ETEMPTBD '^tf@7^', "found illegal key '$'"
+      nkey    = key[ 1 .. ]
+      fields ?= {}
+      if fields[ key ]?
+        throw new E.Intertype_ETEMPTBD '^tf@8^', "found duplicate key #{rpr key}"
+      delete dsc[ key ]
+      fields[ nkey ] = field_dsc
+    #.......................................................................................................
+    if fields?
+      dsc.fields  = fields
+      dsc.isa    ?= 'object'
+    #.......................................................................................................
+    if dsc.fields?
+      nr = 0
+      unless H.types.isa.object dsc.fields
+        throw new E.Intertype_ETEMPTBD '^tf@8^', \
+          "expected an object for `field` property, got a #{rpr H.types.type_of dsc.fields}"
+      for fieldname, field_dsc of dsc.fields
+        if ( H.types.type_of field_dsc ) is 'text'
+          field_dsc = do ( fieldname, field_dsc ) =>
+            H.nameit field_dsc, ( x ) -> @_isa field_dsc, x[ fieldname ]
+        if ( type = H.types.type_of field_dsc ) is 'function'
+          nr++
+          name_of_isa = if field_dsc.name in @cfg.rename then '#{nr}' else field_dsc.name
+          dsc.fields[ fieldname ] = H.nameit "#{dsc.name}.#{fieldname}:#{name_of_isa}", field_dsc.bind @hub
+        else
+          throw new E.Intertype_ETEMPTBD '^tf@8^', "expected a text or a function for field description, got a #{rpr type}"
+    #.......................................................................................................
+    return null
 
   #---------------------------------------------------------------------------------------------------------
   create_type: ( P... ) ->
