@@ -119,8 +119,8 @@ class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _test_from_hedgepath: ( hedgepath ) ->
-    hedges  = hedgepath.split @hub.cfg.sep
-    H.nameit hedgepath, ( x ) -> @_isa hedgpath..., x
+    hedges = hedgepath.split @hub.cfg.sep
+    H.nameit hedgepath, ( x ) -> @_isa hedges..., x
 
   #---------------------------------------------------------------------------------------------------------
   _create_test_walker: ( tests ) -> ( x ) =>
