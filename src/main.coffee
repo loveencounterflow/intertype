@@ -346,9 +346,9 @@ class Intertype extends H.Intertype_abc
 
 
 ############################################################################################################
-@Type_cfg       = Type_cfg
-@Type_factory   = Type_factory
-@Intertype      = Intertype
-
+@Type_cfg             = Type_cfg
+@Type_factory         = Type_factory
+@Intertype            = Intertype
+@Intertype_user_error = E.Intertype_user_error
 
 
