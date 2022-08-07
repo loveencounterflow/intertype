@@ -130,14 +130,15 @@ class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   create_type: ( P... ) ->
-    dsc     = @_normalize_type_cfg P...
-    #.......................................................................................................
-    # cfg.tests  ?= [] ### TAINT move this to normalization ###
-    # R           = R.bind @
-    # ### NOTE `hide()` uses `Object.defineProperty()`, so takes care of `name`: ###
-    GUY.props.hide R, k, v for k, v of cfg # when not GUY.props.has R, k
-    R = new GUY.props.Strict_owner { target: R, oneshot: true, }
-    return R
+    dsc         = @_normalize_type_cfg P...
+    if dsc.fields?
+      R = H.nameit dsc.isa.name, @_create_test_walker().bind dsc
+    else
+      R       = dsc.isa
+      dsc.isa = null
+      GUY.props.hide R, k, v for k, v of dsc
+      H.nameit name, R
+    return new GUY.props.Strict_owner { target: R, oneshot: true, }
 
   #---------------------------------------------------------------------------------------------------------
   _test_from_hedgepath: ( hedgepath ) ->
