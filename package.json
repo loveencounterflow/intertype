@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "guy": "11.1.1",
+    "guy": "11.1.2",
     "intertype-legacy": "^7.7.1",
     "to-width": "^1.2.0"
   }
