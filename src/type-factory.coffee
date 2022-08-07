@@ -117,6 +117,7 @@ class Type_factory extends H.Intertype_abc
       for fieldname, field_dsc of dsc.fields
         if ( H.types.type_of field_dsc ) is 'text'
           field_dsc = do ( fieldname, field_dsc ) =>
+            # H.nameit field_dsc, ( x ) -> @_isa field_dsc, GUY.props.get x, fieldname, undefined
             H.nameit field_dsc, ( x ) -> @_isa field_dsc, x[ fieldname ]
         if ( type = H.types.type_of field_dsc ) is 'function'
           nr++
