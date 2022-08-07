@@ -59,7 +59,13 @@ class Type_cfg extends H.Intertype_abc
         return test
       test = cfg.test[ 0 ]
     test ?= cfg.test
-    return H.nameit cfg.name, ( x ) => test.call hub, x
+    return H.nameit cfg.name, ( x ) =>
+      try
+        return test.call hub, x
+      catch error
+        throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
+        @hub.state.error = error
+      return false
 
   #---------------------------------------------------------------------------------------------------------
   _compile_object_as_test: ( hub, cfg ) ->
@@ -118,6 +124,7 @@ class Intertype extends H.Intertype_abc
       data:     null
       method:   null
       hedges:   []
+      error:    null
     #.......................................................................................................
     @_register_hedges()
     DECLARATIONS._provisional_declare_basic_types @
@@ -143,8 +150,12 @@ class Intertype extends H.Intertype_abc
         return target.toString    if key is 'toString'
         return target.call        if key is 'call'
         return target.apply       if key is 'apply'
+        #...................................................................................................
+        ### initialize `state` ###
         self.state.method = method_name
         self.state.hedges = [ key, ]
+        self.state.error  = null
+        #...................................................................................................
         if key in [ 'of', 'or', ]
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
             "hedgerow cannot start with `#{key}`, must be preceeded by hedge"
@@ -204,6 +215,15 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
+    try
+      return @_inner_isa hedges..., x
+    catch error
+      throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
+      @state.error = error
+    return false
+
+  #---------------------------------------------------------------------------------------------------------
+  _inner_isa: ( hedges..., x ) ->
     @_validate_hedgerow hedges
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
@@ -231,7 +251,7 @@ class Intertype extends H.Intertype_abc
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
             for element from x
-              return false if ( @_isa tail_hedges..., element ) is false
+              return false if ( @_inner_isa tail_hedges..., element ) is false
           catch error
             throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
             throw new E.Intertype_ETEMPTBD '^intertype.isa@7^', \

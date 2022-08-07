@@ -174,9 +174,11 @@ E                         = require './errors'
 @types.declare 'Intertype_constructor_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
+  "x.errors in [ false, 'throw', ]":          ( x ) -> x.errors in [ false, 'throw', ]
 #...........................................................................................................
 @defaults.Intertype_constructor_cfg =
   sep:              '.'
+  errors:           false
 
 # #-----------------------------------------------------------------------------------------------------------
 # @types.declare 'Intertype_walk_hedgepaths_cfg', tests:
