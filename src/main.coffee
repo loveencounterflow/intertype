@@ -96,8 +96,9 @@ class Intertype extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
-    #.......................................................................................................
     GUY.props.hide @, 'cfg',          { H.defaults.Intertype_constructor_cfg..., cfg..., }
+    H.types.validate.Intertype_constructor_cfg @cfg
+    #.......................................................................................................
     GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
     GUY.props.hide @, '_collections', new Set()
     GUY.props.hide @, '_signals',     H.signals
