@@ -145,8 +145,10 @@ class Type_factory extends H.Intertype_abc
     H.nameit hedgepath, ( x ) -> @_isa hedges..., x
 
   #---------------------------------------------------------------------------------------------------------
-  _create_test_walker: ( tests ) -> ( x ) =>
-    for f in tests
+  _create_test_walker: -> ( x ) ->
+    return false if ( R = @isa x ) is false
+    return R unless R is true
+    for _, f of @fields
       return false if ( R = f x ) is false
       return R unless R is true
     return true
