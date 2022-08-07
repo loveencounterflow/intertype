@@ -45,8 +45,33 @@ A JavaScript type checker with helpers to implement own types and do object shap
 ### Type Tests
 
 * A type test (TT) is a function that accepts a single argument and returns a boolean.
-* A TT is not allowed to throw an exception or return anything else but `true` or `false`.
-* An exception may be made when a TT is called with more than one or zero arguments.
+* TTs should not normally throw errors; however, that can sometimes be inconvenient to implement. For this
+  reason, InterType implements 'exception-guarding' which entails that should a type tester inadvertently
+  cause an exception, that exception will be silently caught and stored in the `state.error` property of the
+  `Intertype` instance; the return value of the call will be set `false`. The following types `nevah` and
+  `oops` are almost equivalent in that they return `false` for any input; however, immediately after using
+  `oops`, the suppressed error may be accessed through `types.state.error` property:
+
+  ```coffee
+  { Intertype
+    Intertype_user_error } = require 'intertype'
+  types = new Intertype
+  types.declare.nevah       ( x ) -> false
+  types.declare.oops        ( x ) -> throw new Error 'oops'
+  types.declare.oops_anyway ( x ) -> throw new Intertype_user_error 'oops'
+  types.isa.oops  42                # `false`
+  types.state.error?                # `true` (i.e. `types.state.error` contains error)
+  types.isa.nevah 42                # `false`
+  types.state.error?                # `false` (i.e. no error, all OK)
+  types.isa.oops_anyway 42          # !!! throws an error
+  ```
+
+  Because silently suppressed errors
+  can be tricky to debug and checking for `state.error` is easily forgotten (and should not normally be
+  necessary), users may elect to switch off exception-guarding by setting `errors` to `'throw'` (as in,
+  `types = new Intertype { errors: 'throw', }`)
+* Users may always construct type testers whose intentional errors will not be silently caught by deriving
+  their errors from `Intertype_user_error`
 
 
 ### `isa`
@@ -323,12 +348,16 @@ validate            nonempty                            odd             negative
 
 ## Intertype `state` Property
 
-* `Intertype` instances have a `state` property; initial value is `{ data: null, method: null, hedges: [], }`
+* `Intertype` instances have a `state` property; initial value is `{ data: null, method: null, hedges: [],
+  error: null, }`
 * when chained methods on `isa` and `validate` are called (as in `isa.optional.positive0.integer 42`),
   `method` will be set to the name of method to be invokes (here `'_isa'`) and `hedges` will contain the
   chain of hedges (including the type), in this case `[ 'optional', 'positive0', 'integer', ]`
 * type testing methods are allowed to set or manipulate the `types.state.data` value; this can be used as a
   side channel e.g. to cache intermediate and ancillary results from an expensive testing method
+* should an `isa` method cause an error with an `Intertype` instance with an `errors: false` setting,
+  `state.error` will contain that error to enable applications to query for `types.state.error?` when an
+  `isa` test has failed
 
 ## Intertype `create`
 
@@ -490,6 +519,8 @@ types.declare.quantity
 * **[–]** implement `create` with hedges such that one can write things like
   `create.nonempty.list.of.integer size: 5`; in this case, the `create` method of type `integer` should be
   called with argument `{ hedges: [ 'nonempty', 'integer', ], size: 5, }`
+* **[–]** wrap all hedges and type testers to check for arity `1`; mabe this can be done in
+  `_get_hedge_base_proxy_cfg` once for all
 
 
 ## Is Done
@@ -534,3 +565,8 @@ types.declare.quantity
 * **[+]** <del>change `collection` to `iterable`, b/c their distinguishing mark is that they can be iterated
   over by virtue of `x[ Symbol.iterator ]` returning a function</del> <ins>make `collection` a boolean
   property of type configuration, implement type `iterable`</ins>
+* **[+]** implement 'exception-guarding' where we catch exceptions thrown by type testers when so configured
+  (with `errors: false`) and return `false` instead, recording the error in `state`. When `errors: 'throw'`
+  is set, errors will be thrown as normally
+* **[+]** allow users to access `Intertype_user_error` class so they can throw errors that are exempt from
+  exception-guarding
