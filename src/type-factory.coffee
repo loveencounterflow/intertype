@@ -88,7 +88,7 @@ class Type_factory extends H.Intertype_abc
         f = dsc.isa.bind @hub
         return ( x ) =>
           try
-            f x
+            return f x
           catch error
             throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
             @hub.state.error = error
