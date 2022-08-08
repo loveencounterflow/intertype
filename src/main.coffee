@@ -19,75 +19,75 @@ DECLARATIONS              = require './declarations'
 
 
 
-#===========================================================================================================
-class Type_cfg extends H.Intertype_abc
+# #===========================================================================================================
+# class Type_cfg extends H.Intertype_abc
 
-  #---------------------------------------------------------------------------------------------------------
-  constructor: ( hub, cfg ) ->
-    ### TAINT ensure type_cfg does not contain `type`, `name` ###
-    ### TAINT do not use `tests.every()` when only 1 test given ###
-    super()
-    GUY.props.hide @, 'hub', hub
-    cfg                   = { H.defaults.Type_cfg_constructor_cfg..., cfg..., }
-    H.types.validate.Type_cfg_constructor_cfg cfg
-    cfg.test              = new Proxy ( @_compile_test hub, cfg ), hub._get_hedge_sub_proxy_cfg hub
-    #.......................................................................................................
-    ### TAINT not used by `size_of()` ###
-    cfg.size              = 'length' if cfg.isa_collection and not cfg.size?
-    cfg.size             ?= null
-    #.......................................................................................................
-    @[ k ]                = v for k, v of cfg
-    return self = GUY.lft.freeze @
+#   #---------------------------------------------------------------------------------------------------------
+#   constructor: ( hub, cfg ) ->
+#     ### TAINT ensure type_cfg does not contain `type`, `name` ###
+#     ### TAINT do not use `tests.every()` when only 1 test given ###
+#     super()
+#     GUY.props.hide @, 'hub', hub
+#     cfg                   = { H.defaults.Type_cfg_constructor_cfg..., cfg..., }
+#     H.types.validate.Type_cfg_constructor_cfg cfg
+#     cfg.test              = new Proxy ( @_compile_test hub, cfg ), hub._get_hedge_sub_proxy_cfg hub
+#     #.......................................................................................................
+#     ### TAINT not used by `size_of()` ###
+#     cfg.size              = 'length' if cfg.isa_collection and not cfg.size?
+#     cfg.size             ?= null
+#     #.......................................................................................................
+#     @[ k ]                = v for k, v of cfg
+#     return self = GUY.lft.freeze @
 
-  #---------------------------------------------------------------------------------------------------------
-  _compile_test: ( hub, cfg ) ->
-    cfg.test = @_compile_object_as_test hub, cfg unless cfg.test?
-    if not cfg.extras
-      cfg.test                    = [ cfg.test, ] unless H.types.isa.list cfg.test
-      keys                        = ( k for k of cfg.default ).sort()
-      cfg.test.unshift no_extras  = ( x ) => H.equals ( k for k of x ).sort(), keys
-    test = null
-    if H.types.isa.list cfg.test
-      unless cfg.test.length is 1
-        # fn_names  = ( f.name for f in cfg.test )
-        tests     = ( f.bind hub for f in cfg.test )
-        test      = H.nameit cfg.name, ( x ) =>
-          for test in tests
-            return false if ( R = test x ) is false
-            return R unless R is true
-          return true
-        return test
-      test = cfg.test[ 0 ]
-    test ?= cfg.test
-    return H.nameit cfg.name, ( x ) =>
-      try
-        return test.call hub, x
-      catch error
-        throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
-        @hub.state.error = error
-      return false
+#   #---------------------------------------------------------------------------------------------------------
+#   _compile_test: ( hub, cfg ) ->
+#     cfg.test = @_compile_object_as_test hub, cfg unless cfg.test?
+#     if not cfg.extras
+#       cfg.test                    = [ cfg.test, ] unless H.types.isa.list cfg.test
+#       keys                        = ( k for k of cfg.default ).sort()
+#       cfg.test.unshift no_extras  = ( x ) => H.equals ( k for k of x ).sort(), keys
+#     test = null
+#     if H.types.isa.list cfg.test
+#       unless cfg.test.length is 1
+#         # fn_names  = ( f.name for f in cfg.test )
+#         tests     = ( f.bind hub for f in cfg.test )
+#         test      = H.nameit cfg.name, ( x ) =>
+#           for test in tests
+#             return false if ( R = test x ) is false
+#             return R unless R is true
+#           return true
+#         return test
+#       test = cfg.test[ 0 ]
+#     test ?= cfg.test
+#     return H.nameit cfg.name, ( x ) =>
+#       try
+#         return test.call hub, x
+#       catch error
+#         throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
+#         @hub.state.error = error
+#       return false
 
-  #---------------------------------------------------------------------------------------------------------
-  _compile_object_as_test: ( hub, cfg ) ->
-    type  = cfg.name
-    R     = []
-    for key, test of cfg
-      continue unless key.startsWith '$'
-      if H.types.isa.function test
-        R.push test
-        continue
-      field = key[ 1 .. ]
-      R.push @_test_from_text hub, type, field, test
-    return R
+  # #---------------------------------------------------------------------------------------------------------
+  # _compile_object_as_test: ( hub, cfg ) ->
+  #   type  = cfg.name
+  #   R     = []
+  #   for key, test of cfg
+  #     continue unless key.startsWith '$'
+  #     if H.types.isa.function test
+  #       R.push test
+  #       continue
+  #     field = key[ 1 .. ]
+  #     R.push @_test_from_text hub, type, field, test
+  #   return R
 
-  #---------------------------------------------------------------------------------------------------------
-  _test_from_text: ( hub, type, field, property_chain ) ->
-    property_chain  = property_chain.split '.'
-    if field is ''
-      name = "#{type}:#{property_chain.join hub.cfg.sep}"
-      return H.nameit name, ( x ) -> @_isa property_chain..., x
-    name = "#{type}.#{field}:#{property_chain.join hub.cfg.sep}"
-    return H.nameit name, ( x ) -> @_isa property_chain..., x[ name ]
+  # #---------------------------------------------------------------------------------------------------------
+  # _test_from_text: ( hub, type, field, property_chain ) ->
+  #   property_chain  = property_chain.split '.'
+  #   if field is ''
+  #     name = "#{type}:#{property_chain.join hub.cfg.sep}"
+  #     return H.nameit name, ( x ) -> @_isa property_chain..., x
+  #   name = "#{type}.#{field}:#{property_chain.join hub.cfg.sep}"
+  #   return H.nameit name, ( x ) -> @_isa property_chain..., x[ name ]
 
 
 #===========================================================================================================
@@ -106,18 +106,11 @@ class Intertype extends H.Intertype_abc
     GUY.props.hide @, 'isa',          new Proxy {}, @_get_hedge_base_proxy_cfg @, '_isa'
     GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg @, '_validate'
     GUY.props.hide @, 'create',       new Proxy {}, @_get_hedge_base_proxy_cfg @, '_create'
+    GUY.props.hide @, 'type_factory', new Type_factory @
     #.......................................................................................................
     ### TAINT squeezing this in here for the moment, pending reformulation of `isa` &c to make them callable: ###
-    declare_getter  = ( _, type ) => ( cfg, test = null ) =>
-      if H.types.isa.function cfg
-        cfg = { test: cfg, }
-      if test?
-        if cfg?.test?
-          throw new E.Intertype_ETEMPTBD '^intertype.declare@1^', \
-            "cannot give both positional and named argument test"
-        cfg = { cfg..., test, }
-      @_declare.call @, type, cfg
-    GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: declare_getter
+    GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, name ) => ( P... ) =>
+      @_declare name, P...
     #.......................................................................................................
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { oneshot: true, }
     # GUY.props.hide @, 'types',        H.types
@@ -133,9 +126,9 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _register_hedges: ->
-    for hedge, test of @_hedges._hedgemethods
-      do ( hedge, test ) =>
-        @declare hedge, { test, }
+    for hedge, isa of @_hedges._hedgemethods
+      do ( hedge, isa ) =>
+        @declare hedge, { isa, }
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -195,15 +188,15 @@ class Intertype extends H.Intertype_abc
         return R
 
   #---------------------------------------------------------------------------------------------------------
-  _declare: ( type, type_cfg ) ->
+  _declare: ( P... ) ->
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
-    type_cfg            = { type_cfg..., name: type, }
-    type_cfg            = new Type_cfg @, type_cfg
-    @registry[  type ]  = type_cfg
-    @isa[       type ]  = type_cfg.test
-    @validate[  type ]  = new Proxy ( ( x ) => @_validate type, x ), @_get_hedge_sub_proxy_cfg @
-    @_collections.add type if type_cfg.collection
+    dsc                       = @type_factory.create_type P...
+    @registry[ dsc.typename ] = dsc
+    ### TAINT need not call _get_hedge_sub_proxy_cfg() twice? ###
+    @isa[      dsc.typename ] = new Proxy dsc,                                     @_get_hedge_sub_proxy_cfg @
+    @validate[ dsc.typename ] = new Proxy ( ( x ) => @_validate dsc.typename, x ), @_get_hedge_sub_proxy_cfg @
+    @_collections.add dsc.typename if dsc.collection
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -337,16 +330,15 @@ class Intertype extends H.Intertype_abc
   size_of:                    H.size_of
   _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
 
-  #-----------------------------------------------------------------------------------------------------------
-  _walk_hedgepaths: ( cfg ) ->
-    throw new Error "^intertype._walk_hedgepaths@9^ not implemented"
-    # cfg = { H.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
-    # yield from GUY.props.walk_tree @isa, cfg
-    # return null
+  # #-----------------------------------------------------------------------------------------------------------
+  # _walk_hedgepaths: ( cfg ) ->
+  #   throw new Error "^intertype._walk_hedgepaths@9^ not implemented"
+  #   # cfg = { H.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
+  #   # yield from GUY.props.walk_tree @isa, cfg
+  #   # return null
 
 
 ############################################################################################################
-@Type_cfg             = Type_cfg
 @Type_factory         = Type_factory
 @Intertype            = Intertype
 @Intertype_user_error = E.Intertype_user_error

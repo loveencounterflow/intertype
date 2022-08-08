@@ -7,7 +7,7 @@ GUY                       = require 'guy'
 { debug
   warn
   urge
-  help }                  = GUY.trm.get_loggers 'INTERTYPE'
+  help }                  = GUY.trm.get_loggers 'INTERTYPE/TYPE_FACTORY'
 { rpr }                   = GUY.trm
 #...........................................................................................................
 E                         = require './errors'
@@ -55,7 +55,7 @@ class Type_factory extends H.Intertype_abc
     #.......................................................................................................
     switch arity = P.length
       when 1
-        if H.types.isa.text P[ 0 ] then name  = @_validate_name P[ 0 ]
+        if H.types.isa.text P[ 0 ] then dsc   = { name: P[ 0 ], }
         else                            dsc   = @_validate_dsc  P[ 0 ]
       when 2
         name    = @_validate_name P[ 0 ]
@@ -72,10 +72,11 @@ class Type_factory extends H.Intertype_abc
         throw new E.Intertype_ETEMPTBD '^tf@5^', "got two conflicting values for `isa`"
       dsc.isa   = isa
     #.......................................................................................................
-    if name?
-      if GUY.props.has dsc, 'name'
-        throw new E.Intertype_ETEMPTBD '^tf@6^', "got two conflicting values for `name`"
-      dsc.name  = name
+    if name? and ( dsc_name = GUY.props.get dsc, 'name', null )? and ( dsc_name isnt name )
+      throw new E.Intertype_ETEMPTBD '^tf@6^', \
+        "got two conflicting values for `name` (#{rpr name} and #{rpr dsc_name})"
+    dsc.name     ?= name
+    dsc.typename  = dsc.name
     #.......................................................................................................
     @_assemble_fields dsc
     #.......................................................................................................
@@ -83,7 +84,15 @@ class Type_factory extends H.Intertype_abc
       if H.types.isa.text dsc.isa
         dsc.isa     = @_test_from_hedgepath dsc.isa
       name_of_isa = if dsc.isa.name in @cfg.rename then '#0' else dsc.isa.name
-      dsc.isa     = H.nameit "#{dsc.name}:#{name_of_isa}", dsc.isa.bind @hub
+      dsc.isa     = H.nameit "#{dsc.name}:#{name_of_isa}", do =>
+        f = dsc.isa.bind @hub
+        return ( x ) =>
+          try
+            f x
+          catch error
+            throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
+            @hub.state.error = error
+          return false
     #.......................................................................................................
     dsc = { H.defaults.Type_factory_type_dsc..., dsc..., }
     H.types.validate.Type_factory_type_dsc  dsc
@@ -131,13 +140,17 @@ class Type_factory extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   create_type: ( P... ) ->
     dsc         = @_normalize_type_cfg P...
+    # debug '^7657^', dsc
+    # debug '^7657^', ( k for k of dsc )
     if dsc.fields?
-      R = H.nameit dsc.isa.name, @_create_test_walker().bind dsc
+      name    = dsc.isa.name
+      R       = @_create_test_walker().bind dsc
     else
+      name    = dsc.name
       R       = dsc.isa
       dsc.isa = null
-      GUY.props.hide R, k, v for k, v of dsc
-      H.nameit name, R
+    GUY.props.hide R, k, v for k, v of dsc when k isnt 'name'
+    H.nameit name, R
     return new GUY.props.Strict_owner { target: R, oneshot: true, }
 
   #---------------------------------------------------------------------------------------------------------
@@ -147,12 +160,19 @@ class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _create_test_walker: -> ( x ) ->
-    return false if ( R = @isa x ) is false
-    return R unless R is true
-    for _, f of @fields
-      return false if ( R = f x ) is false
+    # try
+    #   ### TAINT use `@isa()` or `@_isa()` ? ###
+      return false if ( R = @isa x ) is false
       return R unless R is true
-    return true
+      for _, f of @fields
+        return false if ( R = f x ) is false
+        return R unless R is true
+      return true
+    # catch error
+    #   throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
+    #   @hub.state.error = error
+    # return false
+
 
 
 ############################################################################################################
