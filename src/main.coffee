@@ -283,7 +283,7 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ({ term, x, value, verdict, }) ->
-    urge '^4535^', GUY.trm.reverse { term, x, value, verdict, }
+    # urge '^4535^', GUY.trm.reverse { term, x, value, verdict, }
     return verdict
 
   #---------------------------------------------------------------------------------------------------------
