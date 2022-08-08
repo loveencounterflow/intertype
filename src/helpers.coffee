@@ -149,6 +149,7 @@ E                         = require './errors'
   #.........................................................................................................
   "@isa.object x":                                  ( x ) -> @isa.object x
   "@isa.nonempty_text x.name":                      ( x ) -> @isa.nonempty_text x.name
+  "@isa.nonempty_text x.typename":                  ( x ) -> @isa.nonempty_text x.typename
   "@isa.boolean x.collection":                      ( x ) -> @isa.boolean x.collection
   "@isa.function x.isa":                            ( x ) -> @isa.function x.isa
   "@isa optional list.of.function x.fields":        ( x ) ->
@@ -157,6 +158,7 @@ E                         = require './errors'
 #...........................................................................................................
 @defaults.Type_factory_type_dsc =
   name:             null
+  typename:         null
   isa:              null
   fields:           null
   collection:       false
