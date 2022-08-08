@@ -259,7 +259,7 @@ class Intertype extends H.Intertype_abc
       unless ( type_cfg = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
-      result = type_cfg.test.call @, x
+      result = type_cfg.call @, x
       switch result
         when H.signals.return_true
           return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
