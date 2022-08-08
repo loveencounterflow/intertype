@@ -521,6 +521,8 @@ types.declare.quantity
   called with argument `{ hedges: [ 'nonempty', 'integer', ], size: 5, }`
 * **[–]** wrap all hedges and type testers to check for arity `1`; mabe this can be done in
   `_get_hedge_base_proxy_cfg` once for all
+* **[–]** rule out use of names with `cfg.sep` (`.`) (generally, check for name being a valid JS identifier;
+  likewise, `sep` should be restricted to non-identifier characters)
 
 
 ## Is Done
