@@ -144,7 +144,7 @@ class Type_factory extends H.Intertype_abc
     # debug '^7657^', ( k for k of dsc )
     if dsc.fields?
       name    = dsc.isa.name
-      R       = @_create_test_walker().bind dsc
+      R       = ( @_create_test_walker dsc ).bind dsc
     else
       name    = dsc.name
       R       = dsc.isa
@@ -160,20 +160,29 @@ class Type_factory extends H.Intertype_abc
     H.nameit hedgepath, ( x ) -> @_isa hedges..., x
 
   #---------------------------------------------------------------------------------------------------------
-  _create_test_walker: -> ( x ) ->
-    # try
-    #   ### TAINT use `@isa()` or `@_isa()` ? ###
+  _create_test_walker: ( dsc ) ->
+    has_extras = null
+    if ( test_for_extras = not dsc.extras )
+      has_extras = @_create_has_extras dsc
+    return ( x ) ->
       return false if ( R = @isa x ) is false
       return R unless R is true
+      return false if test_for_extras and has_extras x
       for _, f of @fields
         return false if ( R = f x ) is false
         return R unless R is true
       return true
-    # catch error
-    #   throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
-    #   @hub.state.error = error
-    # return false
 
+  #---------------------------------------------------------------------------------------------------------
+  _create_has_extras: ( dsc ) ->
+    default_keys = new Set Object.keys dsc.default
+    R = ( x ) ->
+      x_keys = new Set Object.keys x
+      if ( extra_keys = GUY.sets.subtract x_keys, default_keys ).size isnt 0
+        @state.extra_keys = [ extra_keys..., ]
+        return true
+      return false
+    return H.nameit "#{dsc.name}:has_extras", R.bind @hub
 
 
 ############################################################################################################

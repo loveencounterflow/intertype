@@ -143,10 +143,6 @@ E                         = require './errors'
   # "@isa.boolean x.oneshot":                         ( x ) -> @isa.boolean x.oneshot        # refers to result of `type.create()`
   # "@isa.deep_boolean x.freeze":                     ( x ) -> @isa.deep_boolean x.freeze   # refers to result of `type.create()`
   #.........................................................................................................
-  # "@isa.boolean x.extras":                          ( x ) -> @isa.boolean x.extras        # refers to result of `type.create()`
-  # "if extras is false, default must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.default )
-  # "@isa_optional.function x.create":                ( x ) -> @isa_optional.function x.create
-  #.........................................................................................................
   "@isa.object x":                                  ( x ) -> @isa.object x
   "@isa.nonempty_text x.name":                      ( x ) -> @isa.nonempty_text x.name
   "@isa.nonempty_text x.typename":                  ( x ) -> @isa.nonempty_text x.typename
@@ -155,6 +151,9 @@ E                         = require './errors'
   "@isa optional list.of.function x.fields":        ( x ) ->
     return true unless @isa.list x.fields
     return @isa_list_of.function x.fields
+  "@isa.boolean x.extras":                          ( x ) -> @isa.boolean x.extras        # refers to result of `type.create()`
+  "if extras is false, default must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.default )
+  "@isa_optional.function x.create":                ( x ) -> @isa_optional.function x.create
 #...........................................................................................................
 @defaults.Type_factory_type_dsc =
   name:             null
