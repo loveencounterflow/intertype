@@ -114,15 +114,22 @@ class Intertype extends H.Intertype_abc
     #.......................................................................................................
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { oneshot: true, }
     # GUY.props.hide @, 'types',        H.types
-    @state =
-      data:     null
-      method:   null
-      hedges:   []
-      error:    null
+    @state = {}
+    @_initialize_state
     #.......................................................................................................
     @_register_hedges()
     DECLARATIONS._provisional_declare_basic_types @
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _initialize_state: ->
+    @state.data           = null if @state.data is undefined
+    @state.extra_keys     = null
+    @state.method         = null
+    @state.hedges        ?= []
+    @state.hedges.length  = 0
+    @state.error          = null
+    return null
 
   #---------------------------------------------------------------------------------------------------------
   _register_hedges: ->
@@ -145,10 +152,9 @@ class Intertype extends H.Intertype_abc
         return target.call        if key is 'call'
         return target.apply       if key is 'apply'
         #...................................................................................................
-        ### initialize `state` ###
+        self._initialize_state()
         self.state.method = method_name
-        self.state.hedges = [ key, ]
-        self.state.error  = null
+        self.state.hedges.push key
         #...................................................................................................
         if key in [ 'of', 'or', ]
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
