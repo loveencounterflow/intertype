@@ -115,7 +115,7 @@ class Intertype extends H.Intertype_abc
     GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { oneshot: true, }
     # GUY.props.hide @, 'types',        H.types
     @state = {}
-    @_initialize_state
+    @_initialize_state()
     #.......................................................................................................
     @_register_hedges()
     DECLARATIONS._provisional_declare_basic_types @
