@@ -125,10 +125,9 @@ class Type_factory extends H.Intertype_abc
           "expected an object for `field` property, got a #{rpr H.types.type_of dsc.fields}"
       for fieldname, field_dsc of dsc.fields
         if ( H.types.type_of field_dsc ) is 'text'
-          field_dsc = @hub._split_hedgerow_text field_dsc
-          field_dsc = do ( fieldname, field_dsc ) =>
-            # H.nameit field_dsc, ( x ) -> @_isa field_dsc, GUY.props.get x, fieldname, undefined
-            H.nameit field_dsc, ( x ) -> @_isa field_dsc..., x[ fieldname ]
+          hedges    = @hub._split_hedgerow_text field_dsc
+          field_dsc = do ( fieldname, field_dsc, hedges ) =>
+            H.nameit field_dsc, ( x ) -> @_isa hedges..., x[ fieldname ]
         if ( type = H.types.type_of field_dsc ) is 'function'
           nr++
           name_of_isa = if field_dsc.name in @cfg.rename then '#{nr}' else field_dsc.name
