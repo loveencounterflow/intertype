@@ -80,7 +80,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   thrown, e.g. when a type name is undeclared or `of` is preceded by a non-iterable type name (cf the
   non-sensical `isa.integer.of.integer 42`). This is not the type test, this is the verb `isa` complaining
   about a malformed chain of type tests.
-* It is not allowed to use a name in an `isa` (or `validate` or `create`) hedgrow without that name being
+* It is not allowed to use a name in an `isa` (or `validate` or `create`) hedgerow without that name being
   `declare`d prior to that.
 
 ## `validate`
@@ -465,7 +465,7 @@ types.declare.quantity
 * **[–]** implement `last_of()`, `first_of()`
 * **[–]** try to centralize hedgerow validation; happens in several places now
 * **[–]** implement aliases
-* **[–]** implement `isa`, `validate`, `create` as functions that accept hedgrow, value (i.e. can say both
+* **[–]** implement `isa`, `validate`, `create` as functions that accept hedgerow, value (i.e. can say both
   `isa.list.of.integer []` and `isa 'list', 'of', 'integer', []`, maybe `isa.list.of' 'integer', []`, too)
 * **[–]** currently `isa` &c call instance method `_isa` &c; make it so that `isa` calls `super()` and
   define effective `isa()` in base class `Intertype_xxxxx extends Intertype_abc`, `Intertype extends
@@ -506,7 +506,7 @@ types.declare.quantity
   pattern' &c (?)
 * **[–]** turn `Type_cfg` instances into functions
 * **[–]** document that `isa.optional.t x` is just a convenient way to write `isa.null.or.undefined.or.t x`,
-  which explains why a hedgrow can be short-circuited as soon as `not x?` has been found to be `true`
+  which explains why a hedgerow can be short-circuited as soon as `not x?` has been found to be `true`
 * **[–]** implement `examine`, a non-throwing equivalent to `validate`, which returns the test clauses up to
   the point of failure or `null`. Variant: call it `fails`, returns `false` where `isa` had returned `true`,
   non-empty list of tests otherwise:
