@@ -51,14 +51,9 @@ class Intertype extends H.Intertype_abc
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _initialize_state: ->
-    @state.data           = null if @state.data is undefined
-    @state.extra_keys     = null
-    @state.method         = null
-    @state.hedges        ?= []
-    @state.hedges.length  = 0
-    @state.error          = null
-    return null
+  _initialize_state: ( cfg ) ->
+    ### TAINT should use deep copy of default object ###
+    return @state = { H.defaults.Intertype_state..., hedges2: [], hedgeresults: [], cfg..., }
 
   #---------------------------------------------------------------------------------------------------------
   _register_hedges: ->
