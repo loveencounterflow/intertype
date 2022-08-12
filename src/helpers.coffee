@@ -181,6 +181,18 @@ E                         = require './errors'
   sep:              '.'
   errors:           false
 
+#-----------------------------------------------------------------------------------------------------------
+@defaults.Intertype_state =
+  method:         null
+  isa_depth:      0
+  hedges:         null
+  hedges2:        null
+  hedgeresults:   null
+  error:          null
+  extra_keys:     null
+  data:           null
+
+
 # #-----------------------------------------------------------------------------------------------------------
 # @types.declare 'Intertype_walk_hedgepaths_cfg', tests:
 #   "@isa.object x":                      ( x ) -> @isa.object x
@@ -205,7 +217,7 @@ class Intertype_abc extends GUY.props.Strict_owner
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@defaults       = GUY.lft.freeze @defaults
+# @defaults       = GUY.lft.freeze @defaults
 @Intertype_abc  = Intertype_abc
 
 

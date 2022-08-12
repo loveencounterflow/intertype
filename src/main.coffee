@@ -5,6 +5,7 @@
 ############################################################################################################
 GUY                       = require 'guy'
 { debug
+  info
   warn
   urge
   help }                  = GUY.trm.get_loggers 'INTERTYPE'
@@ -77,8 +78,9 @@ class Intertype extends H.Intertype_abc
         return target.apply       if key is 'apply'
         #...................................................................................................
         self._initialize_state()
-        self.state.method = method_name
-        self.state.hedges.push key
+        self.state.method       = method_name
+        self.state.hedges       = [ key, ]
+        # self.state.hedgeresults = [ [ key, null, ], ]
         #...................................................................................................
         if key in [ 'of', 'or', ]
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
@@ -102,10 +104,11 @@ class Intertype extends H.Intertype_abc
         return target.toString    if key is 'toString'
         return target.call        if key is 'call'
         return target.apply       if key is 'apply'
-        self.state.hedges.push key
+        self.state.hedges.push        key
+        # self.state.hedgeresults.push  [ key, null, ]
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
-        unless ( type_cfg = GUY.props.get @registry, key, null )?
+        unless ( type_dsc = GUY.props.get @registry, key, null )?
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
         #...................................................................................................
         ### check for preceding type being iterable when building hedgerow with `of`: ###
@@ -139,15 +142,22 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
+    @state.isa_depth++
+    R = false
     try
-      return @_inner_isa hedges..., x
+      R = @_inner_isa hedges..., x
     catch error
       throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
       @state.error = error
-    return false
+    @state.isa_depth--
+    return R
 
   #---------------------------------------------------------------------------------------------------------
   _inner_isa: ( hedges..., x ) ->
+    @state.hedges2 = [ @state.hedges2..., hedges..., ]
+    # debug '^34358579^', @state.isa_depth, GUY.trm.reverse hedges
+    # debug '^34358579^', @state
+    xxx_push = ( r ) => r # help '^23424^', hedge_idx, r, @state.hedgeresults, hedges; r # @state.hedgeresults[ hedge_idx ][ 1 ] = r; r
     @_validate_hedgerow hedges
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
@@ -159,12 +169,13 @@ class Intertype extends H.Intertype_abc
     loop
       hedge_idx++
       if hedge_idx > last_hedge_idx
-        return R
+        return ( xxx_push R )
       hedge       = hedges[ hedge_idx ]
+      # urge '^456^', hedge
       is_terminal = ( hedges[ hedge_idx + 1 ] is 'or' ) or ( hedge_idx is last_hedge_idx )
       #.....................................................................................................
       if advance
-        return false if is_terminal
+        return ( xxx_push false ) if is_terminal
         continue unless hedge is 'or'
       advance = false
       #.....................................................................................................
@@ -175,33 +186,37 @@ class Intertype extends H.Intertype_abc
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
             for element from x
-              return false if ( @_inner_isa tail_hedges..., element ) is false
+              return ( xxx_push false ) if ( @_inner_isa tail_hedges..., element ) is false
           catch error
             throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
             throw new E.Intertype_ETEMPTBD '^intertype.isa@7^', \
               "`of` must be preceded by collection name, got #{rpr hedges[ hedge_idx - 1 ]}"
-          return true
+          return ( xxx_push true )
         #...................................................................................................
         when 'or'
-          R = true
+          ( xxx_push R = true )
           continue
       #.....................................................................................................
-      unless ( type_cfg = GUY.props.get @registry, hedge, null )?
+      unless ( type_dsc = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
-      result = type_cfg.call @, x
+      result = type_dsc.call @, x
+      @state.hedgeresults.push [ @state.isa_depth, type_dsc.name, x, result, ]
       switch result
         when H.signals.return_true
-          return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+          return ( xxx_push true )
+          # return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
         # when H.signals.advance                then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
         # when H.signals.process_list_elements  then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
         # when H.signals.process_set_elements   then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
         when false
+          ( xxx_push false )
           @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: false, }
           advance = true
           R       = false
           continue
         when true
+          ( xxx_push true )
           @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
           return true if is_terminal
           continue
@@ -209,7 +224,7 @@ class Intertype extends H.Intertype_abc
       throw new E.Intertype_internal_error '^intertype.isa@9^', \
         "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
     #.......................................................................................................
-    return R
+    return ( xxx_push R )
 
   #---------------------------------------------------------------------------------------------------------
   _protocol_isa: ({ term, x, value, verdict, }) ->
@@ -227,13 +242,13 @@ class Intertype extends H.Intertype_abc
   _create: ( type, cfg ) ->
     create = null
     #.......................................................................................................
-    unless ( type_cfg = GUY.props.get @registry, type, null )?
+    unless ( type_dsc = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype.create@11^', "unknown type #{rpr type}"
     #.......................................................................................................
     ### Try to get `create` method, or, should that fail, the `default` value. Throw error when neither
     `create` nor `default` are given: ###
-    if ( create = GUY.props.get type_cfg, 'create', null ) is null
-      if ( R = GUY.props.get type_cfg, 'default', H.signals.nothing ) is H.signals.nothing
+    if ( create = GUY.props.get type_dsc, 'create', null ) is null
+      if ( R = GUY.props.get type_dsc, 'default', H.signals.nothing ) is H.signals.nothing
         throw new E.Intertype_ETEMPTBD '^intertype.create@12^', \
           "type #{rpr type} does not have a `default` value or a `create()` method"
     #.......................................................................................................
@@ -249,8 +264,8 @@ class Intertype extends H.Intertype_abc
     else
       R = structuredClone R
     #.......................................................................................................
-    if      type_cfg.freeze is true   then R = Object.freeze R
-    else if type_cfg.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R
+    if      type_dsc.freeze is true   then R = Object.freeze R
+    else if type_dsc.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R
     #.......................................................................................................
     return @_validate type, R
 
