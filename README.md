@@ -73,6 +73,13 @@ A JavaScript type checker with helpers to implement own types and do object shap
 * Users may always construct type testers whose intentional errors will not be silently caught by deriving
   their errors from `Intertype_user_error`
 
+* A type test must be *idempotent* and is therefore only allowed to look at, but not to touch (modify)
+  values; IOW, it must be a pure method in the sense of functional programming. Yes, in theory one could
+  write an `isa` method that 'fixes' a list by transforming, adding or deleting some elements (conveniently
+  so, while one has to iterate over list elements anyway), but that would most certainly violate most user's
+  basic assumptions—a type check is not supposed to return with a triumphant 'does the value have the proper
+  shape? Well yes, now it does!'. A type check is not a repair order. InterType does not check for `isa`
+  method being pure because that is deemed (far) too computationally expensive.
 
 ### `isa`
 
@@ -348,16 +355,61 @@ validate            nonempty                            odd             negative
 
 ## Intertype `state` Property
 
-* `Intertype` instances have a `state` property; initial value is `{ data: null, method: null, hedges: [],
-  error: null, }`
-* when chained methods on `isa` and `validate` are called (as in `isa.optional.positive0.integer 42`),
-  `method` will be set to the name of method to be invokes (here `'_isa'`) and `hedges` will contain the
-  chain of hedges (including the type), in this case `[ 'optional', 'positive0', 'integer', ]`
+* `Intertype` instances have a `state` property
+* the shape and initial value of `types.state` is:
+
+  ```coffee
+  types.state = {
+    method:         null
+    hedges:         []
+    extra_keys:     null
+    error:          null
+    data:           null }
+  ```
+
+* The initial value of `types.state` is resumed right before a top-level `isa` or `validate` test is
+  performed.
+
+* The fields of `types.state` are used as follows:
+
+  * When chained methods on `isa` and `validate` are called (as in `isa.integer x`, `validate.integer x`),
+    `method` will be set to the name of method to be invoked (here `'_isa'` or `'_validate'`).
+
+  * As each hedge in a hedgerow is encountered, its name is pushed into the `types.state.hedges` list and
+    its associated test is performed.
+
 * type testing methods are allowed to set or manipulate the `types.state.data` value; this can be used as a
   side channel e.g. to cache intermediate and ancillary results from an expensive testing method
-* should an `isa` method cause an error with an `Intertype` instance with an `errors: false` setting,
-  `state.error` will contain that error to enable applications to query for `types.state.error?` when an
-  `isa` test has failed
+
+  * should an `isa` method cause an error with an `Intertype` instance with an `errors: false` setting,
+    `state.error` will contain that error to enable applications to query for `types.state.error?` when an
+    `isa` test has failed. Errors that are thrown instead of being silenced are *not* recorded in
+    `state.error`.
+
+  * `state.data` is a place for the user's type-checking methods to store intermediate data in. It is never
+    touched by InterType methods except for being reset each time a top-level `isa` or `validate` is
+    performed. It can be used to store expensive computational results that are necessitated by
+    type-checking procedures; for example, one might have a type that is a potentially long list of either
+    functions or names identifying functions. When checking that the list validates, one has to iterate over
+    the list and check for all elements being either a function or a name. Knowing that names will have to
+    be replaced by functions later on, on could have the `isa` method cache all those to-be-postprocessed
+    items:
+
+    ```coffee
+    ( x ) ->
+      @state.data               ?= {}
+      @state.data.name_indexes  ?= []
+      for idx, element in x
+        switch @type_of element
+          when 'function'
+            continue
+          when 'text'
+            @state.data.name_indexes.push { idx, element, }
+          else
+            return false
+      ...
+      ...
+    ```
 
 ## Intertype `create`
 
@@ -523,6 +575,8 @@ types.declare.quantity
   `_get_hedge_base_proxy_cfg` once for all
 * **[–]** rule out use of names with `cfg.sep` (`.`) (generally, check for name being a valid JS identifier;
   likewise, `sep` should be restricted to non-identifier characters)
+* **[–]** consider to offer faster mode where all hegerows must get pre-declared instead of being
+  auto-vivified on-the-fly
 
 
 ## Is Done
