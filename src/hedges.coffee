@@ -44,7 +44,7 @@ class @Intertype_hedges extends GUY.props.Strict_owner
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT tack onto prototype as hidden ###
-  _hedgemethods: GUY.lft.freeze new GUY.props.Strict_owner target:
+  _hedgemethods: new GUY.props.Strict_owner freeze: true, target:
     optional:   ( x ) -> if x? then true else H.signals.return_true
     #.......................................................................................................
     or:         ( x ) -> x is true

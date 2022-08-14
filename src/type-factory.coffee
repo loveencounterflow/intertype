@@ -151,7 +151,8 @@ class Type_factory extends H.Intertype_abc
       dsc.isa = null
     GUY.props.hide R, k, v for k, v of dsc when k isnt 'name'
     H.nameit name, R
-    return new GUY.props.Strict_owner { target: R, oneshot: true, }
+    R = GUY.props.Strict_owner.create { target: R, oneshot: true, }
+    return R
 
   #---------------------------------------------------------------------------------------------------------
   _test_from_hedgepath: ( hedgepath ) ->
