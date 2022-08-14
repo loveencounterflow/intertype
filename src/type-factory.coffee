@@ -160,16 +160,29 @@ class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _create_test_walker: ( dsc ) ->
-    has_extras = null
+    has_extras  = null
+    hub         = @hub
     if ( test_for_extras = not dsc.extras )
       has_extras = @_create_has_extras dsc
+    #.......................................................................................................
     return ( x ) ->
-      return false if ( R = @isa x ) is false
+      #.....................................................................................................
+      if ( R = @isa x ) is false
+        hub.state.hedgeresults.push [ hub.state.isa_depth, @isa.name, x, R, ]
+        return false
+      #.....................................................................................................
       return R unless R is true
-      return false if test_for_extras and has_extras x
+      #.....................................................................................................
+      if test_for_extras and has_extras x
+        hub.state.hedgeresults.push [ hub.state.isa_depth, has_extras.name, x, false, ]
+        return false
+      #.....................................................................................................
       for _, f of @fields
-        return false if ( R = f x ) is false
+        if ( R = f x ) is false
+          hub.state.hedgeresults.push [ hub.state.isa_depth, f.name, x, R, ]
+          return false
         return R unless R is true
+      #.....................................................................................................
       return true
 
   #---------------------------------------------------------------------------------------------------------

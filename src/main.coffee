@@ -150,8 +150,9 @@ class Intertype extends H.Intertype_abc
       throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
       @state.error = error
     @state.isa_depth--
-    if @state.isa_depth is 0
-      @state.hedgeresults = [] unless R is false
+    # if @state.isa_depth < 2
+    # # if @state.isa_depth is 0
+    #   @state.hedgeresults = [] unless R is false
     return R
 
   #---------------------------------------------------------------------------------------------------------
@@ -182,7 +183,8 @@ class Intertype extends H.Intertype_abc
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
             for element from x
-              return ( false ) if ( @_inner_isa tail_hedges..., element ) is false  # exit point
+              # return ( false ) if ( @_inner_isa tail_hedges..., element ) is false  # exit point
+              return ( false ) if ( @_isa tail_hedges..., element ) is false  # exit point
           catch error
             throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
             throw new E.Intertype_ETEMPTBD '^intertype.isa@7^', \
