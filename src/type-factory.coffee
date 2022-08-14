@@ -140,8 +140,6 @@ class Type_factory extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   create_type: ( P... ) ->
     dsc         = @_normalize_type_cfg P...
-    # debug '^7657^', dsc
-    # debug '^7657^', ( k for k of dsc )
     if dsc.fields?
       name    = dsc.isa.name
       R       = ( @_create_test_walker dsc ).bind dsc
