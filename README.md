@@ -577,6 +577,7 @@ types.declare.quantity
   likewise, `sep` should be restricted to non-identifier characters)
 * **[–]** consider to offer faster mode where all hegerows must get pre-declared instead of being
   auto-vivified on-the-fly
+* **[–]** rename `extras` in type descriptions to `open`?
 
 
 ## Is Done
