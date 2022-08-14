@@ -56,8 +56,6 @@
     isa:        ( x ) -> x instanceof Set
     create:     ( cfg = [] ) -> new Set cfg
   #.........................................................................................................
-  ### NOTE we use `GUY.props.get() for `sized` but direct property access for `iterable` b/c
-  `GUY.props.Strict_owner` special-cases access to `Symbol.iterator` (allowing it although not set) ###
   declare.sized
     collection: true
     isa:        ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
