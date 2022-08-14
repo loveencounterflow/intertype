@@ -54,7 +54,7 @@ class Intertype extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _initialize_state: ( cfg ) ->
     ### TAINT should use deep copy of default object ###
-    return @state = { H.defaults.Intertype_state..., hedges2: [], hedgeresults: [], cfg..., }
+    return @state = { H.defaults.Intertype_state..., hedgeresults: [], cfg..., }
 
   #---------------------------------------------------------------------------------------------------------
   _register_hedges: ->
@@ -150,86 +150,76 @@ class Intertype extends H.Intertype_abc
       throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
       @state.error = error
     @state.isa_depth--
+    if @state.isa_depth is 0
+      @state.hedgeresults = [] unless R is false
     return R
 
   #---------------------------------------------------------------------------------------------------------
   _inner_isa: ( hedges..., x ) ->
-    @state.hedges2 = [ @state.hedges2..., hedges..., ]
-    # debug '^34358579^', @state.isa_depth, GUY.trm.reverse hedges
-    # debug '^34358579^', @state
-    xxx_push = ( r ) => r # help '^23424^', hedge_idx, r, @state.hedgeresults, hedges; r # @state.hedgeresults[ hedge_idx ][ 1 ] = r; r
+    # @state.hedges2 = [ @state.hedges2..., hedges..., ]
     @_validate_hedgerow hedges
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
     advance         = false
     is_terminal     = false
     R               = true
-    # element_mode    = false
     #.......................................................................................................
     loop
       hedge_idx++
       if hedge_idx > last_hedge_idx
-        return ( xxx_push R )
+        return ( R )                                                                # exit point
       hedge       = hedges[ hedge_idx ]
-      # urge '^456^', hedge
       is_terminal = ( hedges[ hedge_idx + 1 ] is 'or' ) or ( hedge_idx is last_hedge_idx )
       #.....................................................................................................
       if advance
-        return ( xxx_push false ) if is_terminal
+        return ( false ) if is_terminal                                             # exit point
         continue unless hedge is 'or'
       advance = false
       #.....................................................................................................
       switch hedge
         #...................................................................................................
         when 'of'
-          # element_mode = true
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
             for element from x
-              return ( xxx_push false ) if ( @_inner_isa tail_hedges..., element ) is false
+              return ( false ) if ( @_inner_isa tail_hedges..., element ) is false  # exit point
           catch error
             throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
             throw new E.Intertype_ETEMPTBD '^intertype.isa@7^', \
               "`of` must be preceded by collection name, got #{rpr hedges[ hedge_idx - 1 ]}"
-          return ( xxx_push true )
+          return ( true )                                                           # exit point
         #...................................................................................................
         when 'or'
-          ( xxx_push R = true )
+          ( R = true )                                                              # exit point
           continue
       #.....................................................................................................
       unless ( type_dsc = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
+      # #################################
+      # @state.hedgeresults.push hedgeresult = [ @state.isa_depth, type_dsc.name, x, ]
+      # result = type_dsc.call @, x
+      # hedgeresult.push result
+      # #################################
       result = type_dsc.call @, x
-      @state.hedgeresults.push [ @state.isa_depth, type_dsc.name, x, result, ]
+      @state.hedgeresults.push [ @state.isa_depth, type_dsc.name, x, result, ] if result is false
       switch result
         when H.signals.return_true
-          return ( xxx_push true )
-          # return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
-        # when H.signals.advance                then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
-        # when H.signals.process_list_elements  then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
-        # when H.signals.process_set_elements   then return @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: R, }
+          return ( true )                                                           # exit point
         when false
-          ( xxx_push false )
-          @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: false, }
+          # ( false )                                                                 # exit point
           advance = true
           R       = false
           continue
         when true
-          ( xxx_push true )
-          @_protocol_isa { term: hedge, x, value: H.signals.nothing, verdict: true, }
+          # ( true )                                                                  # exit point
           return true if is_terminal
           continue
       #.....................................................................................................
       throw new E.Intertype_internal_error '^intertype.isa@9^', \
         "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
     #.......................................................................................................
-    return ( xxx_push R )
-
-  #---------------------------------------------------------------------------------------------------------
-  _protocol_isa: ({ term, x, value, verdict, }) ->
-    # urge '^4535^', GUY.trm.reverse { term, x, value, verdict, }
-    return verdict
+    return ( R )                                                                    # exit point
 
   #---------------------------------------------------------------------------------------------------------
   _validate: ( hedges..., type, x ) ->

@@ -186,7 +186,6 @@ E                         = require './errors'
   method:         null
   isa_depth:      0
   hedges:         null
-  hedges2:        null
   hedgeresults:   null
   error:          null
   extra_keys:     null
