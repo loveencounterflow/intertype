@@ -104,7 +104,7 @@ class Intertype extends H.Intertype_abc
         return target.toString    if key is 'toString'
         return target.call        if key is 'call'
         return target.apply       if key is 'apply'
-        self.state.hedges.push        key
+        self.state.hedges.push key
         # self.state.hedgeresults.push  [ key, null, ]
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
