@@ -42,7 +42,7 @@ class Intertype extends H.Intertype_abc
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, name ) => ( P... ) =>
       @_declare name, P...
     #.......................................................................................................
-    GUY.props.hide @, 'registry',     new GUY.props.Strict_owner { oneshot: true, }
+    GUY.props.hide @, 'registry',     GUY.props.Strict_owner.create { oneshot: true, }
     # GUY.props.hide @, 'types',        H.types
     @state = {}
     @_initialize_state()
