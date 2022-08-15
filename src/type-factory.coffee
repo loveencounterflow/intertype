@@ -87,12 +87,16 @@ class Type_factory extends H.Intertype_abc
       dsc.isa     = H.nameit "#{dsc.name}:#{name_of_isa}", do =>
         f = dsc.isa.bind @hub
         return ( x ) =>
-          try
-            return f x
-          catch error
-            throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
-            @hub.state.error = error
-          return false
+          @hub.state.hedgeresults.push hedgeresult = [ '▲nt1', @hub.state.isa_depth, dsc.name, x, ]
+          R = do =>
+            try
+              return f x
+            catch error
+              throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
+              @hub.state.error = error
+            return false
+          hedgeresult.push R
+          return R
     #.......................................................................................................
     dsc = { H.defaults.Type_factory_type_dsc..., dsc..., }
     H.types.validate.Type_factory_type_dsc  dsc
@@ -167,21 +171,24 @@ class Type_factory extends H.Intertype_abc
     #.......................................................................................................
     return ( x ) ->
       #.....................................................................................................
-      if ( R = @isa x ) is false
-        hub.state.hedgeresults.push [ hub.state.isa_depth, @isa.name, x, R, ]
-        return false
+      hub.state.hedgeresults.push hedgeresult = [ '▲tw1', hub.state.isa_depth, @isa.name, x, ]
+      hub.state.isa_depth++
+      R = @isa x
+      hub.state.isa_depth--
+      hedgeresult.push R
+      return R if ( R is false ) or ( R isnt true )
       #.....................................................................................................
-      return R unless R is true
-      #.....................................................................................................
-      if test_for_extras and has_extras x
-        hub.state.hedgeresults.push [ hub.state.isa_depth, has_extras.name, x, false, ]
-        return false
+      if test_for_extras
+        if has_extras x
+          ### TAINT return value, recorded value should both be `false` ###
+          hub.state.hedgeresults.push [ '▲tw2', hub.state.isa_depth, has_extras.name, x, true, ]
+          return false
       #.....................................................................................................
       for _, f of @fields
-        if ( R = f x ) is false
-          hub.state.hedgeresults.push [ hub.state.isa_depth, f.name, x, R, ]
-          return false
-        return R unless R is true
+        hub.state.hedgeresults.push hedgeresult = [ '▲tw3', hub.state.isa_depth, f.name, x, ]
+        R = f x
+        hedgeresult.push R
+        return R if ( R is false ) or ( R isnt true )
       #.....................................................................................................
       return true
 

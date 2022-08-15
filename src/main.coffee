@@ -80,7 +80,6 @@ class Intertype extends H.Intertype_abc
         self._initialize_state()
         self.state.method       = method_name
         self.state.hedges       = [ key, ]
-        # self.state.hedgeresults = [ [ key, null, ], ]
         #...................................................................................................
         if key in [ 'of', 'or', ]
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
@@ -105,7 +104,6 @@ class Intertype extends H.Intertype_abc
         return target.call        if key is 'call'
         return target.apply       if key is 'apply'
         self.state.hedges.push key
-        # self.state.hedgeresults.push  [ key, null, ]
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
         unless ( type_dsc = GUY.props.get @registry, key, null )?
@@ -142,6 +140,7 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
+    # debug '^5435^', { hedges, x, }
     @state.isa_depth++
     R = false
     try
@@ -157,7 +156,6 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _inner_isa: ( hedges..., x ) ->
-    # @state.hedges2 = [ @state.hedges2..., hedges..., ]
     @_validate_hedgerow hedges
     hedge_idx       = -1
     last_hedge_idx  = hedges.length - 1
@@ -180,6 +178,7 @@ class Intertype extends H.Intertype_abc
       switch hedge
         #...................................................................................................
         when 'of'
+          @state.hedgeresults.push [ '▲ii1', @state.isa_depth, 'of', x, true, ]
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
             for element from x
@@ -192,29 +191,24 @@ class Intertype extends H.Intertype_abc
           return ( true )                                                           # exit point
         #...................................................................................................
         when 'or'
-          ( R = true )                                                              # exit point
+          @state.hedgeresults.push [ '▲ii2', @state.isa_depth, 'or', x, true, ]
+          R = true
           continue
       #.....................................................................................................
       unless ( type_dsc = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
-      # #################################
-      # @state.hedgeresults.push hedgeresult = [ @state.isa_depth, type_dsc.name, x, ]
-      # result = type_dsc.call @, x
-      # hedgeresult.push result
-      # #################################
+      # @state.hedgeresults.push hedgeresult = [ '▲ii3', @state.isa_depth, type_dsc.name, x, ]
       result = type_dsc.call @, x
-      @state.hedgeresults.push [ @state.isa_depth, type_dsc.name, x, result, ] if result is false
+      # hedgeresult.push result
       switch result
         when H.signals.return_true
-          return ( true )                                                           # exit point
+          return true
         when false
-          # ( false )                                                                 # exit point
           advance = true
           R       = false
           continue
         when true
-          # ( true )                                                                  # exit point
           return true if is_terminal
           continue
       #.....................................................................................................
