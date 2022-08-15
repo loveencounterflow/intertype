@@ -589,12 +589,12 @@ types.declare.quantity
   ### provide custom value in case of postcondition failure: ###
   plus_1 = ( a, b ) ->
     R = a + b
-    return try validate.float.or.text R catch error
+    return try validate.float.or.bigint R catch error
       0
   ### throw custom error in case of postcondition failure: ###
   plus_2 = ( a, b ) ->
     R = a + b
-    return try validate.float.or.text R catch error
+    return try validate.float.or.bigint R catch error
       throw new Error "these values can not be added: a: #{rpr a}, b: #{rpr b}"
   ```
 
