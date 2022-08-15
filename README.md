@@ -580,6 +580,26 @@ types.declare.quantity
 * **[–]** rename `extras` in type descriptions to `open`? Or indeed create type `noxtra` similar to `empty`,
   `nonempty`: `isa.noxtra.foo x` (or `isa.foo.noxtra x`?) is `true` when `isa.foo x` is `true`, the
   declaration of type `foo` enumerates fieldnames, and no fields except these are found in `Object.keys x`.
+* **[–]** <del>allow `validate` to take an extra parameter: either string (with placeholders for data?) or
+  function to be called in case of validation failure; this to make throwing more meaningful errors than
+  standard validation errors easier</del> <ins>probably not possible due to existence of rest parameter in
+  `_validate: ( hedges..., type, x ) ->`; instead, recommend these patterns:</ins>
+
+  ```coffee
+  ### provide custom value in case of postcondition failure: ###
+  plus_1 = ( a, b ) ->
+    R = a + b
+    return try validate.float.or.text R catch error
+      0
+  ### throw custom error in case of postcondition failure: ###
+  plus_2 = ( a, b ) ->
+    R = a + b
+    return try validate.float.or.text R catch error
+      throw new Error "these values can not be added: a: #{rpr a}, b: #{rpr b}"
+  ```
+
+* **[–]** implement configuration to specifiy whether validation errors should output tracing message and
+  whether to include tracing in `stderr` or print to console or both
 
 
 ## Is Done
