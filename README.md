@@ -577,7 +577,9 @@ types.declare.quantity
   likewise, `sep` should be restricted to non-identifier characters)
 * **[–]** consider to offer faster mode where all hegerows must get pre-declared instead of being
   auto-vivified on-the-fly
-* **[–]** rename `extras` in type descriptions to `open`?
+* **[–]** rename `extras` in type descriptions to `open`? Or indeed create type `noxtra` similar to `empty`,
+  `nonempty`: `isa.noxtra.foo x` (or `isa.foo.noxtra x`?) is `true` when `isa.foo x` is `true`, the
+  declaration of type `foo` enumerates fieldnames, and no fields except these are found in `Object.keys x`.
 
 
 ## Is Done
