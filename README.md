@@ -601,6 +601,8 @@ types.declare.quantity
 * **[–]** implement configuration to specifiy whether validation errors should output tracing message and
   whether to include tracing in `stderr` or print to console or both
 
+* **[–]** must use deep copies when deriving values from defaults in `create()`
+
 
 ## Is Done
 
