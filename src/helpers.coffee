@@ -4,9 +4,18 @@
 
 #-----------------------------------------------------------------------------------------------------------
 GUY                       = require 'guy'
+{ debug
+  info
+  warn
+  urge
+  help }                  = GUY.trm.get_loggers 'INTERTYPE'
+{ rpr }                   = GUY.trm
 misfit                    = Symbol 'misfit'
 notavalue                 = Symbol 'notavalue'
 E                         = require './errors'
+{ to_width }              = require 'to-width'
+### TAINT unify with symbols in `hedges` ###
+@misfit                   = Symbol 'misfit'
 #...........................................................................................................
 @constructor_of_generators  = ( ( -> yield 42 )() ).constructor
 @deep_copy                  = structuredClone
@@ -184,9 +193,13 @@ E                         = require './errors'
 #-----------------------------------------------------------------------------------------------------------
 @defaults.Intertype_state =
   method:         null
+  verb:           null
   isa_depth:      0
+  hedgerow:       null
   hedges:         null
   hedgeresults:   null
+  x:              misfit
+  result:         null
   error:          null
   extra_keys:     null
   data:           null
@@ -219,5 +232,45 @@ class Intertype_abc extends GUY.props.Strict_owner
 # @defaults       = GUY.lft.freeze @defaults
 @Intertype_abc  = Intertype_abc
 
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@get_state_report = ( hub ) ->
+# ( verb, hedgerow, value, types ) ->
+  truth = ( b, r ) -> GUY.trm.reverse if b then ( GUY.trm.green " T " ) else ( GUY.trm.red " F " )
+  # hedges  = hub.state.hedgerow.split '.'
+  # console.log '^get_state_report@2323^', hub.state
+  { hedges
+    hedgerow
+    hedgeresults
+    x
+    result
+    verb
+    error } = hub.state
+  R         = []
+  xr        = " #{rpr x} "
+  xr        = GUY.trm.reverse GUY.trm.steel xr
+  xr        = to_width xr, 100
+  R.push GUY.trm.blue GUY.trm.reverse " #{verb} "
+  R.push GUY.trm.yellow GUY.trm.reverse " #{hedgerow} "
+  R.push xr
+  R.push '\n'
+  for [ ref, level, hedge, value, r, ] in hedgeresults
+    dent  = ( GUY.trm.grey ref ) + ( '  '.repeat level )
+    line  = "#{dent} #{GUY.trm.yellow hedge}"
+    line  = to_width line, 50
+    R.push line
+    R.push truth r, r?.toString()
+    R.push GUY.trm.grey to_width ( " #{rpr value} " ), 75
+    R.push '\n'
+  #.........................................................................................................
+  if error instanceof Error then R.push GUY.trm.red GUY.trm.reverse " Error: #{error.message.trim()} \n"
+  else if error?            then R.push GUY.trm.red GUY.trm.reverse " Error: #{error.toString()} \n"
+  #.........................................................................................................
+  result = true if ( verb is 'validate' ) and ( result isnt false )
+  R.push truth result, result?.toString()
+  #.........................................................................................................
+  return R.join ''
 
 

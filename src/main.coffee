@@ -15,8 +15,8 @@ E                         = require './errors'
 H                         = require './helpers'
 HEDGES                    = require './hedges'
 DECLARATIONS              = require './declarations'
-{ to_width }              = require 'to-width'
 { Type_factory }          = require './type-factory'
+{ to_width }              = require 'to-width'
 
 
 
@@ -44,7 +44,6 @@ class Intertype extends H.Intertype_abc
     #.......................................................................................................
     GUY.props.hide @, 'registry',     GUY.props.Strict_owner.create { oneshot: true, }
     # GUY.props.hide @, 'types',        H.types
-    @state = {}
     @_initialize_state()
     #.......................................................................................................
     @_register_hedges()
@@ -79,7 +78,9 @@ class Intertype extends H.Intertype_abc
         #...................................................................................................
         self._initialize_state()
         self.state.method       = method_name
+        self.state.verb         = method_name[ 1... ]
         self.state.hedges       = [ key, ]
+        self.state.hedgerow     = key
         #...................................................................................................
         if key in [ 'of', 'or', ]
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
@@ -104,6 +105,7 @@ class Intertype extends H.Intertype_abc
         return target.call        if key is 'call'
         return target.apply       if key is 'apply'
         self.state.hedges.push key
+        self.state.hedgerow = self.state.hedges.join self.cfg.sep
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
         unless ( type_dsc = GUY.props.get @registry, key, null )?
@@ -142,6 +144,7 @@ class Intertype extends H.Intertype_abc
   _isa: ( hedges..., x ) ->
     # debug '^5435^', { hedges, x, }
     @state.isa_depth++
+    @state.x = x if @state.isa_depth < 2
     R = false
     try
       R = @_inner_isa hedges..., x
@@ -178,7 +181,7 @@ class Intertype extends H.Intertype_abc
       switch hedge
         #...................................................................................................
         when 'of'
-          @state.hedgeresults.push [ '▲ii1', @state.isa_depth, 'of', x, true, ]
+          @push_hedgeresult [ '▲ii1', @state.isa_depth, 'of', x, true, ]
           tail_hedges = hedges[ hedge_idx + 1 .. ]
           try
             for element from x
@@ -191,14 +194,14 @@ class Intertype extends H.Intertype_abc
           return ( true )                                                           # exit point
         #...................................................................................................
         when 'or'
-          @state.hedgeresults.push [ '▲ii2', @state.isa_depth, 'or', x, true, ]
+          @push_hedgeresult [ '▲ii2', @state.isa_depth, 'or', x, true, ]
           R = true
           continue
       #.....................................................................................................
       unless ( type_dsc = GUY.props.get @registry, hedge, null )?
         throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
       #.....................................................................................................
-      # @state.hedgeresults.push hedgeresult = [ '▲ii3', @state.isa_depth, type_dsc.name, x, ]
+      # @push_hedgeresult hedgeresult = [ '▲ii3', @state.isa_depth, type_dsc.name, x, ]
       result = type_dsc.call @, x
       # hedgeresult.push result
       switch result
@@ -261,6 +264,15 @@ class Intertype extends H.Intertype_abc
   size_of:                    H.size_of
   _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
   _split_hedgerow_text:       ( hedgerow ) -> hedgerow.split @cfg.sep
+
+  #---------------------------------------------------------------------------------------------------------
+  get_state_report:           -> H.get_state_report @
+
+  #---------------------------------------------------------------------------------------------------------
+  push_hedgeresult: ( hedgeresult ) ->
+    ### [ ref, level, hedge, value, r, ] = hedgeresult ###
+    @state.hedgeresults.push hedgeresult
+    return hedgeresult.at -1
 
   # #-----------------------------------------------------------------------------------------------------------
   # _walk_hedgepaths: ( cfg ) ->
