@@ -170,27 +170,34 @@ class Type_factory extends H.Intertype_abc
       has_extras = @_create_has_extras dsc
     #.......................................................................................................
     return ( x ) ->
-      #.....................................................................................................
-      hub.state.hedgeresults.push hedgeresult = [ '▲tw1', hub.state.isa_depth, @isa.name, x, ]
-      hub.state.isa_depth++
-      R = @isa x
-      hub.state.isa_depth--
-      hedgeresult.push R
-      return R if ( R is false ) or ( R isnt true )
-      #.....................................................................................................
-      if test_for_extras
-        if has_extras x
-          ### TAINT return value, recorded value should both be `false` ###
-          hub.state.hedgeresults.push [ '▲tw2', hub.state.isa_depth, has_extras.name, x, true, ]
-          return false
-      #.....................................................................................................
-      for _, f of @fields
-        hub.state.hedgeresults.push hedgeresult = [ '▲tw3', hub.state.isa_depth, f.name, x, ]
-        R = f x
+      R = do =>
+        #.....................................................................................................
+        hub.state.hedgeresults.push hedgeresult = [ '▲tw1', hub.state.isa_depth, @isa.name, x, ]
+        hub.state.isa_depth++
+        R = @isa x
         hedgeresult.push R
-        return R if ( R is false ) or ( R isnt true )
-      #.....................................................................................................
-      return true
+        if ( R is false ) or ( R isnt true )
+          hub.state.isa_depth--
+          return R
+        #.....................................................................................................
+        if test_for_extras
+          if has_extras x
+            ### TAINT return value, recorded value should both be `false` ###
+            hub.state.hedgeresults.push [ '▲tw2', hub.state.isa_depth, has_extras.name, x, true, ]
+            hub.state.isa_depth--
+            return false
+        #.....................................................................................................
+        for _, f of @fields
+          hub.state.hedgeresults.push hedgeresult = [ '▲tw3', hub.state.isa_depth, f.name, x, ]
+          R = f x
+          hedgeresult.push R
+          if ( R is false ) or ( R isnt true )
+            hub.state.isa_depth--
+            return R
+        #.....................................................................................................
+        hub.state.isa_depth--
+        return true
+      return R
 
   #---------------------------------------------------------------------------------------------------------
   _create_has_extras: ( dsc ) ->
