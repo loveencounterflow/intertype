@@ -22,6 +22,12 @@ E                         = require './errors'
 @equals                     = require '../deps/jkroso-equals'
 @nameit                     = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 @TMP_HEDGRES_PRE            = false
+{ reverse: rvr
+  grey
+  red
+  green
+  blue
+  yellow                  } = GUY.trm
 
 
 #===========================================================================================================
@@ -239,7 +245,7 @@ class Intertype_abc extends GUY.props.Strict_owner
 #-----------------------------------------------------------------------------------------------------------
 @get_state_report = ( hub ) ->
 # ( verb, hedgerow, value, types ) ->
-  truth = ( b, r ) -> GUY.trm.reverse if b then ( GUY.trm.green " T " ) else ( GUY.trm.red " F " )
+  truth = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
   # hedges  = hub.state.hedgerow.split '.'
   # console.log '^get_state_report@2323^', hub.state
   { hedges
@@ -248,29 +254,39 @@ class Intertype_abc extends GUY.props.Strict_owner
     x
     result
     verb
-    error } = hub.state
-  R         = []
-  xr        = " #{rpr x} "
-  xr        = GUY.trm.reverse GUY.trm.steel xr
-  xr        = to_width xr, 100
-  R.push GUY.trm.blue GUY.trm.reverse " #{verb} "
-  R.push GUY.trm.yellow GUY.trm.reverse " #{hedgerow} "
-  R.push xr
-  R.push '\n'
+    error       } = hub.state
+  R               = []
+  widths          = {}
+  widths.line     = 108 ### TAINT use TTY width ###
+  widths.hedgerow = 50
+  widths.value    = 75
+  widths.verb     = 10
+  verb_field      = blue rvr to_width verb, widths.verb, { align: 'center', }
+  #.........................................................................................................
   for [ ref, level, hedge, value, r, ] in hedgeresults
-    dent  = ( GUY.trm.grey ref ) + ( '  '.repeat level )
-    line  = "#{dent} #{GUY.trm.yellow hedge}"
-    line  = to_width line, 50
-    R.push line
+    # dent  = ( grey ref ) + ( '  '.repeat level )
+    dent  = '  '.repeat level
     R.push truth r, r?.toString()
-    R.push GUY.trm.grey to_width ( " #{rpr value} " ), 75
+    R.push verb_field
+    R.push rvr yellow to_width dent + hedge, widths.hedgerow
+    R.push grey to_width ( " #{rpr value} " ), widths.value
     R.push '\n'
   #.........................................................................................................
-  if error instanceof Error then R.push GUY.trm.red GUY.trm.reverse " Error: #{error.message.trim()} \n"
-  else if error?            then R.push GUY.trm.red GUY.trm.reverse " Error: #{error.toString()} \n"
+  if error?
+    if error instanceof Error then  error_r = " Error: #{error.message.trim()}"
+    else                            error_r = " Error: #{error.toString()}"
+    R.push red rvr to_width error_r, widths.line
+    R.push '\n'
   #.........................................................................................................
-  result = true if ( verb is 'validate' ) and ( result isnt false )
+  result    = true if ( verb is 'validate' ) and ( result isnt false )
+  xr        = " #{rpr x} "
+  xr        = rvr GUY.trm.steel xr
+  xr        = to_width xr, widths.value
   R.push truth result, result?.toString()
+  R.push verb_field
+  R.push yellow rvr to_width " #{hedgerow}", widths.hedgerow
+  R.push xr
+  R.push '\n'
   #.........................................................................................................
   return R.join ''
 
