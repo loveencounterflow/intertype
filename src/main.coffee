@@ -87,7 +87,10 @@ class Intertype extends H.Intertype_abc
             "hedgerow cannot start with `#{key}`, must be preceeded by hedge"
         unless ( GUY.props.get @registry, key, null )?
           throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@3^', "unknown hedge or type #{rpr key}"
+        #...................................................................................................
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
+        #...................................................................................................
+        ### TAINT code below never used? ###
         if method_name is '_create'
           f = H.nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
         else
