@@ -150,7 +150,7 @@ class Intertype extends H.Intertype_abc
     @state.x = x if @state.isa_depth < 2
     R = false
     try
-      R = @_inner_isa hedges..., x
+      R = @state.result = @_inner_isa hedges..., x
     catch error
       throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
       @state.error = error
@@ -159,6 +159,7 @@ class Intertype extends H.Intertype_abc
     # # if @state.isa_depth is 0
     #   @state.hedgeresults = [] unless R is false
     return R
+    return @state.result = R
 
   #---------------------------------------------------------------------------------------------------------
   _inner_isa: ( hedges..., x ) ->
