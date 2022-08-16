@@ -145,9 +145,7 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _isa: ( hedges..., x ) ->
-    # debug '^5435^', { hedges, x, }
     @state.isa_depth++
-    @state.x = x if @state.isa_depth < 2
     R = false
     try
       R = @state.result = @_inner_isa hedges..., x
@@ -155,10 +153,6 @@ class Intertype extends H.Intertype_abc
       throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
       @state.error = error
     @state.isa_depth--
-    # if @state.isa_depth < 2
-    # # if @state.isa_depth is 0
-    #   @state.hedgeresults = [] unless R is false
-    return R
     return @state.result = R
 
   #---------------------------------------------------------------------------------------------------------
