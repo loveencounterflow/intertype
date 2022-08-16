@@ -21,6 +21,7 @@ E                         = require './errors'
 @deep_copy                  = structuredClone
 @equals                     = require '../deps/jkroso-equals'
 @nameit                     = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
+@TMP_HEDGRES_PRE            = false
 
 
 #===========================================================================================================
