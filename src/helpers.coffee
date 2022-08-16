@@ -258,7 +258,7 @@ class Intertype_abc extends GUY.props.Strict_owner
   R               = []
   widths          = {}
   widths.line     = 108 ### TAINT use TTY width ###
-  widths.hedgerow = 50
+  widths.hedgerow = 75
   widths.value    = 75
   widths.verb     = 10
   verb_field      = blue rvr to_width verb, widths.verb, { align: 'center', }
@@ -284,7 +284,7 @@ class Intertype_abc extends GUY.props.Strict_owner
   xr        = to_width xr, widths.value
   R.push truth result, result?.toString()
   R.push verb_field
-  R.push yellow rvr to_width " #{hedgerow}", widths.hedgerow
+  R.push yellow rvr to_width hedgerow, widths.hedgerow
   R.push xr
   R.push '\n'
   #.........................................................................................................
