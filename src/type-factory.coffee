@@ -87,7 +87,7 @@ class Type_factory extends H.Intertype_abc
       dsc.isa     = H.nameit "#{dsc.name}:#{name_of_isa}", do =>
         f = dsc.isa.bind @hub
         return ( x ) =>
-          @hub.state.x = x
+          @hub.state.x = x if @hub.state.isa_depth < 2
           @hub.push_hedgeresult hedgeresult = [ '▲nt1', @hub.state.isa_depth, dsc.name, x, ] if H.TMP_HEDGRES_PRE
           R = do =>
             try
