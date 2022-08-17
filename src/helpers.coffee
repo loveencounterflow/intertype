@@ -245,18 +245,8 @@ class Intertype_abc extends GUY.props.Strict_owner
 #
 #-----------------------------------------------------------------------------------------------------------
 @get_state_report = ( hub ) ->
-# ( verb, hedgerow, value, types ) ->
   TTY   = require 'node:tty'
   truth = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
-  # hedges  = hub.state.hedgerow.split '.'
-  # console.log '^get_state_report@2323^', hub.state
-  { hedges
-    hedgerow
-    hedgeresults
-    x
-    result
-    verb
-    error       }   = hub.state
   R                 = []
   widths            = do ->
     lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
@@ -267,7 +257,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     lw             -= widths.hedgerow = Math.floor lw * 0.50
     lw             -= widths.value    = lw
     return widths
-  verb_field        = blue rvr to_width verb, widths.verb, { align: 'center', }
+  verb_field        = blue rvr to_width hub.state.verb, widths.verb, { align: 'center', }
   #.........................................................................................................
   push_value_row    = ( ref, level, hedge, value, r ) ->
     dent  = '  '.repeat level
@@ -285,7 +275,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     R.push red rvr to_width error_r, widths.line
     R.push '\n'
   #.........................................................................................................
-  for [ ref, level, hedge, value, r, ] in hedgeresults
+  for [ ref, level, hedge, value, r, ] in hub.state.hedgeresults
     push_value_row ref, level, hedge, value, r
   #.........................................................................................................
   push_value_row null, 0, hedgerow, x, result
