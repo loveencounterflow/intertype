@@ -27,6 +27,7 @@ E                         = require './errors'
   red
   green
   blue
+  steel
   yellow                  } = GUY.trm
 
 
@@ -245,6 +246,7 @@ class Intertype_abc extends GUY.props.Strict_owner
 #-----------------------------------------------------------------------------------------------------------
 @get_state_report = ( hub ) ->
 # ( verb, hedgerow, value, types ) ->
+  TTY   = require 'node:tty'
   truth = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
   # hedges  = hub.state.hedgerow.split '.'
   # console.log '^get_state_report@2323^', hub.state
@@ -254,39 +256,40 @@ class Intertype_abc extends GUY.props.Strict_owner
     x
     result
     verb
-    error       } = hub.state
-  R               = []
-  widths          = {}
-  widths.line     = 108 ### TAINT use TTY width ###
-  widths.hedgerow = 75
-  widths.value    = 75
-  widths.verb     = 10
-  verb_field      = blue rvr to_width verb, widths.verb, { align: 'center', }
+    error       }   = hub.state
+  R                 = []
+  widths            = do ->
+    lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
+    widths          = {}
+    widths.line     = lw
+    lw             -= widths.verb     = 10
+    lw             -= widths.truth    = 3
+    lw             -= widths.hedgerow = Math.floor lw * 0.50
+    lw             -= widths.value    = lw
+    return widths
+  verb_field        = blue rvr to_width verb, widths.verb, { align: 'center', }
   #.........................................................................................................
-  for [ ref, level, hedge, value, r, ] in hedgeresults
-    # dent  = ( grey ref ) + ( '  '.repeat level )
+  push_value_row    = ( ref, level, hedge, value, r ) ->
     dent  = '  '.repeat level
     R.push truth r, r?.toString()
     R.push verb_field
-    R.push rvr yellow to_width dent + hedge, widths.hedgerow
-    R.push grey to_width ( " #{rpr value} " ), widths.value
+    R.push rvr yellow to_width  ( ' ' + dent + hedge  ), widths.hedgerow
+    R.push rvr steel  to_width  ( ' ' + rpr value     ), widths.value
     R.push '\n'
+    return null
   #.........................................................................................................
-  if error?
+  push_error_row    = ( error ) ->
+    return null unless error?
     if error instanceof Error then  error_r = " Error: #{error.message.trim()}"
     else                            error_r = " Error: #{error.toString()}"
     R.push red rvr to_width error_r, widths.line
     R.push '\n'
   #.........................................................................................................
-  result    = true if ( verb is 'validate' ) and ( result isnt false )
-  xr        = " #{rpr x} "
-  xr        = rvr GUY.trm.steel xr
-  xr        = to_width xr, widths.value
-  R.push truth result, result?.toString()
-  R.push verb_field
-  R.push yellow rvr to_width hedgerow, widths.hedgerow
-  R.push xr
-  R.push '\n'
+  for [ ref, level, hedge, value, r, ] in hedgeresults
+    push_value_row ref, level, hedge, value, r
+  #.........................................................................................................
+  push_value_row null, 0, hedgerow, x, result
+  push_error_row hub.state.error ? null
   #.........................................................................................................
   return R.join ''
 
