@@ -278,7 +278,8 @@ class Intertype_abc extends GUY.props.Strict_owner
   for [ ref, level, hedge, value, r, ] in hub.state.hedgeresults
     push_value_row ref, level, hedge, value, r
   #.........................................................................................................
-  push_value_row null, 0, hedgerow, x, result
+  if hub.state.hedgeresults.length > 1
+    push_value_row null, 0, hub.state.hedgerow, hub.state.x, hub.state.result
   push_error_row hub.state.error
   #.........................................................................................................
   return R.join ''
