@@ -268,7 +268,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     R.push '\n'
     return null
   #.........................................................................................................
-  push_error_row    = ( error ) ->
+  push_error_row    = ( error = null ) ->
     return null unless error?
     if error instanceof Error then  error_r = " Error: #{error.message.trim()}"
     else                            error_r = " Error: #{error.toString()}"
@@ -279,7 +279,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     push_value_row ref, level, hedge, value, r
   #.........................................................................................................
   push_value_row null, 0, hedgerow, x, result
-  push_error_row hub.state.error ? null
+  push_error_row hub.state.error
   #.........................................................................................................
   return R.join ''
 
