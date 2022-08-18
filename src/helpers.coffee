@@ -322,7 +322,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     widths.line     = lw
     lw             -= widths.verb     = 10
     lw             -= widths.truth    = 3
-    lw             -= widths.hedgerow = Math.floor lw * 0.50
+    lw             -= widths.hedgerow = Math.floor lw * 0.33
     lw             -= widths.value    = lw
     return widths
   #.........................................................................................................
