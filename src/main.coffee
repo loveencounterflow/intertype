@@ -130,8 +130,8 @@ class Intertype extends H.Intertype_abc
     dsc                       = @type_factory.create_type P...
     @registry[ dsc.typename ] = dsc
     ### TAINT need not call _get_hedge_sub_proxy_cfg() twice? ###
-    @isa[      dsc.typename ] = new Proxy dsc,                                     @_get_hedge_sub_proxy_cfg @
-    @validate[ dsc.typename ] = new Proxy ( ( x ) => @_validate dsc.typename, x ), @_get_hedge_sub_proxy_cfg @
+    @isa[      dsc.typename ] = new Proxy dsc, @_get_hedge_sub_proxy_cfg @
+    @validate[ dsc.typename ] = new Proxy dsc, @_get_hedge_sub_proxy_cfg @
     @_collections.add dsc.typename if dsc.collection
     return null
 
@@ -219,11 +219,13 @@ class Intertype extends H.Intertype_abc
     return ( R )                                                                    # exit point
 
   #---------------------------------------------------------------------------------------------------------
-  _validate: ( hedges..., type, x ) ->
-    return x if @_isa hedges..., type, x
-    qtype = [ hedges..., type, ].join @cfg.sep
-    xr    = to_width ( rpr x ), 100
-    throw new E.Intertype_ETEMPTBD '^intertype.validate@10^', "not a valid #{qtype}: #{xr}"
+  _validate: ( hedges..., x ) ->
+    return x if @_isa hedges..., x
+    console.log GUY.trm.reverse GUY.trm.red "\n Validation Failure "
+    console.log ( @get_state_report { format: 'failing', } ).trim()
+    console.log GUY.trm.reverse GUY.trm.red " Validation Failure \n"
+    state_report = @get_state_report { format: 'short', colors: false, }
+    throw new E.Intertype_ETEMPTBD '^intertype.validate@3^', "invalid: #{state_report}"
 
   #---------------------------------------------------------------------------------------------------------
   _create: ( type, cfg ) ->
