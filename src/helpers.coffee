@@ -245,8 +245,22 @@ class Intertype_abc extends GUY.props.Strict_owner
 #
 #-----------------------------------------------------------------------------------------------------------
 @get_state_report = ( hub ) ->
-  TTY   = require 'node:tty'
-  truth = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
+  TTY               = require 'node:tty'
+  truth             = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
+  first_hidx        = 0
+  last_hidx         = hub.state.hedgeresults.length - 1
+  #.........................................................................................................
+  switch mode = 'failing'
+    when 'failing'
+      return null if hub.state.result is true
+      first_hidx = last_hidx
+      while first_hidx > 0
+        break if ( hub.state.hedgeresults[ first_hidx - 1 ].at -1 ) isnt false
+        first_hidx--
+      first_hidx = Math.min first_hidx, last_hidx
+    else throw new E.Intertype_internal_error '^intertype.get_state_report@1^', "unknown mode #{rpr mode}"
+
+  #.........................................................................................................
   R                 = []
   widths            = do ->
     lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
@@ -275,7 +289,8 @@ class Intertype_abc extends GUY.props.Strict_owner
     R.push red rvr to_width error_r, widths.line
     R.push '\n'
   #.........................................................................................................
-  for [ ref, level, hedge, value, r, ] in hub.state.hedgeresults
+  for hidx in [ first_hidx .. last_hidx ]
+    [ ref, level, hedge, value, r, ] = hub.state.hedgeresults[ hidx ]
     push_value_row ref, level, hedge, value, r
   #.........................................................................................................
   if hub.state.hedgeresults.length > 1
