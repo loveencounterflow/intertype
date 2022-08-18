@@ -13,7 +13,8 @@ GUY                       = require 'guy'
 misfit                    = Symbol 'misfit'
 notavalue                 = Symbol 'notavalue'
 E                         = require './errors'
-{ to_width }              = require 'to-width'
+{ to_width
+  width_of  }             = require 'to-width'
 ### TAINT unify with symbols in `hedges` ###
 @misfit                   = Symbol 'misfit'
 #...........................................................................................................
@@ -202,7 +203,7 @@ E                         = require './errors'
 @types.declare 'intertype_get_state_report_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa.boolean x.colors":                    ( x ) -> @isa.boolean x.colors
-  "x.mode in [ 'all', 'failing', ]":          ( x ) -> x.mode in [ 'all', 'failing', ]
+  "x.mode in [ 'all', 'failing', 'short' ]":  ( x ) -> x.mode in [ 'all', 'failing', 'short' ]
 #...........................................................................................................
 @defaults.intertype_get_state_report_cfg =
   colors:         true
@@ -265,7 +266,7 @@ class Intertype_abc extends GUY.props.Strict_owner
   switch cfg.mode
     when 'all'
       null
-    when 'failing'
+    when 'failing', 'short'
       return null if hub.state.result is true
       first_hidx = last_hidx
       while first_hidx > 0
@@ -275,6 +276,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     else throw new E.Intertype_internal_error '^intertype.get_state_report@1^', "unknown mode #{rpr mode}"
   #.........................................................................................................
   R                 = []
+  sep               = ''
   widths            = do ->
     lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
     widths          = {}
@@ -302,15 +304,27 @@ class Intertype_abc extends GUY.props.Strict_owner
     R.push red rvr to_width error_r, widths.line
     R.push '\n'
   #.........................................................................................................
-  for hidx in [ first_hidx .. last_hidx ]
-    [ ref, level, hedge, value, r, ] = hub.state.hedgeresults[ hidx ]
-    push_value_row ref, level, hedge, value, r
+  switch cfg.mode
+    #.......................................................................................................
+    when 'all', 'failing'
+      for hidx in [ first_hidx .. last_hidx ]
+        [ ref, level, hedge, value, r, ] = hub.state.hedgeresults[ hidx ]
+        push_value_row ref, level, hedge, value, r
+      #.....................................................................................................
+      if hub.state.hedgeresults.length > 1
+        push_value_row null, 0, hub.state.hedgerow, hub.state.x, hub.state.result
+      push_error_row hub.state.error
+    #.......................................................................................................
+    when 'short'
+      for hidx in [ first_hidx .. last_hidx ]
+        [ ref, level, hedge, value, r, ] = hub.state.hedgeresults[ hidx ]
+        value_r = rpr value
+        value_r = to_width value_r, 50 if ( width_of value_r ) > 50
+        R.push "#{green hedge} (#{rvr yellow value_r})"
+      sep = ' —‣ '
+    else throw new E.Intertype_internal_error '^intertype.get_state_report@2^', "unknown mode #{rpr mode}"
   #.........................................................................................................
-  if hub.state.hedgeresults.length > 1
-    push_value_row null, 0, hub.state.hedgerow, hub.state.x, hub.state.result
-  push_error_row hub.state.error
-  #.........................................................................................................
-  R = R.join ''
+  R = R.join sep
   return if cfg.colors then R else GUY.trm.strip_ansi R
 
 
