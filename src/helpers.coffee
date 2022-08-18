@@ -23,13 +23,7 @@ E                         = require './errors'
 @equals                     = require '../deps/jkroso-equals'
 @nameit                     = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 @TMP_HEDGRES_PRE            = false
-{ reverse: rvr
-  grey
-  red
-  green
-  blue
-  steel
-  yellow                  } = GUY.trm
+idf                         = ( x ) -> x ### IDentity Function ###
 
 
 #===========================================================================================================
@@ -200,13 +194,54 @@ E                         = require './errors'
   errors:           false
 
 #-----------------------------------------------------------------------------------------------------------
+@types.declare 'intertype_color', ( x ) ->
+  return true   if      @isa.function       x
+  return true   if      @isa.boolean        x
+  return false  unless  @isa.nonempty_text  x
+  return false  unless  @isa.function       GUY.trm[ x ]
+  return true
+
+#-----------------------------------------------------------------------------------------------------------
+@types.declare 'intertype_state_report_colors', tests:
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa.intertype_color x.value":             ( x ) -> @isa.intertype_color x.value
+  "@isa.intertype_color x.true":              ( x ) -> @isa.intertype_color x.true
+  "@isa.intertype_color x.false":             ( x ) -> @isa.intertype_color x.false
+  "@isa.intertype_color x.hedge":             ( x ) -> @isa.intertype_color x.hedge
+  "@isa.intertype_color x.verb":              ( x ) -> @isa.intertype_color x.verb
+  "@isa.intertype_color x.arrow":             ( x ) -> @isa.intertype_color x.arrow
+  "@isa.intertype_color x.error":             ( x ) -> @isa.intertype_color x.error
+  "@isa.intertype_color x.reverse":           ( x ) -> @isa.intertype_color x.reverse
+#...........................................................................................................
+@defaults.intertype_state_report_colors = GUY.lft.freeze
+  value:          'gold'
+  true:           'green'
+  false:          'red'
+  hedge:          'blue'
+  verb:           'lime'
+  arrow:          'white'
+  error:          'red'
+  reverse:        'reverse'
+#...........................................................................................................
+@defaults.intertype_state_report_no_colors = GUY.lft.freeze
+  value:          idf
+  true:           idf
+  false:          idf
+  hedge:          idf
+  verb:           idf
+  arrow:          idf
+  error:          idf
+  reverse:        idf
+
+#-----------------------------------------------------------------------------------------------------------
 @types.declare 'intertype_get_state_report_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
-  "@isa.boolean x.colors":                    ( x ) -> @isa.boolean x.colors
   "x.mode in [ 'all', 'failing', 'short' ]":  ( x ) -> x.mode in [ 'all', 'failing', 'short' ]
+  "( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )": \
+    ( x ) -> ( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )
 #...........................................................................................................
 @defaults.intertype_get_state_report_cfg =
-  colors:         true
+  colors:         @defaults.intertype_state_report_colors
   mode:           'failing'
 
 #-----------------------------------------------------------------------------------------------------------
@@ -255,13 +290,39 @@ class Intertype_abc extends GUY.props.Strict_owner
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+@_get_state_report_colors = ( colors ) ->
+  return @defaults.intertype_state_report_colors    if colors is true
+  return @defaults.intertype_state_report_no_colors if colors is false
+  R = {}
+  for purpose, color of colors
+    continue if @types.isa.function color
+    switch color
+      when true   then  R[ purpose ] = GUY.trm[ @defaults.intertype_state_report_colors[ color ] ].bind GUY.trm
+      when false  then  R[ purpose ] = idf
+      else              R[ purpose ] = GUY.trm[ color ].bind GUY.trm
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
 @get_state_report = ( hub, cfg ) ->
   @types.validate.intertype_get_state_report_cfg ( cfg = { @defaults.intertype_get_state_report_cfg..., cfg..., } )
+  C = @_get_state_report_colors cfg.colors
   #.........................................................................................................
   TTY               = require 'node:tty'
-  truth             = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
+  truth             = ( b, r ) -> C.reverse if b then ( C.true " T " ) else ( C.false " F " )
   first_hidx        = 0
   last_hidx         = hub.state.hedgeresults.length - 1
+  #.........................................................................................................
+  R                 = []
+  sep               = ''
+  widths            = do ->
+    lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
+    widths          = {}
+    widths.line     = lw
+    lw             -= widths.verb     = 10
+    lw             -= widths.truth    = 3
+    lw             -= widths.hedgerow = Math.floor lw * 0.50
+    lw             -= widths.value    = lw
+    return widths
   #.........................................................................................................
   switch cfg.mode
     when 'all'
@@ -275,33 +336,28 @@ class Intertype_abc extends GUY.props.Strict_owner
       first_hidx = Math.min first_hidx, last_hidx
     else throw new E.Intertype_internal_error '^intertype.get_state_report@1^', "unknown mode #{rpr mode}"
   #.........................................................................................................
-  R                 = []
-  sep               = ''
-  widths            = do ->
-    lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
-    widths          = {}
-    widths.line     = lw
-    lw             -= widths.verb     = 10
-    lw             -= widths.truth    = 3
-    lw             -= widths.hedgerow = Math.floor lw * 0.50
-    lw             -= widths.value    = lw
-    return widths
-  verb_field        = blue rvr to_width hub.state.verb, widths.verb, { align: 'center', }
+  switch cfg.mode
+    when 'short'
+      verb_field        = C.reverse C.verb " #{hub.state.verb} "
+      arrow_field       = C.reverse C.arrow " ◀ "
+    else
+      verb_field        = C.reverse C.verb to_width hub.state.verb, widths.verb, { align: 'center', }
+      arrow_field       = null
   #.........................................................................................................
-  push_value_row    = ( ref, level, hedge, value, r ) ->
+  push_value_row = ( ref, level, hedge, value, r ) ->
     dent  = '  '.repeat level
     R.push truth r, r?.toString()
     R.push verb_field
-    R.push rvr yellow to_width  ( ' ' + dent + hedge  ), widths.hedgerow
-    R.push rvr steel  to_width  ( ' ' + rpr value     ), widths.value
+    R.push C.reverse C.hedge  to_width  ( ' ' + dent + hedge  ), widths.hedgerow
+    R.push C.reverse C.value  to_width  ( ' ' + rpr value     ), widths.value
     R.push '\n'
     return null
   #.........................................................................................................
-  push_error_row    = ( error = null ) ->
+  push_error_row = ( error = null ) ->
     return null unless error?
     if error instanceof Error then  error_r = " Error: #{error.message.trim()}"
     else                            error_r = " Error: #{error.toString()}"
-    R.push red rvr to_width error_r, widths.line
+    R.push C.reverse C.error to_width error_r, widths.line
     R.push '\n'
   #.........................................................................................................
   switch cfg.mode
@@ -320,11 +376,16 @@ class Intertype_abc extends GUY.props.Strict_owner
         [ ref, level, hedge, value, r, ] = hub.state.hedgeresults[ hidx ]
         value_r = rpr value
         value_r = to_width value_r, 50 if ( width_of value_r ) > 50
-        R.push "#{green hedge} (#{rvr yellow value_r})"
-      sep = ' —‣ '
+        R.push '' \
+          + ( truth r                           ) \
+          + ( verb_field                        ) \
+          + ( C.reverse C.hedge " #{hedge} "    ) \
+          + ( C.reverse C.value " #{value_r} "  )
+      sep = arrow_field
     else throw new E.Intertype_internal_error '^intertype.get_state_report@2^', "unknown mode #{rpr mode}"
   #.........................................................................................................
   R = R.join sep
-  return if cfg.colors then R else GUY.trm.strip_ansi R
+  R = R.replace /\x20{2,}/g, ' ' if ( cfg.mode is 'short' ) and ( cfg.colors is false )
+  return R
 
 
