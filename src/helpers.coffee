@@ -199,6 +199,16 @@ E                         = require './errors'
   errors:           false
 
 #-----------------------------------------------------------------------------------------------------------
+@types.declare 'intertype_get_state_report_cfg', tests:
+  "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa.boolean x.colors":                    ( x ) -> @isa.boolean x.colors
+  "x.mode in [ 'all', 'failing', ]":          ( x ) -> x.mode in [ 'all', 'failing', ]
+#...........................................................................................................
+@defaults.intertype_get_state_report_cfg =
+  colors:         true
+  mode:           'failing'
+
+#-----------------------------------------------------------------------------------------------------------
 @defaults.Intertype_state =
   method:         null
   verb:           null
@@ -244,13 +254,17 @@ class Intertype_abc extends GUY.props.Strict_owner
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@get_state_report = ( hub ) ->
+@get_state_report = ( hub, cfg ) ->
+  @types.validate.intertype_get_state_report_cfg ( cfg = { @defaults.intertype_get_state_report_cfg..., cfg..., } )
+  #.........................................................................................................
   TTY               = require 'node:tty'
   truth             = ( b, r ) -> rvr if b then ( green " T " ) else ( red " F " )
   first_hidx        = 0
   last_hidx         = hub.state.hedgeresults.length - 1
   #.........................................................................................................
-  switch mode = 'failing'
+  switch cfg.mode
+    when 'all'
+      null
     when 'failing'
       return null if hub.state.result is true
       first_hidx = last_hidx
@@ -259,7 +273,6 @@ class Intertype_abc extends GUY.props.Strict_owner
         first_hidx--
       first_hidx = Math.min first_hidx, last_hidx
     else throw new E.Intertype_internal_error '^intertype.get_state_report@1^', "unknown mode #{rpr mode}"
-
   #.........................................................................................................
   R                 = []
   widths            = do ->
@@ -297,6 +310,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     push_value_row null, 0, hub.state.hedgerow, hub.state.x, hub.state.result
   push_error_row hub.state.error
   #.........................................................................................................
-  return R.join ''
+  R = R.join ''
+  return if cfg.colors then R else GUY.trm.strip_ansi R
 
 

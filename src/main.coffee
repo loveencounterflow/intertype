@@ -264,7 +264,7 @@ class Intertype extends H.Intertype_abc
   _split_hedgerow_text:       ( hedgerow ) -> hedgerow.split @cfg.sep
 
   #---------------------------------------------------------------------------------------------------------
-  get_state_report:           -> H.get_state_report @
+  get_state_report: ( cfg ) -> H.get_state_report @, cfg
 
   #---------------------------------------------------------------------------------------------------------
   push_hedgeresult: ( hedgeresult ) ->
