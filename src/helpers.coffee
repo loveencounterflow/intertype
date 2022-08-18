@@ -237,12 +237,14 @@ idf                         = ( x ) -> x ### IDentity Function ###
 @types.declare 'intertype_get_state_report_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "x.mode in [ 'all', 'failing', 'short' ]":  ( x ) -> x.mode in [ 'all', 'failing', 'short' ]
+  "@isa_optional.positive_integer x.width":   ( x ) -> @isa_optional.positive_integer x.width
   "( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )": \
     ( x ) -> ( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )
 #...........................................................................................................
 @defaults.intertype_get_state_report_cfg =
   colors:         @defaults.intertype_state_report_colors
   mode:           'failing'
+  width:          null
 
 #-----------------------------------------------------------------------------------------------------------
 @defaults.Intertype_state =
@@ -315,7 +317,7 @@ class Intertype_abc extends GUY.props.Strict_owner
   R                 = []
   sep               = ''
   widths            = do ->
-    lw              = if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
+    lw              = cfg.width ? if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
     widths          = {}
     widths.line     = lw
     lw             -= widths.verb     = 10
