@@ -235,15 +235,15 @@ idf                         = ( x ) -> x ### IDentity Function ###
 
 #-----------------------------------------------------------------------------------------------------------
 @types.declare 'intertype_get_state_report_cfg', tests:
-  "@isa.object x":                            ( x ) -> @isa.object x
-  "x.mode in [ 'all', 'failing', 'short' ]":  ( x ) -> x.mode in [ 'all', 'failing', 'short' ]
-  "@isa_optional.positive_integer x.width":   ( x ) -> @isa_optional.positive_integer x.width
+  "@isa.object x":                              ( x ) -> @isa.object x
+  "x.format in [ 'all', 'failing', 'short' ]":  ( x ) -> x.format in [ 'all', 'failing', 'short' ]
+  "@isa_optional.positive_integer x.width":     ( x ) -> @isa_optional.positive_integer x.width
   "( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )": \
     ( x ) -> ( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )
 #...........................................................................................................
 @defaults.intertype_get_state_report_cfg =
   colors:         @defaults.intertype_state_report_colors
-  mode:           'failing'
+  format:         'failing'
   width:          null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     lw             -= widths.value    = lw
     return widths
   #.........................................................................................................
-  switch cfg.mode
+  switch cfg.format
     when 'all'
       null
     when 'failing', 'short'
@@ -336,9 +336,9 @@ class Intertype_abc extends GUY.props.Strict_owner
         break if ( hub.state.hedgeresults[ first_hidx - 1 ].at -1 ) isnt false
         first_hidx--
       first_hidx = Math.min first_hidx, last_hidx
-    else throw new E.Intertype_internal_error '^intertype.get_state_report@1^', "unknown mode #{rpr mode}"
+    else throw new E.Intertype_internal_error '^intertype.get_state_report@1^', "unknown format #{rpr format}"
   #.........................................................................................................
-  switch cfg.mode
+  switch cfg.format
     when 'short'
       verb_field        = C.reverse C.verb " #{hub.state.verb} "
       arrow_field       = C.reverse C.arrow " ◀ "
@@ -362,7 +362,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     R.push C.reverse C.error to_width error_r, widths.line
     R.push '\n'
   #.........................................................................................................
-  switch cfg.mode
+  switch cfg.format
     #.......................................................................................................
     when 'all', 'failing'
       for hidx in [ first_hidx .. last_hidx ]
@@ -384,10 +384,10 @@ class Intertype_abc extends GUY.props.Strict_owner
           + ( C.reverse C.hedge " #{hedge} "    ) \
           + ( C.reverse C.value " #{value_r} "  )
       sep = arrow_field
-    else throw new E.Intertype_internal_error '^intertype.get_state_report@2^', "unknown mode #{rpr mode}"
+    else throw new E.Intertype_internal_error '^intertype.get_state_report@2^', "unknown format #{rpr format}"
   #.........................................................................................................
   R = R.join sep
-  R = R.replace /\x20{2,}/g, ' ' if ( cfg.mode is 'short' ) and ( cfg.colors is false )
+  R = R.replace /\x20{2,}/g, ' ' if ( cfg.format is 'short' ) and ( cfg.colors is false )
   return R
 
 
