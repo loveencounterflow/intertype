@@ -224,8 +224,8 @@ class Intertype extends H.Intertype_abc
     console.log GUY.trm.reverse GUY.trm.red "\n Validation Failure "
     console.log ( @get_state_report { format: 'failing', } ).trim()
     console.log GUY.trm.reverse GUY.trm.red " Validation Failure \n"
-    state_report = @get_state_report { format: 'short', colors: false, }
-    throw new E.Intertype_ETEMPTBD '^intertype.validate@3^', "invalid: #{state_report}"
+    state_report = @get_state_report { format: 'short', colors: false, width: 500, }
+    throw new E.Intertype_validation_error '^intertype.validate@3^', @state, state_report
 
   #---------------------------------------------------------------------------------------------------------
   _create: ( type, cfg ) ->
