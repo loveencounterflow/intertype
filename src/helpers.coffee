@@ -204,6 +204,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
 #-----------------------------------------------------------------------------------------------------------
 @types.declare 'intertype_state_report_colors', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
+  "@isa.intertype_color x.ref":               ( x ) -> @isa.intertype_color x.ref
   "@isa.intertype_color x.value":             ( x ) -> @isa.intertype_color x.value
   "@isa.intertype_color x.true":              ( x ) -> @isa.intertype_color x.true
   "@isa.intertype_color x.false":             ( x ) -> @isa.intertype_color x.false
@@ -214,6 +215,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
   "@isa.intertype_color x.reverse":           ( x ) -> @isa.intertype_color x.reverse
 #...........................................................................................................
 @defaults.intertype_state_report_colors = GUY.lft.freeze
+  ref:            'grey'
   value:          'gold'
   true:           'green'
   false:          'red'
@@ -224,6 +226,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
   reverse:        'reverse'
 #...........................................................................................................
 @defaults.intertype_state_report_no_colors = GUY.lft.freeze
+  ref:            idf
   value:          idf
   true:           idf
   false:          idf
@@ -237,6 +240,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
 @types.declare 'intertype_get_state_report_cfg', tests:
   "@isa.object x":                              ( x ) -> @isa.object x
   "x.format in [ 'all', 'failing', 'short' ]":  ( x ) -> x.format in [ 'all', 'failing', 'short' ]
+  "@isa.boolean x.refs":                        ( x ) -> @isa.boolean x.refs
   "@isa_optional.positive_integer x.width":     ( x ) -> @isa_optional.positive_integer x.width
   "( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )": \
     ( x ) -> ( @isa.boolean x.colors ) or ( @isa.intertype_state_report_colors )
@@ -245,6 +249,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
   colors:         @defaults.intertype_state_report_colors
   format:         'failing'
   width:          null
+  refs:           false
 
 #-----------------------------------------------------------------------------------------------------------
 @defaults.Intertype_state =
@@ -305,6 +310,7 @@ class Intertype_abc extends GUY.props.Strict_owner
     lw                = cfg.width ? if ( TTY.isatty process.stdout.fd ) then process.stdout.columns else 100
     widths            = {}
     widths.line       = lw
+    lw               -= widths.ref      = if cfg.refs then 5 else 0
     lw               -= widths.verb     = 10
     lw               -= widths.truth    = 3
     lw               -= widths.hedgerow = Math.floor lw / 3
@@ -333,6 +339,7 @@ class Intertype_abc extends GUY.props.Strict_owner
   #.........................................................................................................
   push_value_row = ( ref, level, hedge, value, r ) ->
     dent  = '  '.repeat level
+    R.push C.reverse C.ref    to_width  ( ref ? ''            ), widths.ref if cfg.refs
     R.push truth r, r?.toString()
     R.push verb_field
     R.push C.reverse C.hedge  to_width  ( ' ' + dent + hedge  ), widths.hedgerow
