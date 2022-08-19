@@ -36,7 +36,9 @@ class @Intertype_wrong_type                extends @Intertype_error
   constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
 class @Intertype_wrong_arity               extends @Intertype_error
   constructor: ( ref, name, min, max, found ) -> super ref, "#{name} expected between #{min} and #{max} arguments, got #{found}"
-class @Intertype_user_error            extends @Intertype_error
+class @Intertype_user_error                extends @Intertype_error
   constructor: ( message )          -> super null, message
+class @Intertype_validation_error          extends @Intertype_error
+  constructor: ( ref, state, report ) -> super ref, "not a valid #{state.hedgerow}; failing tests: #{report}"
 #-----------------------------------------------------------------------------------------------------------
 class @Intertype_ETEMPTBD extends @Intertype_error
