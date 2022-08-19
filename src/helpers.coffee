@@ -379,7 +379,9 @@ class Intertype_abc extends GUY.props.Strict_owner
     else throw new E.Intertype_internal_error '^intertype.get_state_report@2^', "unknown format #{rpr format}"
   #.........................................................................................................
   R = R.join sep
-  R = R.replace /\x20{2,}/g, ' ' if ( cfg.format is 'short' ) and ( cfg.colors is false )
+  if ( cfg.format is 'short' ) and ( cfg.colors is false )
+    R = R.trim()
+    R = R.replace /\x20{2,}/g, ' '
   return R
 
 
