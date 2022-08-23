@@ -216,11 +216,11 @@ idf                         = ( x ) -> x ### IDentity Function ###
 #...........................................................................................................
 @defaults.intertype_state_report_colors = GUY.lft.freeze
   ref:            'grey'
-  value:          'gold'
+  value:          'lime'
   true:           'green'
   false:          'red'
   hedge:          'blue'
-  verb:           'lime'
+  verb:           'gold'
   arrow:          'white'
   error:          'red'
   reverse:        'reverse'
