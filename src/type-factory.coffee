@@ -88,7 +88,6 @@ class Type_factory extends H.Intertype_abc
         f = dsc.isa.bind @hub
         return ( x ) =>
           @hub.state.x = x if @hub.state.isa_depth < 2
-          @hub.push_hedgeresult hedgeresult = [ '▲nt1', @hub.state.isa_depth, dsc.name, x, ] if H.TMP_HEDGRES_PRE
           R = do =>
             try
               return f x
@@ -96,9 +95,8 @@ class Type_factory extends H.Intertype_abc
               throw error if @hub.cfg.errors is 'throw' or error instanceof E.Intertype_error
               @hub.state.error = error
             return false
-          @hub.push_hedgeresult hedgeresult = [ '▲nt1', @hub.state.isa_depth, dsc.name, x, ] unless H.TMP_HEDGRES_PRE
-          hedgeresult.push R
-          return R
+          @hub.push_hedgeresult [ '▲nt2', @hub.state.isa_depth, dsc.name, x, R ]
+          return if ( @hub.state.verb is 'validate' ) and ( @hub.state.hedges.length is 1 ) then x else R
     #.......................................................................................................
     dsc = { H.defaults.Type_factory_type_dsc..., dsc..., }
     H.types.validate.Type_factory_type_dsc  dsc
@@ -174,30 +172,28 @@ class Type_factory extends H.Intertype_abc
     return ( x ) ->
       R = do =>
         #.....................................................................................................
-        hub.push_hedgeresult hedgeresult = [ '▲tw1', hub.state.isa_depth, @isa.name, x, ] if H.TMP_HEDGRES_PRE
         hub.state.isa_depth++
         R = @isa x
-        hub.push_hedgeresult hedgeresult = [ '▲tw2', hub.state.isa_depth - 1, @isa.name, x, ] unless H.TMP_HEDGRES_PRE
-        hedgeresult.push R
+        # debug '^767-1^', dsc
+        # debug '^767-1^', hub.state
+        # debug '^767-1^', { x, R, }
+        hub.push_hedgeresult [ '▲tw2', hub.state.isa_depth - 1, @isa.name, x, R, ]
         if ( R is false ) or ( R isnt true )
-          hub.state.isa_depth--
-          return R
+          hub.state.isa_depth--; return R
         #.....................................................................................................
         if test_for_extras
           if has_extras x
             ### TAINT return value, recorded value should both be `false` ###
+            # debug '^767-2^', dsc, x
             hub.push_hedgeresult [ '▲tw3', hub.state.isa_depth, has_extras.name, x, true, ]
-            hub.state.isa_depth--
-            return false
+            hub.state.isa_depth--; return false
         #.....................................................................................................
         for _, f of @fields
-          hub.push_hedgeresult hedgeresult = [ '▲tw4', hub.state.isa_depth, f.name, x, ] if H.TMP_HEDGRES_PRE
           R = f x
-          hub.push_hedgeresult hedgeresult = [ '▲tw5', hub.state.isa_depth, f.name, x, ] unless H.TMP_HEDGRES_PRE
-          hedgeresult.push R
+          # debug '^767-3^', dsc, x
+          hub.push_hedgeresult [ '▲tw5', hub.state.isa_depth, f.name, x, R, ]
           if ( R is false ) or ( R isnt true )
-            hub.state.isa_depth--
-            return R
+            hub.state.isa_depth--; return R
         #.....................................................................................................
         hub.state.isa_depth--
         return true
