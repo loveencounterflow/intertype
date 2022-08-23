@@ -602,6 +602,8 @@ types.declare.quantity
   whether to include tracing in `stderr` or print to console or both
 
 * **[–]** must use deep copies when deriving values from defaults in `create()`
+* **[–]** `get_state_report()` may report single line even with `format: 'failing'` when test has succeeded,
+  should return `null`
 
 
 ## Is Done
