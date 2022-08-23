@@ -112,6 +112,10 @@
   declare.object
     isa:        ( x ) -> x? and ( typeof x is 'object' ) and ( ( Object::toString.call x ) is '[object Object]' )
     default:    {}
+  #.........................................................................................................
+  declare.function
+    isa:        ( x ) -> typeof x is 'function'
+    default:    {}
 
   #.........................................................................................................
   return null
