@@ -605,7 +605,7 @@ types.declare.quantity
 * **[–]** `get_state_report()` may report single line even with `format: 'failing'` when test has succeeded,
   should return `null`
 * **[–]** change `default` to `defaults` (as in, 'field defaults') to avoid clash with JS reserved word.
-  Alternative: `paragon`
+  Alternative: <del>`paragon`</del> <ins>`template`</ins>
 * **[–]** do not use `$`-prefixed fieldnames, define fields in `fields` sub-object
 * **[–]** allow list as enumeration of allowed values as in `color: [ 'red', 'green', 'blue', ]`
 
