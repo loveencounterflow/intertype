@@ -526,20 +526,16 @@ types.declare.quantity
 * **[–]** implement type dependencies (both explicit and implicit), e.g. `codepoint` depends on `text` while
   `codepointid` depends on `integer`
 * **[–]** clarify distinction between `container` and `collection` or remove one of them
-* **[–]** implement using the cfg directly for tests against object (struct) properties. Keys can be
-  anything but if they start with a `$` dollar sign the refer to the keys of the struct being described; `$`
-  refers to the struct itself; string values name an existing type. These additions make declarations highly
-  declarative and aid in providing automatic features (e.g. implicit type dependency):
+* **[–]** `structuredClone()` throws an exception when encountering a function (and other things)
+  * **[–]** fix (probably) related bug [metteur#1867d3a6535c4d1f12ccc55d359fc6ff681a16e6](https://github.com/loveencounterflow/metteur/tree/1867d3a6535c4d1f12ccc55d359fc6ff681a16e6)
 
-  ```coffee
-  declare.quantity
-    $:        'object'          # this could be implicit, judging by the use of any `$`-prefixed key
-    $value:   'float'
-    $unit:    'nonempty.text'
-    default:
-      value:    0
-      unit:     null
-  ```
+    ```
+    Validation Failure
+    F   create       mtr_new_template.rpr:optional.function                 { template: 'the answers are ❰...answer❱.', open: '❰', close: '❱', rpr: null }
+    F   create   mtr_new_template                                           Symbol(misfit)
+    Error: ^intertype/validate@1567^ not a valid boolean (violates 'x is true or false'): Symbol(return_true)
+    Validation Failure
+    ```
 
 * **[–]** in addition to single-`$`-prefixed keys, allow double-`$`-prefixed keys to allow arbitrary names
   for arbitrary conditions; these should probably always use functions as values:
@@ -609,6 +605,10 @@ types.declare.quantity
 * **[–]** do not use `$`-prefixed fieldnames, define fields in `fields` sub-object
 * **[–]** allow list as enumeration of allowed values as in `color: [ 'red', 'green', 'blue', ]`
 
+* **[–]** Implement a demo type `quantity` that allows inputs like `ms: 42`, `km: 3, m: 800` with
+  normalization
+
+* **[–]** make sure key properties of `Intertype` instances are hidden to avoid terminal flooding on output
 
 ## Is Done
 
@@ -657,3 +657,17 @@ types.declare.quantity
   is set, errors will be thrown as normally
 * **[+]** allow users to access `Intertype_user_error` class so they can throw errors that are exempt from
   exception-guarding
+* **[+]** implement using the cfg directly for tests against object (struct) properties. Keys can be
+  anything but if they start with a `$` dollar sign the refer to the keys of the struct being described;
+  <del>`$` refers to the struct itself;</del> string values name an existing type. These additions make
+  declarations highly declarative and aid in providing automatic features (e.g. implicit type dependency):
+
+  ```coffee
+  declare.quantity
+    $:        'object'          # this could be implicit, judging by the use of any `$`-prefixed key
+    $value:   'float'
+    $unit:    'nonempty.text'
+    default:
+      value:    0
+      unit:     null
+  ```

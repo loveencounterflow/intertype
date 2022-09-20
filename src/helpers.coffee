@@ -20,9 +20,9 @@ E                         = require './errors'
 #...........................................................................................................
 @constructor_of_generators  = ( ( -> yield 42 )() ).constructor
 @deep_copy                  = structuredClone
-@equals                     = require '../deps/jkroso-equals'
 @nameit                     = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 idf                         = ( x ) -> x ### IDentity Function ###
+@equals                     = @nameit 'equals', require '../deps/jkroso-equals'
 
 
 #===========================================================================================================
