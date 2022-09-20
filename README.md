@@ -526,6 +526,7 @@ types.declare.quantity
 * **[–]** implement type dependencies (both explicit and implicit), e.g. `codepoint` depends on `text` while
   `codepointid` depends on `integer`
 * **[–]** clarify distinction between `container` and `collection` or remove one of them
+* **[–]** `helpers.dep_copy()` should allow circular objects where necessary
 * **[–]** `structuredClone()` throws an exception when encountering a function (and other things)
   * **[–]** fix (probably) related bug [metteur#1867d3a6535c4d1f12ccc55d359fc6ff681a16e6](https://github.com/loveencounterflow/metteur/tree/1867d3a6535c4d1f12ccc55d359fc6ff681a16e6)
 
