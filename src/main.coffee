@@ -247,11 +247,11 @@ class Intertype extends H.Intertype_abc
     #.......................................................................................................
     if ( not create? ) and cfg?
       if ( t = H.js_type_of R ) is '[object Object]' or t is '[object Array]'
-        R = Object.assign ( structuredClone R ), cfg
+        R = Object.assign ( H.deep_copy R ), cfg
       else
         R = cfg
     else
-      R = structuredClone R
+      R = H.deep_copy R
     #.......................................................................................................
     if      type_dsc.freeze is true   then R = Object.freeze R
     else if type_dsc.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R

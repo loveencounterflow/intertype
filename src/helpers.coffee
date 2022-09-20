@@ -19,7 +19,8 @@ E                         = require './errors'
 @misfit                   = Symbol 'misfit'
 #...........................................................................................................
 @constructor_of_generators  = ( ( -> yield 42 )() ).constructor
-@deep_copy                  = structuredClone
+### see https://github.com/davidmarkclements/rfdc ###
+@deep_copy                  = ( require 'rfdc' ) { proto: true, circles: false, }
 @nameit                     = ( name, f ) -> Object.defineProperty f, 'name', { value: name, }
 idf                         = ( x ) -> x ### IDentity Function ###
 @equals                     = @nameit 'equals', require '../deps/jkroso-equals'
