@@ -150,7 +150,7 @@ class Intertype extends H.Intertype_abc
     try
       R = @state.result = @_inner_isa hedges..., x
     catch error
-      throw error if @cfg.errors is 'throw' or error instanceof E.Intertype_error
+      throw error if @cfg.errors or error instanceof E.Intertype_error
       @state.error = error
     @state.isa_depth--
     return @state.result = R

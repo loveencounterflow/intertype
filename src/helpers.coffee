@@ -187,11 +187,11 @@ idf                         = ( x ) -> x ### IDentity Function ###
 @types.declare 'Intertype_constructor_cfg', tests:
   "@isa.object x":                            ( x ) -> @isa.object x
   "@isa_optional.nonempty_text x.sep":        ( x ) -> @isa_optional.nonempty_text x.sep
-  "x.errors in [ false, 'throw', ]":          ( x ) -> x.errors in [ false, 'throw', ]
+  "@isa.boolean x.errors":                    ( x ) -> @isa.boolean x.errors
 #...........................................................................................................
 @defaults.Intertype_constructor_cfg =
   sep:              '.'
-  errors:           false
+  errors:           true
 
 #-----------------------------------------------------------------------------------------------------------
 @types.declare 'intertype_color', ( x ) ->
