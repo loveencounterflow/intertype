@@ -55,7 +55,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   ```coffee
   { Intertype
     Intertype_user_error } = require 'intertype'
-  types = new Intertype
+  types = new Intertype { errors: false, }
   types.declare.nevah       ( x ) -> false
   types.declare.oops        ( x ) -> throw new Error 'oops'
   types.declare.oops_anyway ( x ) -> throw new Intertype_user_error 'oops'
@@ -66,10 +66,9 @@ A JavaScript type checker with helpers to implement own types and do object shap
   types.isa.oops_anyway 42          # !!! throws an error
   ```
 
-  Because silently suppressed errors
-  can be tricky to debug and checking for `state.error` is easily forgotten (and should not normally be
-  necessary), users may elect to switch off exception-guarding by setting `errors` to `'throw'` (as in,
-  `types = new Intertype { errors: 'throw', }`)
+  Because silently suppressed errors can be tricky to debug and checking for `state.error` is easily
+  forgotten (and should not normally be necessary), exception-guarding is an opt-in (as shown above, use
+  `errors: false`)
 * Users may always construct type testers whose intentional errors will not be silently caught by deriving
   their errors from `Intertype_user_error`
 
