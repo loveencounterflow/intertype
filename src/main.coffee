@@ -275,7 +275,7 @@ class Intertype extends H.Intertype_abc
     H.types.validate.nonempty_text  ref
     # H.types.validate.cardinal       level
     H.types.validate.nonempty_text  hedge
-    H.types.validate.boolean        r
+    # H.types.validate.boolean        r
     @state.hedgeresults.push hedgeresult
     return hedgeresult.at -1
 
