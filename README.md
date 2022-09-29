@@ -609,6 +609,8 @@ types.declare.quantity
   normalization
 
 * **[–]** make sure key properties of `Intertype` instances are hidden to avoid terminal flooding on output
+* **[–]** implement a way for type tests to communicate a reason for rejection of a value; this should be
+  picked up by `validate` when throwing error
 
 ## Is Done
 
