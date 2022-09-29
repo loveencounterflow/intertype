@@ -96,7 +96,8 @@ class Type_factory extends H.Intertype_abc
               @hub.state.error = error
             return false
           @hub.push_hedgeresult [ '▲nt2', @hub.state.isa_depth, dsc.name, x, R ]
-          return if ( @hub.state.verb is 'validate' ) and ( @hub.state.hedges.length is 1 ) then x else R
+          return R
+          # return if ( @hub.state.verb is 'validate' ) and ( @hub.state.hedges.length is 1 ) then x else R
     #.......................................................................................................
     dsc = { H.defaults.Type_factory_type_dsc..., dsc..., }
     H.types.validate.Type_factory_type_dsc  dsc
