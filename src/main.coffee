@@ -214,7 +214,7 @@ class Intertype extends H.Intertype_abc
           continue
       #.....................................................................................................
       throw new E.Intertype_internal_error '^intertype.isa@9^', \
-        "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr R}"
+        "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr result}"
     #.......................................................................................................
     return ( R )                                                                    # exit point
 
