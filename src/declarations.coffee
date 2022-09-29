@@ -88,6 +88,10 @@
     isa:        ( x ) -> Number.isInteger x
     default:    0
   #.........................................................................................................
+  declare.nan
+    isa:        ( x ) -> Number.isNaN x
+    default:    NaN
+  #.........................................................................................................
   declare.negatable # numeric? numeral?
     isa:        ( x ) -> ( typeof x ) is ( typeof -x )
     default:    0
