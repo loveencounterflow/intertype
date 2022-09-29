@@ -222,10 +222,13 @@ class Intertype extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   _validate: ( hedges..., x ) ->
     return x if @_isa hedges..., x
-    console.log GUY.trm.reverse GUY.trm.red "\n Validation Failure "
-    console.log ( @get_state_report { format: 'failing', } ).trim()
-    console.log GUY.trm.reverse GUY.trm.red " Validation Failure \n"
-    state_report = @get_state_report { format: 'short', colors: false, width: 500, }
+    state_report  = @get_state_report { format: 'short', colors: false, width: 500, }
+    state_report += '\n'
+    state_report += GUY.trm.reverse GUY.trm.red "\n Validation Failure "
+    state_report += '\n'
+    state_report += ( @get_state_report { format: 'failing', } ).trim()
+    state_report += '\n'
+    state_report += GUY.trm.reverse GUY.trm.red " Validation Failure \n"
     throw new E.Intertype_validation_error '^intertype.validate@3^', @state, state_report
 
   #---------------------------------------------------------------------------------------------------------
