@@ -14,6 +14,20 @@ L                         = @
 
 
 #===========================================================================================================
+positive0 = ( x ) ->
+  return false  if Object.is x, -0
+  return true   if Object.is x, +0
+  return true   if x is +Infinity
+  return ( Number.isFinite x ) and ( x >= 0 )
+
+#-----------------------------------------------------------------------------------------------------------
+negative0 = ( x ) ->
+  return true   if x is -Infinity
+  return true   if Object.is x, -0
+  return false  if Object.is x, +0
+  return ( Number.isFinite x ) and ( x <= 0 )
+
+#===========================================================================================================
 @defaults =
   combinator_cfg:
     hedgematch:     '*'
@@ -53,9 +67,11 @@ class @Intertype_hedges extends GUY.props.Strict_owner
     empty:      ( x ) -> ( R = H.size_of x, null )? and R is 0
     nonempty:   ( x ) -> ( R = H.size_of x, null )? and R isnt 0
     #.......................................................................................................
-    positive0:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >= 0 ) )
-    positive1:  ( x ) -> ( x is +Infinity ) or ( ( Number.isFinite x ) and ( x >  0 ) )
-    negative0:  ( x ) -> ( x is -Infinity ) or ( ( Number.isFinite x ) and ( x <= 0 ) )
-    negative1:  ( x ) -> ( x is -Infinity ) or ( ( Number.isFinite x ) and ( x <  0 ) )
+    positive:   positive0
+    positive0:  positive0
+    positive1:  ( x ) -> ( x is +Infinity ) or                        ( ( Number.isFinite x ) and ( x >  0 ) )
+    negative:   negative0
+    negative0:  negative0
+    negative1:  ( x ) -> ( x is -Infinity ) or                        ( ( Number.isFinite x ) and ( x <  0 ) )
 
 
