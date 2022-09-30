@@ -4,7 +4,9 @@ var type = require('./jkroso-type')
 // (any, any, [array]) -> boolean
 function equal(a, b, memos){
   // All identical values are equivalent
-  if (a === b) return true
+  // thx to https://stackoverflow.com/a/7223395/7568091; we now distingish +0 from -0
+  if ( Object.is( a, b ) ) return true;
+  // if (a === b) return true
   var fnA = types[type(a)]
   var fnB = types[type(b)]
   return fnA && fnA === fnB
