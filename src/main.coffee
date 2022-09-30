@@ -26,6 +26,7 @@ class Intertype extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
     super()
+    @data = {}
     GUY.props.hide @, 'cfg',          { H.defaults.Intertype_constructor_cfg..., cfg..., }
     H.types.validate.Intertype_constructor_cfg @cfg
     #.......................................................................................................

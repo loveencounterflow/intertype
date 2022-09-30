@@ -266,7 +266,6 @@ idf                         = ( x ) -> x ### IDentity Function ###
   result:         null
   error:          null
   extra_keys:     null
-  data:           null
 
 
 #===========================================================================================================
