@@ -264,9 +264,9 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   equals:                     H.equals
-  type_of:                    H.type_of
-  size_of:                    H.size_of
-  _normalize_type:            ( type ) -> type.toLowerCase().replace /\s+/g, ''
+  type_of:                    H.type_of.bind H
+  size_of:                    H.size_of.bind H
+  _normalize_type:            H._normalize_type.bind H
   _split_hedgerow_text:       ( hedgerow ) -> hedgerow.split @cfg.sep
 
   #---------------------------------------------------------------------------------------------------------

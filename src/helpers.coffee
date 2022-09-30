@@ -71,6 +71,9 @@ idf                         = ( x ) -> x ### IDentity Function ###
   nothing:                Symbol 'nothing'
 
 #-----------------------------------------------------------------------------------------------------------
+@_normalize_type = ( type ) -> type.toLowerCase().replace /\s+/g, ''
+
+#-----------------------------------------------------------------------------------------------------------
 @type_of = ( x ) ->
   throw new Error "^7746^ expected 1 argument, got #{arity}" unless ( arity = arguments.length ) is 1
   return 'null'       if x is null
