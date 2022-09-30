@@ -131,7 +131,7 @@ class Intertype extends H.Intertype_abc
     @registry[ dsc.typename ] = dsc
     ### TAINT need not call _get_hedge_sub_proxy_cfg() twice? ###
     @isa[      dsc.typename ] = new Proxy dsc, @_get_hedge_sub_proxy_cfg @
-    dscv                      = ( x ) => @_validate dsc.typename, x
+    dscv                      = H.nameit dsc.typename, ( x ) => @_validate dsc.typename, x
     @validate[ dsc.typename ] = new Proxy dscv, @_get_hedge_sub_proxy_cfg @
     @_collections.add dsc.typename if dsc.collection
     return null
