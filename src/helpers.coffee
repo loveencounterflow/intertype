@@ -341,6 +341,7 @@ class Intertype_abc extends GUY.props.Strict_owner
       arrow_field       = null
   #.........................................................................................................
   push_value_row = ( ref, level, hedge, value, r ) ->
+    level = Math.max level, 0
     dent  = '  '.repeat level
     R.push C.reverse C.ref    to_width  ( ref ? ''            ), widths.ref if cfg.refs
     R.push truth r, r?.toString()
