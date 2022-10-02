@@ -93,8 +93,10 @@ class Intertype extends H.Intertype_abc
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
         ### TAINT code below never used? ###
-        if method_name in [ '_create', '_cast', ]
+        if method_name is '_create'
           f = H.nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
+        else if method_name is '_cast'
+          f = H.nameit key, ( P... ) -> self[ self.state.method ] key, P...
         else
           f = H.nameit key, ( P... ) -> self[ self.state.method ] P...
         GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
