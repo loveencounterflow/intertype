@@ -132,7 +132,9 @@ class Type_factory extends H.Intertype_abc
         if ( H.types.type_of field_dsc ) is 'text'
           hedges    = @hub._split_hedgerow_text field_dsc
           field_dsc = do ( fieldname, field_dsc, hedges ) =>
-            H.nameit field_dsc, ( x ) -> @_isa hedges..., x[ fieldname ]
+            H.nameit field_dsc, ( x ) ->
+              return false unless x?
+              return @_isa hedges..., x[ fieldname ]
         if ( type = H.types.type_of field_dsc ) is 'function'
           nr++
           name_of_isa = if field_dsc.name in @cfg.rename then '#{nr}' else field_dsc.name
@@ -174,6 +176,14 @@ class Type_factory extends H.Intertype_abc
       R = do =>
         #.....................................................................................................
         hub.state.isa_depth++
+        #.....................................................................................................
+        for _, f of @fields
+          R = f x
+          # debug '^767-3^', dsc, x
+          hub.push_hedgeresult [ '▲tw5', hub.state.isa_depth, f.name, x, R, ]
+          if ( R is false ) or ( R isnt true )
+            hub.state.isa_depth--; return R
+        #.....................................................................................................
         R = @isa x
         # debug '^767-1^', dsc
         # debug '^767-1^', hub.state
@@ -188,13 +198,6 @@ class Type_factory extends H.Intertype_abc
             # debug '^767-2^', dsc, x
             hub.push_hedgeresult [ '▲tw3', hub.state.isa_depth, has_extras.name, x, true, ]
             hub.state.isa_depth--; return false
-        #.....................................................................................................
-        for _, f of @fields
-          R = f x
-          # debug '^767-3^', dsc, x
-          hub.push_hedgeresult [ '▲tw5', hub.state.isa_depth, f.name, x, R, ]
-          if ( R is false ) or ( R isnt true )
-            hub.state.isa_depth--; return R
         #.....................................................................................................
         hub.state.isa_depth--
         return true
