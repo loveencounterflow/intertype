@@ -410,6 +410,33 @@ validate            nonempty                            odd             negative
       ...
     ```
 
+## Intertype `cast`
+
+Experimental feature to create a new instance of a type from any number of arguments; usage:
+
+```coffee
+declare.quantity
+  fields:
+    value:         'float'
+    unit:          'nonempty.text'
+  extras:         false
+  default:
+    value:    0
+    unit:     null
+  cast: ( x ) ->
+    return x unless @isa.nonempty.text x
+    return x unless ( match = x.match /^(?<value>.*?)(?<unit>\D*)$/ )?
+    { value
+      unit  } = match.groups
+    value     = parseFloat value
+    return x unless isa.float value
+    return x unless isa.nonempty.text unit
+    return { value, unit, }
+cast.quantity '102kg' # { value: 102, unit: 'kg', }
+```
+
+Return value will be validated.
+
 ## Intertype `create`
 
 * returns deep copy (structural clone) of `default` member of type declaration
@@ -611,6 +638,17 @@ types.declare.quantity
 * **[–]** make sure key properties of `Intertype` instances are hidden to avoid terminal flooding on output
 * **[–]** implement a way for type tests to communicate a reason for rejection of a value; this should be
   picked up by `validate` when throwing error
+* **[–]** relax restriction on `extras` which currently calls for `default` (to be renamed -> `template`) to
+  be set; `fields` should be sufficient
+* **[–]** declarations themselves should have `extras: false` to help catch unknown and misspelled
+  properties
+* **[–]** A function call that *could* happen *before* shape-testing could be called `cast()` which
+  might accept inputs of all kinds and shapes and try to return a conformant value from those or fail with
+  an exception. So `quantity` could be declared as an object with fields `amount: 'float', unit:
+  'nonempty.text'`, but also accept textual inputs like `'7.3e3kg`, to be parsed and transformed into
+  `amount: 7300, unit: 'kg'`. Whether one wants `cast()` to be called always (implicitly) or only on demand
+  is another question.
+* **[–]** phase out dollar sigil for field declarations; instead, use `fields` sub-object
 
 ## Is Done
 
@@ -673,3 +711,7 @@ types.declare.quantity
       value:    0
       unit:     null
   ```
+
+* **[+]** in compound data types, `isa()` should be called *after* fields have been validated so that a
+  consumer can perform additional checking in `isa()` knowing that the general shape of the value is
+  conformant.

@@ -35,6 +35,7 @@ class Intertype extends H.Intertype_abc
     GUY.props.hide @, '_signals',     H.signals
     # GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
     GUY.props.hide @, 'isa',          new Proxy {}, @_get_hedge_base_proxy_cfg @, '_isa'
+    GUY.props.hide @, 'cast',         new Proxy {}, @_get_hedge_base_proxy_cfg @, '_cast'
     GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg @, '_validate'
     GUY.props.hide @, 'create',       new Proxy {}, @_get_hedge_base_proxy_cfg @, '_create'
     GUY.props.hide @, 'type_factory', new Type_factory @
@@ -92,7 +93,7 @@ class Intertype extends H.Intertype_abc
         return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
         #...................................................................................................
         ### TAINT code below never used? ###
-        if method_name is '_create'
+        if method_name in [ '_create', '_cast', ]
           f = H.nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
         else
           f = H.nameit key, ( P... ) -> self[ self.state.method ] P...
@@ -262,6 +263,20 @@ class Intertype extends H.Intertype_abc
     else if type_dsc.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R
     #.......................................................................................................
     return @_validate type, R
+
+  #---------------------------------------------------------------------------------------------------------
+  _cast: ( type, P... ) ->
+    cast = null
+    #.......................................................................................................
+    unless ( type_dsc = GUY.props.get @registry, type, null )?
+      throw new E.Intertype_ETEMPTBD '^intertype.cast@11^', "unknown type #{rpr type}"
+    unless ( cast = GUY.props.get type_dsc, 'cast', null )?
+      throw new E.Intertype_ETEMPTBD '^intertype.cast@11^', "type #{rpr type} does not have a `cast` method"
+    #.......................................................................................................
+    ### NOTE we *could* call `create`, `validate`, but should we? ###
+    # return ( @create[ type ] cast.call @, P... ) if GUY.props.has type.dsc, 'create'
+    return @validate[ type ] cast.call @, P...
+    # return cast.call @, P...
 
   #---------------------------------------------------------------------------------------------------------
   equals:                     H.equals
