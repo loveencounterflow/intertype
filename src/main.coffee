@@ -253,13 +253,14 @@ class Intertype extends H.Intertype_abc
       ### If `create` is given, call it to obtain default value: ###
       R = create.call @, cfg
     #.......................................................................................................
-    if ( not create? ) and cfg?
-      if ( t = H.js_type_of R ) is '[object Object]' or t is '[object Array]'
-        R = Object.assign ( H.deep_copy R ), cfg
+    if ( not create? )
+      if cfg?
+        if ( t = H.js_type_of R ) is '[object Object]' or t is '[object Array]'
+          R = Object.assign ( H.deep_copy R ), cfg
+        else
+          R = cfg
       else
-        R = cfg
-    else
-      R = H.deep_copy R
+        R = H.deep_copy R
     #.......................................................................................................
     if      type_dsc.freeze is true   then R = Object.freeze R
     else if type_dsc.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R
