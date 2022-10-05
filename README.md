@@ -19,6 +19,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
     - [Diagram](#diagram)
     - [xxx](#xxx)
   - [Intertype `state` Property](#intertype-state-property)
+  - [Intertype `cast`](#intertype-cast)
   - [Intertype `create`](#intertype-create)
   - [Intertype `equals()`](#intertype-equals)
   - [To Do](#to-do)
@@ -649,6 +650,13 @@ types.declare.quantity
   `amount: 7300, unit: 'kg'`. Whether one wants `cast()` to be called always (implicitly) or only on demand
   is another question.
 * **[–]** phase out dollar sigil for field declarations; instead, use `fields` sub-object
+* **[–]** implement option to make result an instance of `GUY.props.Strict_owner`
+* **[–]** provide a way to add computed defaults (which are, strictly speaking, redundant, or
+  denormalizations); e.g. a 'layout' might specify where to put 'pages' on a printing 'sheet'; from this
+  arrangement we can deduce the pages per sheet ('pps') setting which is good to have around as a ready-made
+  number (as opposed to having it to compute it on the fly, maybe repeatedly, from array lengths). Suggest
+  to offer a method `prepare()` that will be called *before* field validation (the way that `create()` used
+  to). Note that now we have `cast()`, `prepare()`, and `create()` to aid in value construction.
 
 ## Is Done
 
