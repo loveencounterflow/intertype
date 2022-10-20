@@ -42,6 +42,10 @@
   declare.codepointid
     isa:        ( x ) -> @isa.integer x and ( 0x00000 <= x <= 0x1ffff )
     default:    '\x00'
+  #.........................................................................................................
+  declare.regex
+    isa:        ( x ) -> ( Object::toString.call x ) is '[object RegExp]'
+    default:    new RegExp ''
 
   #---------------------------------------------------------------------------------------------------------
   # Container Types
