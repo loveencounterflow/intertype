@@ -283,6 +283,7 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   equals:                     H.equals
+  deep_copy:                  H.deep_copy
   type_of:                    H.type_of.bind H
   size_of:                    H.size_of.bind H
   _normalize_type:            H._normalize_type.bind H
@@ -315,4 +316,5 @@ class Intertype extends H.Intertype_abc
 @Intertype            = Intertype
 @Intertype_user_error = E.Intertype_user_error
 @equals               = H.equals
+@deep_copy            = H.deep_copy
 
