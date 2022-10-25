@@ -633,7 +633,7 @@ types.declare.quantity
 * **[–]** do not use `$`-prefixed fieldnames, define fields in `fields` sub-object
 * **[–]** allow list as enumeration of allowed values as in `color: [ 'red', 'green', 'blue', ]`
 
-* **[–]** Implement a demo type `quantity` that allows inputs like `ms: 42`, `km: 3, m: 800` with
+* **[–]** Implement a demo type `quantity` that allows inputs like `ms: 42`, `km: 3`, `m: 800` with
   normalization
 
 * **[–]** make sure key properties of `Intertype` instances are hidden to avoid terminal flooding on output
@@ -657,6 +657,7 @@ types.declare.quantity
   number (as opposed to having it to compute it on the fly, maybe repeatedly, from array lengths). Suggest
   to offer a method `prepare()` that will be called *before* field validation (the way that `create()` used
   to). Note that now we have `cast()`, `prepare()`, and `create()` to aid in value construction.
+* **[–]** allow enumerations (list of values)
 
 ## Is Done
 
