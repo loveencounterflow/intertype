@@ -46,6 +46,13 @@
   declare.regex
     isa:        ( x ) -> ( Object::toString.call x ) is '[object RegExp]'
     default:    new RegExp ''
+  #.........................................................................................................
+  declare.jsidentifier ( x ) ->
+    ### thx to https://github.com/mathiasbynens/mothereff.in/blob/master/js-variables/eff.js and
+    https://mathiasbynens.be/notes/javascript-identifiers-es6 ###
+    return false unless @isa.text x
+    return ( x.match \
+      /// ^ (?: [ $_ ] | \p{ID_Start} ) (?: [ $ _ \u{200c} \u{200d} ] | \p{ID_Continue} )* $ ///u )?
 
   #---------------------------------------------------------------------------------------------------------
   # Container Types
