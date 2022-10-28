@@ -658,6 +658,8 @@ types.declare.quantity
   to offer a method `prepare()` that will be called *before* field validation (the way that `create()` used
   to). Note that now we have `cast()`, `prepare()`, and `create()` to aid in value construction.
 * **[–]** allow enumerations (list of values)
+* **[–]** allow declaration of non-settable items (useful for `cfg` objects that need pre-computed
+  properties derived from user settings)
 
 ## Is Done
 
