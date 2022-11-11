@@ -660,6 +660,12 @@ types.declare.quantity
 * **[–]** allow enumerations (list of values)
 * **[–]** allow declaration of non-settable items (useful for `cfg` objects that need pre-computed
   properties derived from user settings)
+* **[–]** turns out ordering of `or`ed terms matters when it shouldn't:
+  * `isa.regex.or.nonempty.text 'x'`: `true`
+  * `isa.regex.or.nonempty.text /x/`: `true`
+  * `isa.nonempty.text.or.regex 'x'`: `true`
+  * `isa.nonempty.text.or.regex /x/`: `false` (b/c of `nonempty` which is never `true` for `regex`es)
+
 
 ## Is Done
 
