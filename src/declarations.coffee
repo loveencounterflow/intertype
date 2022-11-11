@@ -137,8 +137,12 @@
     default:    {}
   #.........................................................................................................
   declare.function
-    isa:        ( x ) -> typeof x is 'function'
-    default:    {}
+    isa:        ( x ) -> ( Object::toString.call x ) is '[object Function]'
+    default:    ->
+  #.........................................................................................................
+  declare.asyncfunction
+    isa:        ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
+    default:    ->
 
   #.........................................................................................................
   return null
