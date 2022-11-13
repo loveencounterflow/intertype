@@ -732,3 +732,5 @@ types.declare.quantity
 * **[+]** in compound data types, `isa()` should be called *after* fields have been validated so that a
   consumer can perform additional checking in `isa()` knowing that the general shape of the value is
   conformant.
+* **[+]** implement `override` option for `declare` to cause types that take precedence over others when
+  using `type_of()`
