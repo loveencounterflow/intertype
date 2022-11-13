@@ -12,6 +12,7 @@
 - [Constraints on `Type_factory::constructor cfg` After Normalization:](#constraints-on-type_factoryconstructor-cfg-after-normalization)
 - [Settings `copy`, `freeze`, and `seal`](#settings-copy-freeze-and-seal)
 - [`declare`](#declare)
+  - [The `override` Option](#the-override-option)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -316,6 +317,7 @@ types.declare.array
   * `extras:      true`—whether extraneous object properties are allowed (see below)
   * `collection:  false`—whether the type should be considered a collection, meaning it can be used with
     hedges like `empty`, `nonempty`
+  * `override:    false`—whether this type should be checked for by `type_of()` (see below for details)
 
 Like [Clojure spec](https://typedclojure.org)[https://www.youtube.com/watch?v=B_Farscj0hY], InterType
 normally assumes that the contracts of object (or 'structural') types (i.e. 'structs') should be
@@ -364,3 +366,22 @@ c2p.z = 123
 validate.open_2d_point    o2p             # OK
 validate.closed_2d_point  c2p             # !!! Validation Error !!!
 ```
+
+#### The `override` Option
+
+The `override` option allows for type declarations to be used by `type_of()` type checks. This feature was
+motivated by a case where it was desirable to differentiate functions by their arity (number of arguments);
+in this case, types like this one:
+
+```coffee
+declare.function3
+  isa:        ( x ) -> ( @isa.function x ) and ( x.length is 3 )
+  default:    ( x, y, z ) ->
+  override:   true
+```
+
+that have `override` set to `true` will cause `type_of ( a, b, c ) ->` to return `function3` instead of
+`function`. Observe that, as a matter of course, later declarations always take precedence over earlier
+ones.
+
+
