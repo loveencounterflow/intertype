@@ -73,8 +73,13 @@ idf                         = ( x ) -> x ### IDentity Function ###
 @_normalize_type = ( type ) -> type.toLowerCase().replace /\s+/g, ''
 
 #-----------------------------------------------------------------------------------------------------------
-@type_of = ( x ) ->
-  throw new Error "^7746^ expected 1 argument, got #{arity}" unless ( arity = arguments.length ) is 1
+@type_of = ( x, overrides = null ) ->
+  throw new Error "^7746^ expected 1 or 2 arguments, got #{arity}" unless 0 < ( arity = arguments.length ) < 3
+  #.........................................................................................................
+  if overrides?
+    for [ type, isa, ] in overrides
+      return type if isa x
+  #.........................................................................................................
   return 'null'       if x is null
   return 'undefined'  if x is undefined
   return 'infinity'   if ( x is Infinity  ) or  ( x is -Infinity  )
@@ -136,6 +141,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
     return true
   "x.groups is deprecated": ( x ) -> not x.groups?
   "@isa.boolean x.collection": ( x ) -> @isa.boolean x.collection
+  "@isa.boolean x.override": ( x ) -> @isa.boolean x.override
 #...........................................................................................................
 @defaults.Type_cfg_constructor_cfg =
   name:             null
@@ -147,6 +153,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
   freeze:           false
   extras:           true
   collection:       false
+  override:         false
 
 #-----------------------------------------------------------------------------------------------------------
 @types.declare 'Type_factory_type_dsc', tests:

@@ -39,6 +39,7 @@ class Intertype extends H.Intertype_abc
     GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg @, '_validate'
     GUY.props.hide @, 'create',       new Proxy {}, @_get_hedge_base_proxy_cfg @, '_create'
     GUY.props.hide @, 'type_factory', new Type_factory @
+    GUY.props.hide @, 'overrides',    []
     #.......................................................................................................
     ### TAINT squeezing this in here for the moment, pending reformulation of `isa` &c to make them callable: ###
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, name ) => ( P... ) =>
@@ -138,6 +139,8 @@ class Intertype extends H.Intertype_abc
     dscv                      = H.nameit dsc.typename, ( x ) => @_validate dsc.typename, x
     @validate[ dsc.typename ] = new Proxy dscv, @_get_hedge_sub_proxy_cfg @
     @_collections.add dsc.typename if dsc.collection
+    return null unless GUY.props.get dsc, 'override', false
+    @overrides.unshift [ dsc.typename, dsc, ]
     return null
 
   #---------------------------------------------------------------------------------------------------------
@@ -284,7 +287,7 @@ class Intertype extends H.Intertype_abc
   #---------------------------------------------------------------------------------------------------------
   equals:                     H.equals
   deep_copy:                  H.deep_copy
-  type_of:                    H.type_of.bind H
+  type_of:                    ( x ) => H.type_of x, @overrides
   size_of:                    H.size_of.bind H
   _normalize_type:            H._normalize_type.bind H
   _split_hedgerow_text:       ( hedgerow ) -> hedgerow.split @cfg.sep
