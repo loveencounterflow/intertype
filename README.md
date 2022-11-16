@@ -734,3 +734,5 @@ types.declare.quantity
   conformant.
 * **[+]** implement `override` option for `declare` to cause types that take precedence over others when
   using `type_of()`
+* **[+]** implement deleting declarations and make replacements *keep* the position of the `override` entry;
+  that way we don't need yet another cfg setting and can still handle precedence of overrides

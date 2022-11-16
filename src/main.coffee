@@ -49,6 +49,8 @@ class Intertype extends H.Intertype_abc
     ### TAINT squeezing this in here for the moment, pending reformulation of `isa` &c to make them callable: ###
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, name ) => ( P... ) =>
       @_declare name, P...
+    GUY.props.hide @, 'remove',       new Proxy ( @_remove.bind  @ ), get: ( _, name ) => ( P... ) =>
+      @_remove name, P...
     #.......................................................................................................
     GUY.props.hide @, 'registry',     GUY.props.Strict_owner.create()
     # GUY.props.hide @, 'types',        H.types
@@ -152,6 +154,14 @@ class Intertype extends H.Intertype_abc
         return R
 
   #---------------------------------------------------------------------------------------------------------
+  _remove: ( typename ) ->
+    unless ( dsc = GUY.props.get @registry, typename, null )?
+      throw new E.Intertype_ETEMPTBD '^intertype.remove@5^', "unable to remove unknown type #{rpr typename}"
+    delete @registry[ typename ]
+    @_remove_override dsc if dsc.override
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
   _declare: ( P... ) ->
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
@@ -168,17 +178,33 @@ class Intertype extends H.Intertype_abc
     dscv                      = H.nameit dsc.typename, ( x ) => @_validate dsc.typename, x
     @validate[ dsc.typename ] = new Proxy dscv, @_get_hedge_sub_proxy_cfg @
     @_collections.add dsc.typename if dsc.collection
-    @_remove_override old_dsc.typename if old_dsc?.override ? false
-    if dsc.override
-      @overrides.unshift [ dsc.typename, dsc, ]
+    if old_dsc?.override
+      if dsc.override then  @_replace_override  dsc
+      else                  @_remove_override   dsc
+    else
+      if dsc.override then  @_add_override      dsc
     #.......................................................................................................
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _remove_override: ( typename ) ->
+  _add_override: ( dsc ) ->
+    @overrides.unshift [ dsc.typename, dsc, ]
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _remove_override: ( dsc ) ->
     for idx in [ @overrides.length - 1 .. 0 ] by -1
-      continue unless @overrides[ idx ][ 0 ] is typename
+      continue unless @overrides[ idx ][ 0 ] is dsc.typename
       @overrides.splice idx, 1
+      break
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _replace_override: ( dsc ) ->
+    for idx in [ @overrides.length - 1 .. 0 ] by -1
+      continue unless @overrides[ idx ][ 0 ] is dsc.typename
+      @overrides[ idx ][ 1 ] = dsc
+      break
     return null
 
   #---------------------------------------------------------------------------------------------------------

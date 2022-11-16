@@ -175,6 +175,8 @@ idf                         = ( x ) -> x ### IDentity Function ###
   "@isa.boolean x.extras":                          ( x ) -> @isa.boolean x.extras        # refers to result of `type.create()`
   "if extras is false, default must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.default )
   "@isa_optional.function x.create":                ( x ) -> @isa_optional.function x.create
+  "@isa.boolean x.override":                        ( x ) -> @isa.boolean x.override
+  "@isa.boolean x.replace":                         ( x ) -> @isa.boolean x.replace
 #...........................................................................................................
 @defaults.Type_factory_type_dsc =
   name:             null
