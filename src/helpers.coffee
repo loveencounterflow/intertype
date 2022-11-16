@@ -189,6 +189,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
   freeze:           false     # refers to result of `type.create()`
   extras:           true      # refers to result of `type.create()`
   override:         false
+  replace:          false
 
 #-----------------------------------------------------------------------------------------------------------
 @types.declare 'Intertype_iterable', ( x ) -> x? and x[ Symbol.iterator ]?

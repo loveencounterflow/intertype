@@ -50,7 +50,7 @@ class Intertype extends H.Intertype_abc
     GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, name ) => ( P... ) =>
       @_declare name, P...
     #.......................................................................................................
-    GUY.props.hide @, 'registry',     GUY.props.Strict_owner.create { oneshot: true, }
+    GUY.props.hide @, 'registry',     GUY.props.Strict_owner.create()
     # GUY.props.hide @, 'types',        H.types
     @_initialize_state()
     #.......................................................................................................
@@ -156,14 +156,29 @@ class Intertype extends H.Intertype_abc
     ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
     convention for this method. ###
     dsc                       = @type_factory.create_type P...
+    #.......................................................................................................
+    if ( old_dsc = GUY.props.get @registry, dsc.typename, null )?
+      unless dsc.replace
+        throw new E.Intertype_ETEMPTBD '^intertype.declare@5^', \
+          "unable to redefine declaration for #{rpr dsc.typename} (set `replace: true` to allow this)"
+    #.......................................................................................................
     @registry[ dsc.typename ] = dsc
     ### TAINT need not call _get_hedge_sub_proxy_cfg() twice? ###
     @isa[      dsc.typename ] = new Proxy dsc, @_get_hedge_sub_proxy_cfg @
     dscv                      = H.nameit dsc.typename, ( x ) => @_validate dsc.typename, x
     @validate[ dsc.typename ] = new Proxy dscv, @_get_hedge_sub_proxy_cfg @
     @_collections.add dsc.typename if dsc.collection
-    return null unless GUY.props.get dsc, 'override', false
-    @overrides.unshift [ dsc.typename, dsc, ]
+    @_remove_override old_dsc.typename if old_dsc?.override ? false
+    if dsc.override
+      @overrides.unshift [ dsc.typename, dsc, ]
+    #.......................................................................................................
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _remove_override: ( typename ) ->
+    for idx in [ @overrides.length - 1 .. 0 ] by -1
+      continue unless @overrides[ idx ][ 0 ] is typename
+      @overrides.splice idx, 1
     return null
 
   #---------------------------------------------------------------------------------------------------------
