@@ -27,6 +27,11 @@ class Intertype extends H.Intertype_abc
   constructor: ( cfg ) ->
     super()
     @data = {}
+    #.......................................................................................................
+    clone = false
+    if cfg instanceof @constructor
+      clone = true
+      [ cfg, other, ] = [ { cfg.cfg..., }, cfg, ]
     GUY.props.hide @, 'cfg',          { H.defaults.Intertype_constructor_cfg..., cfg..., }
     H.types.validate.Intertype_constructor_cfg @cfg
     #.......................................................................................................
@@ -50,7 +55,25 @@ class Intertype extends H.Intertype_abc
     @_initialize_state()
     #.......................................................................................................
     @_register_hedges()
-    DECLARATIONS._provisional_declare_basic_types @
+    #.......................................................................................................
+    if clone
+      for type, dsc of other.registry
+        continue if GUY.props.has @registry, type
+        ### TAINT this is a kludge ###
+        @declare[ type ]
+          isa:          dsc
+          name:         GUY.props.get dsc, 'name',        H.defaults.Type_factory_type_dsc.name
+          typename:     GUY.props.get dsc, 'typename',    H.defaults.Type_factory_type_dsc.typename
+          fields:       GUY.props.get dsc, 'fields',      H.defaults.Type_factory_type_dsc.fields
+          collection:   GUY.props.get dsc, 'collection',  H.defaults.Type_factory_type_dsc.collection
+          create:       GUY.props.get dsc, 'create',      H.defaults.Type_factory_type_dsc.create
+          freeze:       GUY.props.get dsc, 'freeze',      H.defaults.Type_factory_type_dsc.freeze
+          extras:       GUY.props.get dsc, 'extras',      H.defaults.Type_factory_type_dsc.extras
+          default:      GUY.props.get dsc, 'default',     H.defaults.Type_factory_type_dsc.default
+          override:     GUY.props.get dsc, 'override',    H.defaults.Type_factory_type_dsc.override
+    else
+      DECLARATIONS._provisional_declare_basic_types @
+    #.......................................................................................................
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
