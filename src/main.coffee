@@ -160,7 +160,7 @@ class Intertype extends H.Intertype_abc
     if ( old_dsc = GUY.props.get @registry, dsc.typename, null )?
       unless dsc.replace
         throw new E.Intertype_ETEMPTBD '^intertype.declare@5^', \
-          "unable to redefine declaration for #{rpr dsc.typename} (set `replace: true` to allow this)"
+          "unable to re-declare #{rpr dsc.typename} (set `replace: true` to allow this)"
     #.......................................................................................................
     @registry[ dsc.typename ] = dsc
     ### TAINT need not call _get_hedge_sub_proxy_cfg() twice? ###
