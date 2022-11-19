@@ -72,11 +72,15 @@ class Type_factory extends H.Intertype_abc
         throw new E.Intertype_ETEMPTBD '^tf@5^', "got two conflicting values for `isa`"
       dsc.isa   = isa
     #.......................................................................................................
-    if name? and ( dsc_name = GUY.props.get dsc, 'name', null )? and ( dsc_name isnt name )
-      throw new E.Intertype_ETEMPTBD '^tf@6^', \
-        "got two conflicting values for `name` (#{rpr name} and #{rpr dsc_name})"
-    dsc.name     ?= name
-    dsc.typename  = dsc.name
+    # debug '^456456^', { dsc_name: ( GUY.props.get dsc, 'name', null ), }
+    # if name? and ( dsc_name = GUY.props.get dsc, 'name', null )? and ( dsc_name isnt name )
+    #   throw new E.Intertype_ETEMPTBD '^tf@6^', \
+    #     "got two conflicting values for `name` (#{rpr name} and #{rpr dsc_name})"
+    if name?
+      dsc.name      = name
+      dsc.typename  = name
+    else if ( dsc_name = GUY.props.get dsc, 'name', null )?
+      dsc.typename  = dsc.name
     #.......................................................................................................
     @_assemble_fields dsc
     #.......................................................................................................
