@@ -143,6 +143,11 @@
   declare.asyncfunction
     isa:        ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
     default:    ->
+  #.........................................................................................................
+  declare.symbol
+    isa:        ( x ) -> ( typeof x ) is 'symbol'
+    default:    Symbol ''
+    create:     ( x ) -> Symbol x
 
   #.........................................................................................................
   return null
