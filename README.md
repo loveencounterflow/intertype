@@ -665,6 +665,8 @@ types.declare.quantity
   * `isa.regex.or.nonempty.text /x/`: `true`
   * `isa.nonempty.text.or.regex 'x'`: `true`
   * `isa.nonempty.text.or.regex /x/`: `false` (b/c of `nonempty` which is never `true` for `regex`es)
+* **[–]** all regex as value for `isa`, `declare.x /foo/` meaning `declare.x isa: ( x ) -> ( @isa.text x )
+  and ( /foo/.test x )`
 
 
 ## Is Done
