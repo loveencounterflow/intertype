@@ -667,6 +667,10 @@ types.declare.quantity
   * `isa.nonempty.text.or.regex /x/`: `false` (b/c of `nonempty` which is never `true` for `regex`es)
 * **[–]** all regex as value for `isa`, `declare.x /foo/` meaning `declare.x isa: ( x ) -> ( @isa.text x )
   and ( /foo/.test x )`
+* **[–]** consider to abandon dotted syntax and use underscores instead, e.g.
+  `validate.text_or_positive_integer 42`; this has the advantage that nested runtime name chain resolution
+  can be replaced by looking up a single (compiled?) function (at least after the first use, which should
+  probably cause construction of that function)
 
 
 ## Is Done
