@@ -671,6 +671,7 @@ types.declare.quantity
   `validate.text_or_positive_integer 42`; this has the advantage that nested runtime name chain resolution
   can be replaced by looking up a single (compiled?) function (at least after the first use, which should
   probably cause construction of that function)
+* **[–]** catch errors thrown inside a type's `create()` function and convert them to validation errors
 
 
 ## Is Done
