@@ -140,6 +140,11 @@
     isa:        ( x ) -> ( Object::toString.call x ) is '[object Function]'
     default:    ->
   #.........................................................................................................
+  declare.class
+    isa:        ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and \
+      ( Object.getOwnPropertyDescriptor x, 'prototype' )?.writable is false
+    # default:    ->
+  #.........................................................................................................
   declare.asyncfunction
     isa:        ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
     default:    ->
