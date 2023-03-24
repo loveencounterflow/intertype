@@ -22,6 +22,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Intertype `cast`](#intertype-cast)
   - [Intertype `create`](#intertype-create)
   - [Intertype `equals()`](#intertype-equals)
+  - [Intertype `is_extension_of()`](#intertype-is_extension_of)
   - [To Do](#to-do)
   - [Is Done](#is-done)
 
@@ -491,6 +492,12 @@ types.declare.quantity
 * a 'deep equals' implementation (see [`jseq`](https://github.com/loveencounterflow/jseq), gleaned from
   [`jkroso/equals`](https://github.com/jkroso/equals))
 
+## Intertype `is_extension_of()`
+
+* `is_extension_of: ( Derived, Base ) -> Derived is Base or (Derived::) instanceof Base`
+* tests whether class `Derived` is derived from class `Base`; this includes the case where `Derived` is just
+  an alias for `Base` (i.e. JS `Derived === Base`)
+
 ## To Do
 
 * **[–]** allow to filter out builtin types
@@ -672,8 +679,8 @@ types.declare.quantity
   can be replaced by looking up a single (compiled?) function (at least after the first use, which should
   probably cause construction of that function)
 * **[–]** catch errors thrown inside a type's `create()` function and convert them to validation errors
-* **[–]** implement `is_derived_from Derived, Base` (or `extends Derived, Base`) using `( Derived is Base or
-  (Derived::) instanceof Base )` (first seen in MoonRiver)
+* **[–]** implement `is_extension_of Derived, Base` using `Derived is Base or (Derived::) instanceof Base`
+  (first seen in MoonRiver)
 
 
 ## Is Done
