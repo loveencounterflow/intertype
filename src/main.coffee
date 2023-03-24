@@ -357,6 +357,9 @@ class Intertype extends H.Intertype_abc
   _split_hedgerow_text:       ( hedgerow ) -> hedgerow.split @cfg.sep
 
   #---------------------------------------------------------------------------------------------------------
+  is_extension_of: ( Derived, Base ) -> Derived is Base or (Derived::) instanceof Base
+
+  #---------------------------------------------------------------------------------------------------------
   get_state_report: ( cfg ) -> H.get_state_report @, cfg
 
   #---------------------------------------------------------------------------------------------------------
