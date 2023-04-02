@@ -209,7 +209,7 @@ class Type_factory extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _create_has_extras: ( dsc ) ->
-    default_keys = new Set Object.keys dsc.default
+    default_keys = new Set Object.keys dsc.template ? dsc.default
     R = ( x ) ->
       x_keys = new Set Object.keys x
       if ( extra_keys = GUY.sets.subtract x_keys, default_keys ).size isnt 0

@@ -71,7 +71,7 @@ class Intertype extends H.Intertype_abc
           create:       GUY.props.get dsc, 'create',      H.defaults.Type_factory_type_dsc.create
           freeze:       GUY.props.get dsc, 'freeze',      H.defaults.Type_factory_type_dsc.freeze
           extras:       GUY.props.get dsc, 'extras',      H.defaults.Type_factory_type_dsc.extras
-          default:      GUY.props.get dsc, 'default',     H.defaults.Type_factory_type_dsc.default
+          template:     GUY.props.get dsc, 'template',    H.defaults.Type_factory_type_dsc.template
           override:     GUY.props.get dsc, 'override',    H.defaults.Type_factory_type_dsc.override
     else
       DECLARATIONS._provisional_declare_basic_types @
@@ -80,7 +80,7 @@ class Intertype extends H.Intertype_abc
 
   #---------------------------------------------------------------------------------------------------------
   _initialize_state: ( cfg ) ->
-    ### TAINT should use deep copy of default object ###
+    ### TAINT should use deep copy of template object ###
     return @state = { H.defaults.Intertype_state..., hedgeresults: [], cfg..., }
 
   #---------------------------------------------------------------------------------------------------------
@@ -309,15 +309,15 @@ class Intertype extends H.Intertype_abc
     unless ( type_dsc = GUY.props.get @registry, type, null )?
       throw new E.Intertype_ETEMPTBD '^intertype.create@11^', "unknown type #{rpr type}"
     #.......................................................................................................
-    ### Try to get `create` method, or, should that fail, the `default` value. Throw error when neither
-    `create` nor `default` are given: ###
+    ### Try to get `create` method, or, should that fail, the `template` value. Throw error when neither
+    `create` nor `template` are given: ###
     if ( create = GUY.props.get type_dsc, 'create', null ) is null
-      if ( R = GUY.props.get type_dsc, 'default', H.signals.nothing ) is H.signals.nothing
+      if ( R = GUY.props.get type_dsc, 'template', H.signals.nothing ) is H.signals.nothing
         throw new E.Intertype_ETEMPTBD '^intertype.create@12^', \
-          "type #{rpr type} does not have a `default` value or a `create()` method"
+          "type #{rpr type} does not have a `template` value or a `create()` method"
     #.......................................................................................................
     else
-      ### If `create` is given, call it to obtain default value: ###
+      ### If `create` is given, call it to obtain template value: ###
       R = create.call @, cfg
     #.......................................................................................................
     if ( not create? )

@@ -635,8 +635,6 @@ types.declare.quantity
 * **[–]** must use deep copies when deriving values from defaults in `create()`
 * **[–]** `get_state_report()` may report single line even with `format: 'failing'` when test has succeeded,
   should return `null`
-* **[–]** change `default` to `defaults` (as in, 'field defaults') to avoid clash with JS reserved word.
-  Alternative: <del>`paragon`</del> <ins>`template`</ins>
 * **[–]** do not use `$`-prefixed fieldnames, define fields in `fields` sub-object
 * **[–]** allow list as enumeration of allowed values as in `color: [ 'red', 'green', 'blue', ]`
 
@@ -752,3 +750,5 @@ types.declare.quantity
   using `type_of()`
 * **[+]** implement deleting declarations and make replacements *keep* the position of the `override` entry;
   that way we don't need yet another cfg setting and can still handle precedence of overrides
+* **[+]** change `default` to <del>`defaults` (as in, 'field defaults') to avoid clash with JS reserved word.
+  Alternative: `paragon`</del> <ins>`template`</ins>

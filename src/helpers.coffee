@@ -128,8 +128,8 @@ idf                         = ( x ) -> x ### IDentity Function ###
   # "@isa.boolean x.seal":                      ( x ) -> @isa.boolean x.seal
   "@isa.deep_boolean x.freeze":               ( x ) -> @isa.deep_boolean x.freeze
   "@isa.boolean x.extras":                    ( x ) -> @isa.boolean x.extras
-  "if extras is false, default must be an object": \
-    ( x ) -> ( x.extras ) or ( @isa.object x.default )
+  "if extras is false, template must be an object": \
+    ( x ) -> ( x.extras ) or ( @isa.object x.template )
   "@isa_optional.function x.create":          ( x ) -> @isa_optional.function x.create
   ### TAINT might want to check for existence of `$`-prefixed keys in case of `( not x.test? )` ###
   ### TAINT should validate values of `$`-prefixed keys are either function or non-empty strings ###
@@ -146,7 +146,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
 @defaults.Type_cfg_constructor_cfg =
   name:             null
   test:             null
-  ### `default` omitted on purpose ###
+  ### `template` omitted on purpose ###
   create:           null
   # copy:             false
   # seal:             false
@@ -173,7 +173,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
     return true unless @isa.list x.fields
     return @isa_list_of.function x.fields
   "@isa.boolean x.extras":                          ( x ) -> @isa.boolean x.extras        # refers to result of `type.create()`
-  "if extras is false, default must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.default )
+  "if extras is false, template must be an object":  ( x ) -> ( x.extras ) or ( @isa.object x.template )
   "@isa_optional.function x.create":                ( x ) -> @isa_optional.function x.create
   "@isa.boolean x.override":                        ( x ) -> @isa.boolean x.override
   "@isa.boolean x.replace":                         ( x ) -> @isa.boolean x.replace
@@ -184,7 +184,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
   isa:              null
   fields:           null
   collection:       false
-  ### `default` omitted on purpose ###
+  ### `template` omitted on purpose ###
   create:           null      # refers to result of `type.create()`
   # copy:             false     # refers to result of `type.create()`
   # seal:             false     # refers to result of `type.create()`
