@@ -329,8 +329,8 @@ class Intertype extends H.Intertype_abc
       else
         R = H.deep_copy R
     #.......................................................................................................
-    if      type_dsc.freeze is true   then R = Object.freeze R
-    else if type_dsc.freeze is 'deep' then R = GUY.lft.freeze H.deep_copy R
+    if      type_dsc.freeze in [ true, 'shallow', ] then R = Object.freeze R
+    else if type_dsc.freeze is 'deep'               then R = GUY.lft.freeze H.deep_copy R
     #.......................................................................................................
     return @_validate type, R
 

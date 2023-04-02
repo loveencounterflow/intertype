@@ -118,7 +118,7 @@ idf                         = ( x ) -> x ### IDentity Function ###
 @defaults                 = {}
 
 #-----------------------------------------------------------------------------------------------------------
-@types.declare 'deep_boolean', ( x ) -> x in [ 'deep', false, true, ]
+@types.declare 'deep_boolean', ( x ) -> x in [ false, true, 'deep', 'shallow', ]
 
 #-----------------------------------------------------------------------------------------------------------
 @types.declare 'Type_cfg_constructor_cfg', tests:

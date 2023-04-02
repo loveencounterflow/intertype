@@ -272,12 +272,12 @@ log '^1-1^', isa.xy_quantity { value: 42, unit: 'm', }
   * `freeze`:
     * `false` (default): returned object will be non-frozen, non-sealed (like most objects have always been
       in JS)
-    * `true`: returned value will be a shallow freeze (implemented with
+    * `true` or `'shallow'`: returned value will be a shallow freeze (implemented with
       [`Object.freeze()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze))
-    * `deep`: returned value will be a deep-frozen version of the result returned by `{ defaults..., cfg...,
-      }`. **Note** that in this preliminary version we will always freeze a deep copy (structural clone) of
-      the `cfg` value so in no case will any nested list or object of the original `cfg` get inadvertantly
-      frozen
+    * `'deep'`: returned value will be a deep-frozen version of the result returned by `{ defaults...,
+      cfg..., }`. **Note** that in this preliminary version we will always freeze a deep copy (structural
+      clone) of the `cfg` value so in no case will any nested list or object of the original `cfg` get
+      inadvertantly frozen
 
 
 ### `declare`
