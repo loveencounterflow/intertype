@@ -23,6 +23,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Intertype `create`](#intertype-create)
   - [Intertype `equals()`](#intertype-equals)
   - [Intertype `is_extension_of()`](#intertype-is_extension_of)
+  - [Intertype Meta-Type `knowntype`](#intertype-meta-type-knowntype)
   - [To Do](#to-do)
   - [Is Done](#is-done)
 
@@ -497,6 +498,12 @@ types.declare.quantity
 * `is_extension_of: ( Derived, Base ) -> Derived is Base or (Derived::) instanceof Base`
 * tests whether class `Derived` is derived from class `Base`; this includes the case where `Derived` is just
   an alias for `Base` (i.e. JS `Derived === Base`)
+
+## Intertype Meta-Type `knowntype`
+
+* used to test whether a given value is registered as type, as in `types.isa.knowntype 'foobar'`
+* tests unconditionally `false` unless argument is a non-empty string
+* otherwise, tests whether argument is key of `types.registry`
 
 ## To Do
 
