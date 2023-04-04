@@ -312,27 +312,31 @@ class Intertype extends H.Intertype_abc
     ### Try to get `create` method, or, should that fail, the `template` value. Throw error when neither
     `create` nor `template` are given: ###
     if ( create = GUY.props.get type_dsc, 'create', null ) is null
-      if ( R = GUY.props.get type_dsc, 'template', H.signals.nothing ) is H.signals.nothing
+      if ( template = GUY.props.get type_dsc, 'template', H.signals.nothing ) is H.signals.nothing
         throw new E.Intertype_ETEMPTBD '^intertype.create@12^', \
           "type #{rpr type} does not have a `template` value or a `create()` method"
     #.......................................................................................................
-    else
-      ### If `create` is given, call it to obtain template value: ###
+    return @_validate type, @_create_non_validation { create, template, freeze: type_dsc.freeze, cfg, }
+
+  #---------------------------------------------------------------------------------------------------------
+  _create_non_validation: ({ create, template, freeze, cfg }) ->
+    #.......................................................................................................
+    if create?
       R = create.call @, cfg
     #.......................................................................................................
-    if ( not create? )
+    else
       if cfg?
-        if ( t = H.js_type_of R ) is '[object Object]' or t is '[object Array]'
-          R = Object.assign ( H.deep_copy R ), cfg
+        if ( t = H.js_type_of template ) is '[object Object]' or t is '[object Array]'
+          R = Object.assign ( H.deep_copy template ), cfg
         else
           R = cfg
       else
-        R = H.deep_copy R
+        R = H.deep_copy template
     #.......................................................................................................
-    if      type_dsc.freeze in [ true, 'shallow', ] then R = Object.freeze R
-    else if type_dsc.freeze is 'deep'               then R = GUY.lft.freeze H.deep_copy R
+    if      freeze in [ true, 'shallow', ] then R = Object.freeze R
+    else if freeze is 'deep'               then R = GUY.lft.freeze H.deep_copy R
     #.......................................................................................................
-    return @_validate type, R
+    return R
 
   #---------------------------------------------------------------------------------------------------------
   _cast: ( type, P... ) ->
