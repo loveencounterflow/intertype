@@ -316,10 +316,10 @@ class Intertype extends H.Intertype_abc
         throw new E.Intertype_ETEMPTBD '^intertype.create@12^', \
           "type #{rpr type} does not have a `template` value or a `create()` method"
     #.......................................................................................................
-    return @_validate type, @_create_non_validation { create, template, freeze: type_dsc.freeze, cfg, }
+    return @_validate type, @_create_no_validation { create, template, freeze: type_dsc.freeze, cfg, }
 
   #---------------------------------------------------------------------------------------------------------
-  _create_non_validation: ({ create, template, freeze, cfg }) ->
+  _create_no_validation: ({ create, template, freeze, cfg }) ->
     #.......................................................................................................
     if create?
       R = create.call @, cfg
