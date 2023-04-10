@@ -2,12 +2,13 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Declarations](#declarations)
+- [InterType](#intertype)
+  - [Declarations](#declarations)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-
+# InterType
 
 ## Declarations
 
