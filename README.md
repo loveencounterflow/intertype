@@ -39,31 +39,40 @@
 
 ## Declarations
 
+`types.declare.T()` takes one argument whiche should be either
 
-* **`isa`**: either the name of the type, an [`isa` method](??????????????????????????????????), a list of
-  (preferrably named) [`isa` clauses](??????????????????????????????????), or an object with named [`isa`
-  clauses](??????????????????????????????????).
+  * a string declare the name of its type, as in `types.declare.optint 'optional.integer'`, or
 
-* **`fields`**: in the case of an `object`, the fields with their type declarations.
+  * an ISA-function as described for the `isa` setting below, or
 
-* **`template`**: in the case of an `object`, the fields with their default values.
+  * a configuration object (`cfg`) with settings as described below.
 
-* **`plural`**: plural form of the name in case the automatic plural is not satisfactory.
+Properties of the `cfg` object:
 
-* **`walk`**: on container types, a generator function that iterates over all elements.
+  * **`isa`**: either the name of the type, an [`isa` method](??????????????????????????????????), a list of
+    (preferrably named) [`isa` clauses](??????????????????????????????????), or an object with named [`isa`
+    clauses](??????????????????????????????????).
 
-* **`empty`**: on container types, a function that returns `true` when the container has no elements, and
-  `false` otherwise. This function will be called when `types.isa.empty_T x` is requested.
+  * **`fields`**: in the case of an `object`, the fields with their type declarations.
 
-* **`size`**: on container types, a function or the name of an attribute that returns the number of elements
-  in the container. This will be used by `types.size_of x` requests.
+  * **`template`**: in the case of an `object`, the fields with their default values.
 
-* **`extras`**: on object types, a boolean to allow (`true`, the default) or forbids (`false`) additional
-  properties on the object beyond those that are listed in `fields`. Only enumerable properties will be
-  considered.
+  * **`plural`**: plural form of the name in case the automatic plural is not satisfactory.
 
-* **`freeze`**: one of `false` (the default), `shallow` or `deep` that indicates whether a call to
-  `types.create.T()` should return an unfrozen, shallow-frozen or deep-frozen object.
+  * **`walk`**: on container types, a generator function that iterates over all elements.
+
+  * **`empty`**: on container types, a function that returns `true` when the container has no elements, and
+    `false` otherwise. This function will be called when `types.isa.empty_T x` is requested.
+
+  * **`size`**: on container types, a function or the name of an attribute that returns the number of
+    elements in the container. This will be used by `types.size_of x` requests.
+
+  * **`extras`**: on object types, a boolean to allow (`true`, the default) or forbids (`false`) additional
+    properties on the object beyond those that are listed in `fields`. Only enumerable properties will be
+    considered.
+
+  * **`freeze`**: one of `false` (the default), `shallow` or `deep` that indicates whether a call to
+    `types.create.T()` should return an unfrozen, shallow-frozen or deep-frozen object.
 
 
 
