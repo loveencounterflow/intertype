@@ -69,6 +69,11 @@ GUY                       = require 'guy'
     isa:        ( x ) -> x instanceof Set
     create:     ( cfg = [] ) -> new Set cfg
   #.........................................................................................................
+  declare.map
+    isa:        ( x ) -> x instanceof Map
+    template:   new Map()
+    create:     ( x ) -> new Map()
+  #.........................................................................................................
   declare.sized
     collection: true
     isa:        ( x ) -> ( @size_of x, @_signals.nothing ) isnt @_signals.nothing
