@@ -24,6 +24,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Intertype `equals()`](#intertype-equals)
   - [Intertype `is_extension_of()`](#intertype-is_extension_of)
   - [Intertype Meta-Type `knowntype`](#intertype-meta-type-knowntype)
+  - [Browserify](#browserify)
   - [To Do](#to-do)
   - [Is Done](#is-done)
 
@@ -504,6 +505,12 @@ types.declare.quantity
 * used to test whether a given value is registered as type, as in `types.isa.knowntype 'foobar'`
 * tests unconditionally `false` unless argument is a non-empty string
 * otherwise, tests whether argument is key of `types.registry`
+
+## Browserify
+
+```bash
+browserify --require intertype --ignore 'node:tty' --ignore 'node:fs' --debug -o public/browserified/intertype.js
+```
 
 ## To Do
 
