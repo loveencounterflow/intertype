@@ -311,7 +311,7 @@ class Intertype_abc extends GUY.props.Strict_owner
   @types.validate.intertype_get_state_report_cfg ( cfg = { @defaults.intertype_get_state_report_cfg..., cfg..., } )
   C = @_get_state_report_colors cfg.colors
   #.........................................................................................................
-  TTY               = require 'node:tty'
+  TTY = try require 'node:tty' catch error then { isatty: ( -> false ), }
   truth             = ( b, r ) -> C.reverse if b then ( C.true " T " ) else ( C.false " F " )
   first_hidx        = 0
   last_hidx         = hub.state.hedgeresults.length - 1
