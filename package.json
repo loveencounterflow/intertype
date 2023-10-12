@@ -4,6 +4,7 @@
   "description": "A JavaScript typechecker",
   "main": "lib/main.js",
   "scripts": {
+    "preinstall": "echo '`intertype` is now part of `webguy`; run `pnpm add webguy` instead'",
     "test": "echo use https://github.com/loveencounterflow/hengist"
   },
   "repository": {
