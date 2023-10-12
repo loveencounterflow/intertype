@@ -3,17 +3,3 @@ lockfileVersion: '6.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
-
-dependencies:
-  intervoke:
-    specifier: ^0.6.0
-    version: link:../intervoke
-  rfdc:
-    specifier: ^1.3.0
-    version: 1.3.0
-
-packages:
-
-  /rfdc@1.3.0:
-    resolution: {integrity: sha512-V2hovdzFbOi77/WajaSMXk2OLm+xNIeQdMMuB7icj7bk6zi2F8GGAxigcnDFpJHbNyNcgyJDiP+8nOrY5cZGrA==}
-    dev: false
