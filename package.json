@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/loveencounterflow/intertype/issues"
   },
-  "homepage": "https://github.com/loveencounterflow/intertype#readme"
+  "homepage": "https://github.com/loveencounterflow/intertype#readme",
+  "dependencies": {
+    "webguy": "^5.2.12"
+  }
 }
