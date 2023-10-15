@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "webguy": "^5.2.16"
+    "webguy": "^5.2.17"
   }
 }
