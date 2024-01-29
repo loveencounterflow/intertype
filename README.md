@@ -693,6 +693,7 @@ browserify --require intertype --ignore 'node:tty' --ignore 'node:fs' --debug -o
 * **[–]** catch errors thrown inside a type's `create()` function and convert them to validation errors
 * **[–]** implement `is_extension_of Derived, Base` using `Derived is Base or (Derived::) instanceof Base`
   (first seen in MoonRiver)
+* **[–]** consider to make this a mere shallow shim over `webguy.types`
 
 
 ## Is Done
