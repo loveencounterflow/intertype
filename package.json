@@ -1,12 +1,9 @@
 {
   "name": "intertype",
-  "version": "100.0.4",
+  "version": "200.0.0",
   "description": "A JavaScript typechecker",
   "main": "lib/main.js",
   "scripts": {
-    "preinstall": "echo '`intertype` is now part of `webguy`; run `pnpm add webguy` instead'",
-    "ininstall": "echo '`intertype` is now part of `webguy`; run `pnpm add webguy` instead'",
-    "postinstall": "echo '`intertype` is now part of `webguy`; run `pnpm add webguy` instead'",
     "test": "echo use https://github.com/loveencounterflow/hengist"
   },
   "repository": {
@@ -20,6 +17,5 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
-    "webguy": "^5.2.23"
   }
 }
