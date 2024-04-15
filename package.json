@@ -17,5 +17,7 @@
   },
   "homepage": "https://github.com/loveencounterflow/intertype#readme",
   "dependencies": {
+    "subsidiary": "^0.3.0",
+    "webguy": "^5.2.1"
   }
 }
