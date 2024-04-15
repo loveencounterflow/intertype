@@ -1,396 +1,76 @@
 
 'use strict'
 
-
-############################################################################################################
-GUY                       = require 'guy'
-{ debug
-  info
-  warn
-  urge
-  help }                  = GUY.trm.get_loggers 'INTERTYPE'
-{ rpr }                   = GUY.trm
-#...........................................................................................................
-E                         = require './errors'
-H                         = require './helpers'
-HEDGES                    = require './hedges'
-DECLARATIONS              = require './declarations'
-{ Type_factory }          = require './type-factory'
-{ to_width }              = require 'to-width'
-
+{ Intervoke_phraser }     = require 'intervoke'
+{ sample_vocabulary }     = require 'intervoke/lib/phrase-parser'
+{ debug             }     = console
+misfit                    = Symbol.for 'misfit'
 
 
 #===========================================================================================================
-class Intertype extends H.Intertype_abc
+defaults =
+  declaration:
+    fields:   null
+    template: misfit
+
+#===========================================================================================================
+class Types
+  isa_function: ( x ) -> typeof x is 'function'
+
+T = new Types()
+
+#===========================================================================================================
+class Declaration_compiler
 
   #---------------------------------------------------------------------------------------------------------
-  constructor: ( cfg ) ->
-    super()
-    @data = {}
-    #.......................................................................................................
-    clone = false
-    if cfg instanceof @constructor
-      clone = true
-      [ cfg, other, ] = [ { cfg.cfg..., }, cfg, ]
-    GUY.props.hide @, 'cfg',          { H.defaults.Intertype_constructor_cfg..., cfg..., }
-    H.types.validate.Intertype_constructor_cfg @cfg
-    #.......................................................................................................
-    GUY.props.hide @, '_hedges',      new HEDGES.Intertype_hedges()
-    GUY.props.hide @, '_collections', new Set()
-    GUY.props.hide @, '_signals',     H.signals
-    # GUY.props.hide @, 'isa',      new GUY.props.Strict_owner { reset: false, }
-    GUY.props.hide @, 'isa',          new Proxy {}, @_get_hedge_base_proxy_cfg @, '_isa'
-    GUY.props.hide @, 'cast',         new Proxy {}, @_get_hedge_base_proxy_cfg @, '_cast'
-    GUY.props.hide @, 'validate',     new Proxy {}, @_get_hedge_base_proxy_cfg @, '_validate'
-    GUY.props.hide @, 'create',       new Proxy {}, @_get_hedge_base_proxy_cfg @, '_create'
-    GUY.props.hide @, 'type_factory', new Type_factory @
-    GUY.props.hide @, 'overrides',    []
-    #.......................................................................................................
-    ### TAINT squeezing this in here for the moment, pending reformulation of `isa` &c to make them callable: ###
-    GUY.props.hide @, 'declare',      new Proxy ( @_declare.bind @ ), get: ( _, name ) => ( P... ) =>
-      @_declare name, P...
-    GUY.props.hide @, 'remove',       new Proxy ( @_remove.bind  @ ), get: ( _, name ) => ( P... ) =>
-      @_remove name, P...
-    #.......................................................................................................
-    GUY.props.hide @, 'registry',     GUY.props.Strict_owner.create()
-    # GUY.props.hide @, 'types',        H.types
-    @_initialize_state()
-    #.......................................................................................................
-    @_register_hedges()
-    #.......................................................................................................
-    if clone
-      for type, dsc of other.registry
-        continue if GUY.props.has @registry, type
-        ### TAINT this is a kludge ###
-        @declare[ type ]
-          isa:          dsc
-          name:         GUY.props.get dsc, 'name',        H.defaults.Type_factory_type_dsc.name
-          typename:     GUY.props.get dsc, 'typename',    H.defaults.Type_factory_type_dsc.typename
-          fields:       GUY.props.get dsc, 'fields',      H.defaults.Type_factory_type_dsc.fields
-          collection:   GUY.props.get dsc, 'collection',  H.defaults.Type_factory_type_dsc.collection
-          create:       GUY.props.get dsc, 'create',      H.defaults.Type_factory_type_dsc.create
-          freeze:       GUY.props.get dsc, 'freeze',      H.defaults.Type_factory_type_dsc.freeze
-          extras:       GUY.props.get dsc, 'extras',      H.defaults.Type_factory_type_dsc.extras
-          template:     GUY.props.get dsc, 'template',    H.defaults.Type_factory_type_dsc.template
-          override:     GUY.props.get dsc, 'override',    H.defaults.Type_factory_type_dsc.override
-    else
-      DECLARATIONS._provisional_declare_basic_types @
-    #.......................................................................................................
-    return undefined
-
-  #---------------------------------------------------------------------------------------------------------
-  _initialize_state: ( cfg ) ->
-    ### TAINT should use deep copy of template object ###
-    return @state = { H.defaults.Intertype_state..., hedgeresults: [], cfg..., }
-
-  #---------------------------------------------------------------------------------------------------------
-  _register_hedges: ->
-    for hedge, isa of @_hedges._hedgemethods
-      do ( hedge, isa ) =>
-        @declare hedge, { isa, }
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  ### TAINT ideally would put this stuff elsewhere ###
-  _get_hedge_base_proxy_cfg: ( self, method_name ) ->
-    # _method_name  = method_name
-    # _method_name  = "_#{method_name}" unless _method_name.startsWith '_'
-    #.......................................................................................................
-    return
-      get: ( target, key ) =>
-        return undefined          if key is Symbol.toStringTag
-        return target.constructor if key is 'constructor'
-        return target.toString    if key is 'toString'
-        return target.call        if key is 'call'
-        return target.apply       if key is 'apply'
-        #...................................................................................................
-        self._initialize_state()
-        self.state.method       = method_name
-        self.state.verb         = method_name[ 1... ]
-        self.state.hedges       = [ key, ]
-        self.state.hedgerow     = key
-        #...................................................................................................
-        if key in [ 'of', 'or', ]
-          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@2^', \
-            "hedgerow cannot start with `#{key}`, must be preceeded by hedge"
-        unless ( GUY.props.get @registry, key, null )?
-          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@3^', "unknown hedge or type #{rpr key}"
-        #...................................................................................................
-        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        #...................................................................................................
-        ### TAINT code below never used? ###
-        if method_name is '_create'
-          f = H.nameit key, ( cfg = null ) -> self[ self.state.method ] key, cfg
-        else if method_name is '_cast'
-          f = H.nameit key, ( P... ) -> self[ self.state.method ] key, P...
-        else
-          f = H.nameit key, ( P... ) -> self[ self.state.method ] P...
-        GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
-        return R
-
-  #---------------------------------------------------------------------------------------------------------
-  _get_hedge_sub_proxy_cfg: ( self ) ->
-    return
-      get: ( target, key ) =>
-        return undefined          if key is Symbol.toStringTag
-        return target.constructor if key is 'constructor'
-        return target.toString    if key is 'toString'
-        return target.call        if key is 'call'
-        return target.apply       if key is 'apply'
-        self.state.hedges.push key
-        self.state.hedgerow = self.state.hedges.join self.cfg.sep
-        return R if ( R = GUY.props.get target, key, H.signals.nothing ) isnt H.signals.nothing
-        #...................................................................................................
-        unless ( type_dsc = GUY.props.get @registry, key, null )?
-          throw new E.Intertype_ETEMPTBD '^intertype.base_proxy@4^', "unknown hedge or type #{rpr key}"
-        #...................................................................................................
-        ### check for preceding type being iterable when building hedgerow with `of`: ###
-        if ( key is 'of' ) and ( not @_collections.has target.name )
-          throw new E.Intertype_ETEMPTBD '^intertype.sub_proxy@5^', \
-            "expected type before `of` to be a collection, got #{rpr target.name}"
-        #...................................................................................................
-        f = H.nameit key, ( x ) -> self[ self.state.method ] self.state.hedges..., x
-        GUY.props.hide target, key, R = new Proxy f, @_get_hedge_sub_proxy_cfg self
-        return R
-
-  #---------------------------------------------------------------------------------------------------------
-  _remove: ( typename ) ->
-    unless ( dsc = GUY.props.get @registry, typename, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype.remove@5^', "unable to remove unknown type #{rpr typename}"
-    delete @registry[ typename ]
-    @_remove_override dsc if dsc.override
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _declare: ( P... ) ->
-    ### TAINT handling of arguments here shimmed while we have not yet nailed down the exact calling
-    convention for this method. ###
-    dsc                       = @type_factory.create_type P...
-    #.......................................................................................................
-    if ( old_dsc = GUY.props.get @registry, dsc.typename, null )?
-      unless dsc.replace
-        throw new E.Intertype_ETEMPTBD '^intertype.declare@5^', \
-          "unable to re-declare #{rpr dsc.typename} (set `replace: true` to allow this)"
-    #.......................................................................................................
-    @registry[ dsc.typename ] = dsc
-    ### TAINT need not call _get_hedge_sub_proxy_cfg() twice? ###
-    @isa[      dsc.typename ] = new Proxy dsc, @_get_hedge_sub_proxy_cfg @
-    dscv                      = H.nameit dsc.typename, ( x ) => @_validate dsc.typename, x
-    @validate[ dsc.typename ] = new Proxy dscv, @_get_hedge_sub_proxy_cfg @
-    @_collections.add dsc.typename if dsc.collection
-    if old_dsc?.override
-      if dsc.override then  @_replace_override  dsc
-      else                  @_remove_override   dsc
-    else
-      if dsc.override then  @_add_override      dsc
-    #.......................................................................................................
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _add_override: ( dsc ) ->
-    @overrides.unshift [ dsc.typename, dsc, ]
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _remove_override: ( dsc ) ->
-    for idx in [ @overrides.length - 1 .. 0 ] by -1
-      continue unless @overrides[ idx ][ 0 ] is dsc.typename
-      @overrides.splice idx, 1
-      break
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _replace_override: ( dsc ) ->
-    for idx in [ @overrides.length - 1 .. 0 ] by -1
-      continue unless @overrides[ idx ][ 0 ] is dsc.typename
-      @overrides[ idx ][ 1 ] = dsc
-      break
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _validate_hedgerow: ( hedgerow ) ->
-    if ( hedgerow[ 0 ] in [ 'of', 'or', ] ) or ( hedgerow[ hedgerow.length - 1 ] in [ 'of', 'or', ] )
-      xr = rpr hedgerow.join @cfg.sep
-      throw new E.Intertype_ETEMPTBD '^intertype.validate_hedgerow@6^', \
-        "hedgerow cannot begin or end with `of` or `or`, must be surrounded by hedges, got #{xr}"
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _isa: ( hedges..., x ) ->
-    @state.isa_depth++
-    R = false
-    try
-      R = @state.result = @_inner_isa hedges..., x
-    catch error
-      throw error if @cfg.errors or error instanceof E.Intertype_error
-      @state.error = error
-    @state.isa_depth--
-    return @state.result = R
-
-  #---------------------------------------------------------------------------------------------------------
-  _inner_isa: ( hedges..., x ) ->
-    @_validate_hedgerow hedges
-    hedge_idx       = -1
-    last_hedge_idx  = hedges.length - 1
-    advance         = false
-    is_terminal     = false
-    R               = true
-    #.......................................................................................................
-    loop
-      hedge_idx++
-      if hedge_idx > last_hedge_idx
-        return ( R )                                                                # exit point
-      hedge       = hedges[ hedge_idx ]
-      is_terminal = ( hedges[ hedge_idx + 1 ] is 'or' ) or ( hedge_idx is last_hedge_idx )
-      #.....................................................................................................
-      if advance
-        return ( false ) if is_terminal                                             # exit point
-        continue unless hedge is 'or'
-      advance = false
-      #.....................................................................................................
-      switch hedge
-        #...................................................................................................
-        when 'of'
-          @push_hedgeresult [ '▲ii1', @state.isa_depth, 'of', x, true, ]
-          tail_hedges = hedges[ hedge_idx + 1 .. ]
-          try
-            for element from x
-              # return ( false ) if ( @_inner_isa tail_hedges..., element ) is false  # exit point
-              return ( false ) if ( @_isa tail_hedges..., element ) is false  # exit point
-          catch error
-            throw error unless ( error.name is 'TypeError' ) and ( error.message is 'x is not iterable' )
-            throw new E.Intertype_ETEMPTBD '^intertype.isa@7^', \
-              "`of` must be preceded by collection name, got #{rpr hedges[ hedge_idx - 1 ]}"
-          return ( true )                                                           # exit point
-        #...................................................................................................
-        when 'or'
-          @push_hedgeresult [ '▲ii2', @state.isa_depth, 'or', x, true, ]
-          R = true
-          continue
-      #.....................................................................................................
-      unless ( type_dsc = GUY.props.get @registry, hedge, null )?
-        throw new E.Intertype_ETEMPTBD '^intertype.isa@8^', "unknown hedge or type #{rpr hedge}"
-      #.....................................................................................................
-      # @push_hedgeresult hedgeresult = [ '▲ii3', @state.isa_depth, type_dsc.name, x, ]
-      result = type_dsc.call @, x
-      # hedgeresult.push result
-      switch result
-        when H.signals.return_true
-          return true
-        when false
-          advance = true
-          R       = false
-          continue
-        when true
-          return true if is_terminal
-          continue
-      #.....................................................................................................
-      throw new E.Intertype_internal_error '^intertype.isa@9^', \
-        "unexpected return value from hedgemethod for hedge #{rpr hedge}: #{rpr result}"
-    #.......................................................................................................
-    return ( R )                                                                    # exit point
-
-  #---------------------------------------------------------------------------------------------------------
-  _validate: ( hedges..., x ) ->
-    return x if @_isa hedges..., x
-    state_report  = @get_state_report { format: 'short', colors: false, width: 500, }
-    state_report += '\n'
-    state_report += GUY.trm.reverse GUY.trm.red "\n Validation Failure "
-    state_report += '\n'
-    state_report += ( @get_state_report { format: 'failing', } ).trim()
-    state_report += '\n'
-    state_report += GUY.trm.reverse GUY.trm.red " Validation Failure \n"
-    throw new E.Intertype_validation_error '^intertype.validate@3^', @state, state_report
-
-  #---------------------------------------------------------------------------------------------------------
-  _create: ( type, cfg ) ->
-    create = null
-    #.......................................................................................................
-    unless ( type_dsc = GUY.props.get @registry, type, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype.create@11^', "unknown type #{rpr type}"
-    #.......................................................................................................
-    ### Try to get `create` method, or, should that fail, the `template` value. Throw error when neither
-    `create` nor `template` are given: ###
-    if ( create = GUY.props.get type_dsc, 'create', null ) is null
-      if ( template = GUY.props.get type_dsc, 'template', H.signals.nothing ) is H.signals.nothing
-        throw new E.Intertype_ETEMPTBD '^intertype.create@12^', \
-          "type #{rpr type} does not have a `template` value or a `create()` method"
-    #.......................................................................................................
-    return @_validate type, @_create_no_validation { create, template, freeze: type_dsc.freeze, cfg, }
-
-  #---------------------------------------------------------------------------------------------------------
-  _create_no_validation: ({ create, template, freeze, cfg }) ->
-    #.......................................................................................................
-    if create?
-      R = create.call @, cfg
-    #.......................................................................................................
-    else
-      if cfg?
-        if ( t = H.js_type_of template ) is '[object Object]' or t is '[object Array]'
-          R = Object.assign ( H.deep_copy template ), cfg
-        else
-          R = cfg
-      else
-        R = H.deep_copy template
-    #.......................................................................................................
-    if      freeze in [ true, 'shallow', ] then R = Object.freeze R
-    else if freeze is 'deep'               then R = GUY.lft.freeze H.deep_copy R
-    #.......................................................................................................
+  compile: ( name, declaration ) ->
+    declaration = { isa: declaration, } if T.isa_function declaration
+    R = { defaults.declaration..., declaration..., }
     return R
 
-  #---------------------------------------------------------------------------------------------------------
-  _cast: ( type, P... ) ->
-    cast = null
-    #.......................................................................................................
-    unless ( type_dsc = GUY.props.get @registry, type, null )?
-      throw new E.Intertype_ETEMPTBD '^intertype.cast@11^', "unknown type #{rpr type}"
-    unless ( cast = GUY.props.get type_dsc, 'cast', null )?
-      throw new E.Intertype_ETEMPTBD '^intertype.cast@11^', "type #{rpr type} does not have a `cast` method"
-    #.......................................................................................................
-    ### NOTE we *could* call `create`, `validate`, but should we? ###
-    # return ( @create[ type ] cast.call @, P... ) if GUY.props.has type.dsc, 'create'
-    return @validate[ type ] cast.call @, P...
-    # return cast.call @, P...
+D = new Declaration_compiler()
+
+#===========================================================================================================
+class Isa_proto extends Intervoke_phraser
 
   #---------------------------------------------------------------------------------------------------------
-  equals:                     H.equals
-  deep_copy:                  H.deep_copy
-  type_of:                    ( x ) => H.type_of x, @overrides
-  size_of:                    H.size_of.bind H
-  _normalize_type:            H._normalize_type.bind H
-  _split_hedgerow_text:       ( hedgerow ) -> hedgerow.split @cfg.sep
+  __get_handler: ( accessor, ast ) ->
+    debug '^Isa_proto::__get_handler@1^', accessor
+    debug '^Isa_proto::__get_handler@1^', ast
+    return ( x ) ->
+      debug '^Isa_proto::__get_handler/handler@1^', accessor, ast
+      return true
 
   #---------------------------------------------------------------------------------------------------------
-  is_extension_of: ( Derived, Base ) ->
-    return true if Derived is Base
-    try return ( (Derived::) instanceof Base ) catch error then return false
+  __declare: ( accessor, handler ) ->
+    ### Associate an accessor with a handler method: ###
+    debug '^Isa_proto::__declare@1^', { accessor, handler, }
+    debug '^Isa_proto::__declare@1^', D.compile accessor, handler
+    super accessor, handler
+
+
+#===========================================================================================================
+class Isa extends Isa_proto
 
   #---------------------------------------------------------------------------------------------------------
-  get_state_report: ( cfg ) -> H.get_state_report @, cfg
-
-  #---------------------------------------------------------------------------------------------------------
-  push_hedgeresult: ( hedgeresult ) ->
-    ### [ ref, level, hedge, value, r, ] = hedgeresult ###
-    [ ref, level, hedge, value, r, ] = hedgeresult
-    H.types.validate.nonempty_text  ref
-    # H.types.validate.cardinal       level
-    H.types.validate.nonempty_text  hedge
-    # H.types.validate.boolean        r
-    @state.hedgeresults.push hedgeresult
-    return hedgeresult.at -1
-
-  # #-----------------------------------------------------------------------------------------------------------
-  # _walk_hedgepaths: ( cfg ) ->
-  #   throw new Error "^intertype._walk_hedgepaths@9^ not implemented"
-  #   # cfg = { H.defaults.Intertype_walk_hedgepaths_cfg..., cfg..., }
-  #   # yield from GUY.props.walk_tree @isa, cfg
-  #   # return null
+  @declare:
+    null:       ( x ) -> x is null
+    undefined:  ( x ) -> x is undefined
+    boolean:    ( x ) -> ( x is true ) or ( x is false )
+    float:      ( x ) -> Number.isFinite x
+    symbol:     ( x ) -> ( typeof x ) is 'symbol'
 
 
-############################################################################################################
-@Type_factory         = Type_factory
-@Intertype            = Intertype
-@Intertype_user_error = E.Intertype_user_error
-@equals               = H.equals
-@deep_copy            = H.deep_copy
+#===========================================================================================================
+if module is require.main then do =>
+  #.........................................................................................................
+  isa = new Isa()
+  isa.__parser.set_vocabulary sample_vocabulary
+  debug '^do@1^', isa
+  debug '^do@2^', isa.integer
+  debug '^do@3^', isa.integer 12
+  debug '^do@4^', isa.null
+  debug '^do@4^', isa.null 5
+  debug '^do@4^', isa.null null
+
 
