@@ -47,9 +47,10 @@ class Intertype
   constructor: ( declarations = null ) ->
     declarations ?= default_declarations
     #.......................................................................................................
-    hide @, 'isa',               { optional: {}, }
-    hide @, 'validate',          { optional: {}, }
-    hide @, '_type_of_tests',    {}
+    hide @, 'isa',                { optional: {}, }
+    hide @, 'validate',           { optional: {}, }
+    hide @, '_type_of_tests',     {}
+    hide @, 'type_of',            ( P... ) => @_type_of P...
     #.......................................................................................................
     ### TAINT prevent accidental overwrites ###
     for collection in [ built_ins, declarations, ]
@@ -67,7 +68,7 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   ### TAINT may want to check type, arities ###
   get_isa:                ( type, test ) -> ( x ) => test.call @, x
-  get_isa_optional:       ( type, test ) -> ( x ) => if x? then ( test.call @, x )               else true
+  get_isa_optional:       ( type, test ) -> ( x ) => if x? then ( test.call @, x ) else true
   get_validate_optional:  ( type, test ) -> ( x ) =>
     return x unless x?
     ### TAINT code duplication ###
@@ -79,7 +80,7 @@ class Intertype
     throw new Error "expected a #{type}, got a #{typeof x}" ### TAINT `typeof` will give some strange results ###
 
   #---------------------------------------------------------------------------------------------------------
-  type_of: ( x ) ->
+  _type_of: ( x ) ->
     return 'null'       if x is null
     return 'undefined'  if x is undefined
     for type, test of @_type_of_tests
