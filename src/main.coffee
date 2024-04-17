@@ -49,7 +49,7 @@ class Intertype
     #.......................................................................................................
     hide @, 'isa',                { optional: {}, }
     hide @, 'validate',           { optional: {}, }
-    hide @, '_type_of_tests',     {}
+    hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
     #.......................................................................................................
     ### TAINT prevent accidental overwrites ###
@@ -61,7 +61,7 @@ class Intertype
         @isa.optional[      type ] = @get_isa_optional      type, test
         @validate[          type ] = @get_validate          type, test
         @validate.optional[ type ] = @get_validate_optional type, test
-        @_type_of_tests[    type ] = @isa[ type ] if collection isnt built_ins
+        @_tests_for_type_of[    type ] = @isa[ type ] if collection isnt built_ins
     #.......................................................................................................
     return undefined
 
@@ -88,7 +88,7 @@ class Intertype
   _type_of: ( x ) ->
     return 'null'       if x is null
     return 'undefined'  if x is undefined
-    for type, test of @_type_of_tests
+    for type, test of @_tests_for_type_of
       return type if test x
     return 'unknown'
 
