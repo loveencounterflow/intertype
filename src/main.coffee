@@ -66,6 +66,8 @@ class Intertype
       @validate.optional[ type ] = @get_validate_optional type, test
       return if skip_types.has type
       @_type_of_tests[    type ] = @isa[ type ]
+        if Reflect.has @isa, type
+          throw new Error "unable to re-declare type #{rpr type}"
     #.......................................................................................................
     return undefined
 
