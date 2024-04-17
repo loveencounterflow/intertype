@@ -78,7 +78,6 @@ class _Intertype
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT may want to check type, arities ###
   get_isa: ( type, test ) ->
     me = @
     return nameit "isa_#{type}", ( x ) ->
@@ -87,7 +86,6 @@ class _Intertype
       return test.call me, x
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT may want to check type, arities ###
   get_isa_optional: ( type, test ) ->
     me = @
     return nameit "isa_optional_#{type}", ( x ) ->
@@ -96,7 +94,6 @@ class _Intertype
       if x? then ( test.call me, x ) else true
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT may want to check type, arities ###
   get_validate: ( type, test ) ->
     me = @
     return nameit "validate_#{type}", ( x ) ->
@@ -106,7 +103,6 @@ class _Intertype
       throw new E.Intertype_validation_error "^validate_#{type}@1^", type, typeof x ### TAINT `typeof` will give some strange results ###
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT may want to check type, arities ###
   get_validate_optional: ( type, test ) ->
     me = @
     return nameit "validate_optional_#{type}", ( x ) ->
@@ -117,7 +113,6 @@ class _Intertype
       throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@1^", type, typeof x ### TAINT `typeof` will give some strange results ###
 
   #---------------------------------------------------------------------------------------------------------
-  ### TAINT may want to check type, arities ###
   _type_of: ( x ) ->
     if ( arguments.length isnt 1 )
       throw new E.Intertype_wrong_arity "^type_of@1^", 1, arguments.length
