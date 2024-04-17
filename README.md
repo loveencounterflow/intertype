@@ -35,4 +35,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 ## Is Done
 
 * **[+]** hard-wire basic types `anything`, `nothing`, `something`, `null`, `undefined`, `unknown`
+* **[+]** allow stand-alone methods (`{ type_of } = new Intertype()`)
 
