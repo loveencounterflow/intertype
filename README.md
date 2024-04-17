@@ -54,6 +54,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow name-spacing a la `isa.myproject.foobar()`?
 * **[–]** allow overrides
   * **[–]** but not of `built_ins`?
+* **[–]** throw error with instructive message when an undefined type is being accessed as in `isa.qux x`
 
 ## Is Done
 
@@ -61,4 +62,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[+]** allow stand-alone methods (`{ type_of } = new Intertype()`)
 * **[+]** ensure all methods have reasonable names
 * **[+]** use proper error types like `Validation_error`
+* **[+]** make it possible for Intertype methods to use an internal, private instance so type and arity
+  testing is possible for its own methods
+* **[+]** throw error with instructive message when a type testing or `type_of()` iscalled with wrong arity
 
