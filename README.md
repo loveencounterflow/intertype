@@ -27,14 +27,14 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 
 ## To Do
 
-* **[–]** use proper error types like `Validation_error`
 * **[–]** allow name-spacing a la `isa.myproject.foobar()`?
 * **[–]** allow overrides
   * **[–]** but not of `built_ins`?
-* **[–]** ensure all methods have reasonable names
 
 ## Is Done
 
 * **[+]** hard-wire basic types `anything`, `nothing`, `something`, `null`, `undefined`, `unknown`
 * **[+]** allow stand-alone methods (`{ type_of } = new Intertype()`)
+* **[+]** ensure all methods have reasonable names
+* **[+]** use proper error types like `Validation_error`
 
