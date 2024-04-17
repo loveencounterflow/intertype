@@ -67,14 +67,19 @@ class Intertype
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT may want to check type, arities ###
-  get_isa:                ( type, test ) -> ( x ) => test.call @, x
-  get_isa_optional:       ( type, test ) -> ( x ) => if x? then ( test.call @, x ) else true
-  get_validate_optional:  ( type, test ) -> ( x ) =>
+  get_isa:                ( type, test ) -> nameit "isa_#{type}",               ( x ) =>
+    test.call @, x
+  #.........................................................................................................
+  get_isa_optional:       ( type, test ) -> nameit "isa_optional_#{type}",      ( x ) =>
+    if x? then ( test.call @, x ) else true
+  #.........................................................................................................
+  get_validate_optional:  ( type, test ) -> nameit "validate_optional_#{type}", ( x ) =>
     return x unless x?
     ### TAINT code duplication ###
     return x if test.call @, x
     throw new Error "expected an optional #{type}, got a #{typeof x}" ### TAINT `typeof` will give some strange results ###
-  get_validate:           ( type, test ) -> ( x ) =>
+  #.........................................................................................................
+  get_validate:           ( type, test ) -> nameit "validate_#{type}",          ( x ) =>
     ### TAINT code duplication ###
     return x if test.call @, x
     throw new Error "expected a #{type}, got a #{typeof x}" ### TAINT `typeof` will give some strange results ###
