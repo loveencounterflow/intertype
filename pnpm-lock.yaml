@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  subsidiary:
-    specifier: ^0.3.0
-    version: 0.3.0
   webguy:
     specifier: ^5.2.1
     version: 5.2.1
@@ -26,10 +23,6 @@ packages:
 
   /multimix@5.0.0:
     resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
-    dev: false
-
-  /subsidiary@0.3.0:
-    resolution: {integrity: sha512-Mkl/ZOb/+BgUzotUEoy7YfYyVPxU5SXYiVkT0xp7GAptCRQigLnkBYJks0/6TRYrhEV0qFvPBG1rOyvDL1e1Mw==}
     dev: false
 
   /webguy@5.2.1:
