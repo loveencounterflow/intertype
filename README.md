@@ -31,6 +31,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow name-spacing a la `isa.myproject.foobar()`?
 * **[–]** allow overrides
   * **[–]** but not of `built_ins`?
+* **[–]** ensure all methods have reasonable names
 
 ## Is Done
 
