@@ -22,7 +22,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 ## Built-In Types
 
 The following types are built-in and treated specially; they are always present and cannot be overwritten or
-omitted:
+omitted. The definitions of their test methods reads like pseudo-code:
 
 ```coffee
 anything:   ( x ) -> true
@@ -33,11 +33,14 @@ undefined:  ( x ) -> x is undefined
 unknown:    ( x ) -> ( @type_of x ) is 'unknown'
 ```
 
-`anything` is the set of all JS values; `nothing` is the set `( null, undefined )`, `something` is
-`anything` except `null` and `undefined`. `null` and `undefined` comprise the eponymous value only.
-`unknown` is the set of values for which `type_of x` cannot find an `isa[ type ] x` for any known type that
-returns `true` (`type_of x` will never test for `anything`, `nothing` or `something`).
-
+* `anything` is the set of all JS values;
+* `nothing` is the set containing `null` and `undefined`,
+* `something` is `anything` except `nothing` (`null` and `undefined`).
+* `type_of x` will never test for and return `anything`, `nothing` or `something`.
+* `null` is, unsurprisingly, the name of the value `null` and
+* `undefined` is the name of the value `undefined`.
+* `unknown` is the default type name returned by `type_of x` when no other type test (except for `anything`,
+  `nothing` and `something`) returns `true`.
 
 
 ## Browserify
