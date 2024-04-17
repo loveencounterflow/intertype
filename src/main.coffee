@@ -28,6 +28,7 @@ default_declarations =
   asyncfunction:          ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
   symbol:                 ( x ) -> ( typeof x ) is 'symbol'
   object:                 ( x ) -> x? and ( typeof x is 'object' ) and ( ( Object::toString.call x ) is '[object Object]' )
+  float:                  ( x ) -> Number.isFinite x
   text:                   ( x ) -> ( typeof x ) is 'string'
   regex:                  ( x ) -> x instanceof RegExp
   nullary:                ( x ) -> x? and ( ( x.length is 0 ) or ( x.size is 0 ) )
