@@ -11,12 +11,16 @@ WG                        = require 'webguy'
 { debug }                 = console
 
 #===========================================================================================================
-declarations = default_declarations =
+built_ins =
   anything:               ( x ) -> true
   nothing:                ( x ) -> not x?
   something:              ( x ) -> x?
   null:                   ( x ) -> x is null
   undefined:              ( x ) -> x is undefined
+  unknown:                ( x ) -> ( @type_of x ) is 'unknown'
+
+#-----------------------------------------------------------------------------------------------------------
+default_declarations =
   boolean:                ( x ) -> ( x is true ) or ( x is false )
   function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
   asyncfunction:          ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
@@ -29,23 +33,12 @@ declarations = default_declarations =
   binary:                 ( x ) -> x? and ( ( x.length is 2 ) or ( x.size is 2 ) )
   trinary:                ( x ) -> x? and ( ( x.length is 3 ) or ( x.size is 3 ) )
   #.........................................................................................................
-  unknown:                ( x ) -> ( @type_of x ) is 'unknown'
-  #.........................................................................................................
   IT_listener:            ( x ) -> ( @isa.function x ) or ( @isa.asyncfunction x )
   IT_note_$key:           ( x ) -> ( @isa.text x ) or ( @isa.symbol x )
   unary_or_binary:        ( x ) -> ( @isa.unary   x ) or ( @isa.binary  x )
   binary_or_trinary:      ( x ) -> ( @isa.binary  x ) or ( @isa.trinary x )
   $freeze:                ( x ) -> @isa.boolean x
 
-#===========================================================================================================
-### TAINT make configurable in type declaration? ###
-skip_types = new Set [
-  'anything'
-  'nothing'
-  'something'
-  'null'
-  'undefined'
-  'unknown' ]
 
 #===========================================================================================================
 class Intertype
@@ -59,15 +52,15 @@ class Intertype
     hide @, '_type_of_tests',    {}
     #.......................................................................................................
     ### TAINT prevent accidental overwrites ###
-    for type, test of declarations then do ( type, test ) =>
-      @isa[               type ] = @get_isa               type, test
-      @isa.optional[      type ] = @get_isa_optional      type, test
-      @validate[          type ] = @get_validate          type, test
-      @validate.optional[ type ] = @get_validate_optional type, test
-      return if skip_types.has type
-      @_type_of_tests[    type ] = @isa[ type ]
+    for collection in [ built_ins, declarations, ]
+      for type, test of collection then do ( type, test ) =>
         if Reflect.has @isa, type
           throw new Error "unable to re-declare type #{rpr type}"
+        @isa[               type ] = @get_isa               type, test
+        @isa.optional[      type ] = @get_isa_optional      type, test
+        @validate[          type ] = @get_validate          type, test
+        @validate.optional[ type ] = @get_validate_optional type, test
+        @_type_of_tests[    type ] = @isa[ type ] if collection isnt built_ins
     #.......................................................................................................
     return undefined
 
@@ -95,7 +88,7 @@ class Intertype
 
 
 #===========================================================================================================
-types = new Intertype declarations
+types = new Intertype default_declarations
 
 #===========================================================================================================
-module.exports = { Intertype, types, declarations, }
+module.exports = { Intertype, types, declarations: default_declarations, }
