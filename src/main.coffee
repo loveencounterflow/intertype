@@ -42,9 +42,17 @@ default_declarations =
   binary_or_trinary:      ( x ) -> ( @isa.binary  x ) or ( @isa.trinary x )
   $freeze:                ( x ) -> @isa.boolean x
 
+#-----------------------------------------------------------------------------------------------------------
+# internal_declarations = { default_declarations..., }
+internal_declarations = {
+  default_declarations...
+  # foo: ( x ) -> x is 'foo'
+  # bar: ( x ) -> x is 'bar'
+  }
+
 
 #===========================================================================================================
-class Intertype
+class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT may want to check type, arities ###
@@ -119,9 +127,13 @@ class Intertype
       return type if test x
     return 'unknown'
 
+#===========================================================================================================
+class Intertype extends _Intertype
+
 
 #===========================================================================================================
-types = new Intertype default_declarations
+internal_types  = new _Intertype internal_declarations
+types           = new Intertype default_declarations
 
 #===========================================================================================================
 module.exports = { Intertype, types, declarations: default_declarations, }
