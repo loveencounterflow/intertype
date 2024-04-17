@@ -44,6 +44,7 @@ default_declarations =
 class Intertype
 
   #---------------------------------------------------------------------------------------------------------
+  ### TAINT may want to check type, arities ###
   constructor: ( declarations = null ) ->
     declarations ?= default_declarations
     #.......................................................................................................
@@ -71,11 +72,13 @@ class Intertype
     test.call @, x
   #.........................................................................................................
   get_isa_optional:       ( type, test ) -> nameit "isa_optional_#{type}",      ( x ) =>
+  ### TAINT may want to check type, arities ###
     if x? then ( test.call @, x ) else true
   #.........................................................................................................
   get_validate_optional:  ( type, test ) -> nameit "validate_optional_#{type}", ( x ) =>
     return x unless x?
     ### TAINT code duplication ###
+  ### TAINT may want to check type, arities ###
     return x if test.call @, x
     throw new Error "expected an optional #{type}, got a #{typeof x}" ### TAINT `typeof` will give some strange results ###
   #.........................................................................................................
@@ -85,6 +88,7 @@ class Intertype
     throw new Error "expected a #{type}, got a #{typeof x}" ### TAINT `typeof` will give some strange results ###
 
   #---------------------------------------------------------------------------------------------------------
+  ### TAINT may want to check type, arities ###
   _type_of: ( x ) ->
     return 'null'       if x is null
     return 'undefined'  if x is undefined
