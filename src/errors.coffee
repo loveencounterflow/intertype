@@ -35,7 +35,9 @@ class @Intertype_argument_missing          extends @Intertype_error
 class @Intertype_wrong_type                extends @Intertype_error
   constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
 class @Intertype_wrong_arity               extends @Intertype_error
-  constructor: ( ref, name, min, max, found ) -> super ref, "#{name} expected between #{min} and #{max} arguments, got #{found}"
+  constructor: ( ref, need_arity, is_arity ) -> super ref, "expected #{need_arity} arguments, got #{is_arity}"
+class @Intertype_wrong_arity_range         extends @Intertype_wrong_arity
+  constructor: ( ref, min, max, is_arity ) -> super ref, "between #{min} and #{max}", is_arity
 class @Intertype_user_error                extends @Intertype_error
   constructor: ( message )          -> super null, message
 class @Intertype_validation_error          extends @Intertype_error
