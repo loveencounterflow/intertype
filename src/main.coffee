@@ -64,16 +64,16 @@ class _Intertype
     hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
     hide @, 'create',             @_new_strict_proxy 'create'
+    hide @, 'declarations',       @_new_strict_proxy 'declarations'
     #.......................................................................................................
     for collection in [ built_ins, declarations, ]
       for type, test of collection then do ( type, test ) =>
         #...................................................................................................
-        if Reflect.has @isa, type
+        if Reflect.has @declarations, type
           throw new Error "unable to re-declare type #{rpr type}"
         #...................................................................................................
-        declaration = @_compile_declaration_object type, test
-        #...................................................................................................
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
+        @declarations[        type ] = declaration = @_compile_declaration_object type, test
         @isa[                 type ] = @get_isa               type, declaration.test
         @isa.optional[        type ] = @get_isa_optional      type, declaration.test
         @validate[            type ] = @get_validate          type, declaration.test
