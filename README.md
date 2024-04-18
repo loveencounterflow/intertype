@@ -54,6 +54,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow name-spacing a la `isa.myproject.foobar()`?
 * **[–]** allow overrides <ins>when so configured</ins>
   * **[–]** but not of `built_ins`<del>?</del>
+* **[–]** allow declaration objects
 
 ## Is Done
 
@@ -66,4 +67,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[+]** throw error with instructive message when a type testing or `type_of()` is called with wrong arity
 * **[+]** throw error with instructive message when an undefined type is being accessed as in `isa.quux x`
 * **[+]** ensure that `optional` cannot be used as a type name
+* **[+]** type-check declaration function (a.k.a. isa-test)
 
