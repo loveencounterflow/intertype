@@ -55,6 +55,17 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow overrides <ins>when so configured</ins>
   * **[–]** but not of `built_ins`<del>?</del>
 * **[–]** allow declaration objects
+* **[–]** given a declaration like this:
+
+  ```coffee
+  declarations =
+    float:
+      test:   ( x ) -> Number.isFinite x
+      create: ( p ) -> parseFloat p
+  ```
+
+  determine at what point(s) to insert a type validation; presumably, the return value of `create()` (even
+  of one generated from a `template` setting) should be validated
 
 ## Is Done
 
