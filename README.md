@@ -55,17 +55,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow overrides <ins>when so configured</ins>
   * **[–]** but not of `built_ins`<del>?</del>
 * **[–]** allow declaration objects
-* **[–]** given a declaration like this:
-
-  ```coffee
-  declarations =
-    float:
-      test:   ( x ) -> Number.isFinite x
-      create: ( p ) -> parseFloat p
-  ```
-
-  determine at what point(s) to insert a type validation; presumably, the return value of `create()` (even
-  of one generated from a `template` setting) should be validated
 
 ## Is Done
 
@@ -79,4 +68,16 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[+]** throw error with instructive message when an undefined type is being accessed as in `isa.quux x`
 * **[+]** ensure that `optional` cannot be used as a type name
 * **[+]** type-check declaration function (a.k.a. isa-test)
+* **[+]** given a declaration like this:
+
+  ```coffee
+  declarations =
+    float:
+      test:   ( x ) -> Number.isFinite x
+      create: ( p ) -> parseFloat p
+  ```
+
+  determine at what point(s) to insert a type validation; presumably, the return value of `create()` (even
+  of one generated from a `template` setting) should be validated
+
 
