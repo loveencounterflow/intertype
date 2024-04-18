@@ -59,8 +59,8 @@ class _Intertype
   constructor: ( declarations = null ) ->
     declarations ?= default_declarations
     #.......................................................................................................
-    hide @, 'isa',                { optional: {}, }
-    hide @, 'validate',           { optional: {}, }
+    hide @, 'isa',                @_new_strict_proxy 'isa'
+    hide @, 'validate',           @_new_strict_proxy 'validate'
     hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
     #.......................................................................................................
@@ -76,6 +76,22 @@ class _Intertype
         @_tests_for_type_of[    type ] = @isa[ type ] if collection isnt built_ins
     #.......................................................................................................
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _new_strict_proxy: ( name ) ->
+    ### Create a proxy for a new object that will throw an `Intertype_unknown_type` error when
+    a non-existing property is accessed ###
+    get_cfg = ( ref ) =>
+      get: ( target, key ) =>
+        return undefined          if key is Symbol.toStringTag
+        return target.constructor if key is 'constructor'
+        return target.toString    if key is 'toString'
+        # return target.call        if key is 'call'
+        # return target.apply       if key is 'apply'
+        return R if ( R = Reflect.get target, key )?
+        throw new E.Intertype_unknown_type ref, key
+    optional =  new Proxy {},             get_cfg "^proxy_for_#{name}_optional@1^"
+    return      new Proxy { optional, },  get_cfg "^proxy_for_#{name}@1^"
 
   #---------------------------------------------------------------------------------------------------------
   get_isa: ( type, test ) ->

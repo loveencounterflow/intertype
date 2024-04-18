@@ -36,6 +36,8 @@ class @Intertype_error extends Error
 #   constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
 # class @Intertype_user_error                extends @Intertype_error
 #   constructor: ( message )          -> super null, message
+class @Intertype_unknown_type              extends @Intertype_error
+  constructor: ( ref, type ) -> super ref, "unknown type #{rpr type}"
 class @Intertype_wrong_arity               extends @Intertype_error
   constructor: ( ref, need_arity, is_arity ) -> super ref, "expected #{need_arity} arguments, got #{is_arity}"
 class @Intertype_wrong_arity_range         extends @Intertype_wrong_arity
