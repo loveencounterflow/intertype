@@ -166,35 +166,49 @@ class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
   get_create: ( declaration ) ->
-    me = @
+    { type
+      create
+      template  } = declaration
+    me            = @
     switch true
-      when declaration.create?
-        return nameit "create_#{declaration.type}", ( P... ) -> declaration.create.call me, P...
-      when declaration.template?
+      when create?
+        return nameit "create_#{type}", ( P... ) ->
+          unless me.isa[ type ] ( R = create.call me, P... )
+            throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, me.type_of R
+          return R
+      when template?
         return @_get_create_from_template declaration
-    return nameit "create_#{declaration.type}", ( P... ) ->
-      throw new E.Intertype_create_not_available "^create_#{declaration.type}@1^", declaration.type
+    return nameit "create_#{type}", ( P... ) ->
+      throw new E.Intertype_create_not_available "^create_#{type}@2^", type
 
   #---------------------------------------------------------------------------------------------------------
   _get_create_from_template: ( declaration ) ->
     ### TAINT must distinguish whether value is object or not, use assign ###
-    me = @
+    { type
+      template  } = declaration
+    me            = @
     #.......................................................................................................
     switch true
       #.....................................................................................................
-      when default_declarations.function declaration.template
-        return nameit "create_#{declaration.type}", ->
+      when default_declarations.function template
+        return nameit "create_#{type}", ->
           if ( arguments.length isnt 0 )
-            throw new E.Intertype_wrong_arity "^create_#{declaration.type}@1^", 0, arguments.length
-          return declaration.template.call me
+            throw new E.Intertype_wrong_arity "^create_#{type}@3^", 0, arguments.length
+          unless me.isa[ type ] ( R = template.call me )
+            throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@4^", type, me.type_of R
+          return R
       #.....................................................................................................
-      when default_declarations.asyncfunction declaration.template
+      ### TAINT what about generatorfunctions &c? ###
+      when default_declarations.asyncfunction template
         throw E.Intertype_ETEMPTBD '^5345345^', "cannot be asyncfunction"
     #.......................................................................................................
-    return nameit "create_#{declaration.type}", ->
+    ### TAINT case of constant template could be handled when validating the declaration ###
+    return nameit "create_#{type}", ->
       if ( arguments.length isnt 0 )
-        throw new E.Intertype_wrong_arity "^create_#{declaration.type}@2^", 0, arguments.length
-      return declaration.template
+        throw new E.Intertype_wrong_arity "^create_#{type}@6^", 0, arguments.length
+      unless me.isa[ type ] ( R = template )
+        throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@7^", type, me.type_of R
+      return R
 
 
 #===========================================================================================================
