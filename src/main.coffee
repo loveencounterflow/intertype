@@ -64,11 +64,18 @@ class _Intertype
     hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
     #.......................................................................................................
-    ### TAINT prevent accidental overwrites ###
     for collection in [ built_ins, declarations, ]
       for type, test of collection then do ( type, test ) =>
+        #...................................................................................................
         if Reflect.has @isa, type
           throw new Error "unable to re-declare type #{rpr type}"
+        #...................................................................................................
+        if ( @constructor isnt _Intertype )
+          unless internal_types.isa.function test
+            throw new E.Intertype_wrong_type '^constructor@1^', "function", internal_types.type_of test
+          unless internal_types.isa.unary test
+            throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, test.length
+        #...................................................................................................
         @isa[               type ] = @get_isa               type, test
         @isa.optional[      type ] = @get_isa_optional      type, test
         @validate[          type ] = @get_validate          type, test
