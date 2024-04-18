@@ -20,26 +20,26 @@ class @Intertype_error extends Error
     return undefined
 
 #-----------------------------------------------------------------------------------------------------------
-class @Intertype_cfg_error                 extends @Intertype_error
-  constructor: ( ref, message )     -> super ref, message
-class @Intertype_internal_error            extends @Intertype_error
-  constructor: ( ref, message )     -> super ref, message
-class @Intertype_not_implemented           extends @Intertype_error
-  constructor: ( ref, what )        -> super ref, "#{what} isn't implemented (yet)"
-class @Intertype_deprecated                extends @Intertype_error
-  constructor: ( ref, what )        -> super ref, "#{what} has been deprecated"
-class @Intertype_argument_not_allowed      extends @Intertype_error
-  constructor: ( ref, name, value ) -> super ref, "argument #{name} not allowed, got #{rpr value}"
-class @Intertype_argument_missing          extends @Intertype_error
-  constructor: ( ref, name )        -> super ref, "expected value for #{name}, got nothing"
-class @Intertype_wrong_type                extends @Intertype_error
-  constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
+# class @Intertype_cfg_error                 extends @Intertype_error
+#   constructor: ( ref, message )     -> super ref, message
+# class @Intertype_internal_error            extends @Intertype_error
+#   constructor: ( ref, message )     -> super ref, message
+# class @Intertype_not_implemented           extends @Intertype_error
+#   constructor: ( ref, what )        -> super ref, "#{what} isn't implemented (yet)"
+# class @Intertype_deprecated                extends @Intertype_error
+#   constructor: ( ref, what )        -> super ref, "#{what} has been deprecated"
+# class @Intertype_argument_not_allowed      extends @Intertype_error
+#   constructor: ( ref, name, value ) -> super ref, "argument #{name} not allowed, got #{rpr value}"
+# class @Intertype_argument_missing          extends @Intertype_error
+#   constructor: ( ref, name )        -> super ref, "expected value for #{name}, got nothing"
+# class @Intertype_wrong_type                extends @Intertype_error
+#   constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
+# class @Intertype_user_error                extends @Intertype_error
+#   constructor: ( message )          -> super null, message
 class @Intertype_wrong_arity               extends @Intertype_error
   constructor: ( ref, need_arity, is_arity ) -> super ref, "expected #{need_arity} arguments, got #{is_arity}"
 class @Intertype_wrong_arity_range         extends @Intertype_wrong_arity
   constructor: ( ref, min, max, is_arity ) -> super ref, "between #{min} and #{max}", is_arity
-class @Intertype_user_error                extends @Intertype_error
-  constructor: ( message )          -> super null, message
 class @Intertype_validation_error          extends @Intertype_error
   constructor: ( ref, need_type, is_type ) -> super ref, "expected a #{need_type}, got a #{is_type}"
 class @Intertype_optional_validation_error extends @Intertype_error
