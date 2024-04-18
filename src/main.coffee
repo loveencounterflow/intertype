@@ -29,7 +29,7 @@ default_declarations =
   symbol:                 ( x ) -> ( typeof x ) is 'symbol'
   object:                 ( x ) -> x? and ( typeof x is 'object' ) and ( ( Object::toString.call x ) is '[object Object]' )
   float:                  ( x ) -> Number.isFinite x
-  text:                   ( x ) -> ( typeof x ) is 'string'
+  text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   regex:                  ( x ) -> x instanceof RegExp
   nullary:                ( x ) -> x? and ( ( x.length is 0 ) or ( x.size is 0 ) )
   unary:                  ( x ) -> x? and ( ( x.length is 1 ) or ( x.size is 1 ) )
@@ -63,6 +63,7 @@ class _Intertype
     hide @, 'validate',           @_new_strict_proxy 'validate'
     hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
+    hide @, 'create',             @_new_strict_proxy 'create'
     #.......................................................................................................
     for collection in [ built_ins, declarations, ]
       for type, test of collection then do ( type, test ) =>
@@ -70,19 +71,37 @@ class _Intertype
         if Reflect.has @isa, type
           throw new Error "unable to re-declare type #{rpr type}"
         #...................................................................................................
-        if ( @constructor isnt _Intertype )
-          unless internal_types.isa.function test
-            throw new E.Intertype_wrong_type '^constructor@1^', "function", internal_types.type_of test
-          unless internal_types.isa.unary test
-            throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, test.length
+        declaration = @_compile_declaration_object type, test
         #...................................................................................................
-        @isa[               type ] = @get_isa               type, test
-        @isa.optional[      type ] = @get_isa_optional      type, test
-        @validate[          type ] = @get_validate          type, test
-        @validate.optional[ type ] = @get_validate_optional type, test
-        @_tests_for_type_of[    type ] = @isa[ type ] if collection isnt built_ins
+        ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
+        @isa[                 type ] = @get_isa               type, declaration.test
+        @isa.optional[        type ] = @get_isa_optional      type, declaration.test
+        @validate[            type ] = @get_validate          type, declaration.test
+        @validate.optional[   type ] = @get_validate_optional type, declaration.test
+        @_tests_for_type_of[  type ] = @isa[ type ] if collection isnt built_ins
+        @create[              type ] = @get_create            declaration
     #.......................................................................................................
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_declaration_object: ( type, test ) ->
+    return { type, test, } if ( @constructor is _Intertype )
+    #.......................................................................................................
+    switch true
+      #.....................................................................................................
+      when internal_types.isa.function test
+        unless internal_types.isa.unary test
+          throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, test.length
+        R = { type, test, } ### TAINT assign template ###
+      #.....................................................................................................
+      when internal_types.isa.object test
+        R = { type, test..., }
+      #.....................................................................................................
+      else
+        throw new E.Intertype_wrong_type '^constructor@1^', "function or object", internal_types.type_of test
+    #.......................................................................................................
+    ### TAINT validate result before returning it ###
+    return R
 
   #---------------------------------------------------------------------------------------------------------
   _new_strict_proxy: ( name ) ->
@@ -144,6 +163,39 @@ class _Intertype
     for type, test of @_tests_for_type_of
       return type if test x
     return 'unknown'
+
+  #---------------------------------------------------------------------------------------------------------
+  get_create: ( declaration ) ->
+    me = @
+    switch true
+      when declaration.create?
+        return nameit "create_#{declaration.type}", ( P... ) -> declaration.create.call me, P...
+      when declaration.template?
+        return @_get_create_from_template declaration
+    return nameit "create_#{declaration.type}", ( P... ) ->
+      throw new E.Intertype_create_not_available "^create_#{declaration.type}@1^", declaration.type
+
+  #---------------------------------------------------------------------------------------------------------
+  _get_create_from_template: ( declaration ) ->
+    ### TAINT must distinguish whether value is object or not, use assign ###
+    me = @
+    #.......................................................................................................
+    switch true
+      #.....................................................................................................
+      when default_declarations.function declaration.template
+        return nameit "create_#{declaration.type}", ->
+          if ( arguments.length isnt 0 )
+            throw new E.Intertype_wrong_arity "^create_#{declaration.type}@1^", 0, arguments.length
+          return declaration.template.call me
+      #.....................................................................................................
+      when default_declarations.asyncfunction declaration.template
+        throw E.Intertype_ETEMPTBD '^5345345^', "cannot be asyncfunction"
+    #.......................................................................................................
+    return nameit "create_#{declaration.type}", ->
+      if ( arguments.length isnt 0 )
+        throw new E.Intertype_wrong_arity "^create_#{declaration.type}@2^", 0, arguments.length
+      return declaration.template
+
 
 #===========================================================================================================
 class Intertype extends _Intertype
