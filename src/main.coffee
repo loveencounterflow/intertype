@@ -70,7 +70,7 @@ class _Intertype
       for type, test of collection then do ( type, test ) =>
         #...................................................................................................
         if Reflect.has @declarations, type
-          throw new Error "unable to re-declare type #{rpr type}"
+          throw new E.Intertype_declaration_override_forbidden '^constructor@1^', type
         #...................................................................................................
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
         @declarations[        type ] = declaration = @_compile_declaration_object type, test

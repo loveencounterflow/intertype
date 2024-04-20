@@ -52,5 +52,7 @@ class @Intertype_create_not_available      extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "type declaration of #{rpr type} has no `create` and no `template` entries, cannot be created"
 class @Intertype_wrong_arguments_for_create extends @Intertype_error
   constructor: ( ref, need_type, is_type ) -> super ref, "expected `create.#{need_type}()` to return a #{need_type} but it returned a #{is_type}"
+class @Intertype_declaration_override_forbidden extends @Intertype_error
+  constructor: ( ref, type ) -> super ref, "type #{rpr type} has already been declared and may not be overridden"
 #-----------------------------------------------------------------------------------------------------------
 class @Intertype_ETEMPTBD extends @Intertype_error
