@@ -10,6 +10,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 - [InterType](#intertype)
   - [Built-In Types](#built-in-types)
+    - [`create.〈type〉()`](#create%E2%8C%A9type%E2%8C%AA)
   - [Browserify](#browserify)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -42,6 +43,15 @@ unknown:    ( x ) -> ( @type_of x ) is 'unknown'
 * `unknown` is the default type name returned by `type_of x` when no other type test (except for `anything`,
   `nothing` and `something`) returns `true`.
 
+In addition to the above, `optional` is also reserved. `optional` is not a type proper, rather, it is a type
+modifier to allow for optional `null`s and `undefined`s. It is used in constructs like `isa.optional.integer
+x` and `validate.optional.integer x` to state succinctly that 'if x is given (i.e. not `null` or
+`undefined`), it should be an integer'.
+
+### `create.〈type〉()`
+
+* a type declaration with a `template` but no `create` entry will become 'creatable' by being assigned an
+  auto-generated `create` method
 
 ## Browserify
 
