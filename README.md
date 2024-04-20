@@ -50,8 +50,25 @@ x` and `validate.optional.integer x` to state succinctly that 'if x is given (i.
 
 ### `create.〈type〉()`
 
+Types declarations may include a `create` and a `template` entry:
+
+* Types that have neither a `create` nor a `template` entry are not 'creatable'; trying to call
+  `types.create.〈type〉()` will fail with an error.
+* If given, a `create` entry must be a (synchronous) function that may accept any number of arguments; if it
+  can make sense out of the values given, if any, it must return a value that passes its own `test()`
+  method; otherwise, it should return any non-validating value (maybe `null` for all types except for
+  `null`) to indicate failure. In the latter case, an `Intertype_wrong_arguments_for_create` will be thrown,
+  assuming that the input arguments (not the create method) was at fault. Errors other than
+  `Intertype_wrong_arguments_for_create` that are raised during calls to the create method should be
+  considered bugs.
 * a type declaration with a `template` but no `create` entry will become 'creatable' by being assigned an
-  auto-generated `create` method
+  auto-generated create method.
+* The auto-generated create method will accept no arguments and either
+  * return the value stored under `template`, or
+  * call the template method, if it is a function; this is not only how one can have a function being
+    returned by an auto-generated create method, this is also a way to produce new copies instead of always
+    returning the identical same object, and, furthermore, a way to return random (`random_integer`) or
+    time-dependent (`date`) values.
 
 ## Browserify
 
@@ -65,6 +82,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow overrides <ins>when so configured</ins>
   * **[–]** but not of `built_ins`<del>?</del>
 * **[–]** allow declaration objects
+* **[–]** validate that `create` entries are sync functions
+* **[–]** validate arity of template methods
 
 ## Is Done
 
