@@ -86,7 +86,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow overrides <ins>when so configured</ins> but not of <del>`built_ins`?</del> the 'base types'
   `anything`, `nothing`, `something`, `null`, `undefined`, `unknown`, or the 'meta type' `optional`
 * **[–]** allow declaration objects
-* **[–]** validate <ins>null</ins>arity of template methods
+* **[–]** what about declarations with missing `test`?
+* **[–]** enable setting `test` to the name of a declared type
 
 ## Is Done
 
@@ -113,4 +114,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   of one generated from a `template` setting) should be validated
 
 * **[+]** validate that `create` entries are sync functions
+* **[+]** validate <ins>null</ins>arity of template methods <ins>when no `create` entry is present</ins>
 
