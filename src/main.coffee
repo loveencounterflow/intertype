@@ -190,19 +190,13 @@ class _Intertype
       template  } = declaration
     me            = @
     #.......................................................................................................
-    switch true
-      #.....................................................................................................
-      when default_declarations.function template
-        return nameit "create_#{type}", ->
-          if ( arguments.length isnt 0 )
-            throw new E.Intertype_wrong_arity "^create_#{type}@3^", 0, arguments.length
-          unless me.isa[ type ] ( R = template.call me )
-            throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@4^", type, me.type_of R
-          return R
-      #.....................................................................................................
-      ### TAINT what about generatorfunctions &c? ###
-      when default_declarations.asyncfunction template
-        throw new E.Intertype_ETEMPTBD '^5345345^', "cannot be asyncfunction"
+    if default_declarations.function template
+      return nameit "create_#{type}", ->
+        if ( arguments.length isnt 0 )
+          throw new E.Intertype_wrong_arity "^create_#{type}@3^", 0, arguments.length
+        unless me.isa[ type ] ( R = template.call me )
+          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@4^", type, me.type_of R
+        return R
     #.......................................................................................................
     ### TAINT case of constant template could be handled when validating the declaration ###
     return nameit "create_#{type}", ->
