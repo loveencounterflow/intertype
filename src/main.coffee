@@ -172,6 +172,8 @@ class _Intertype
     me            = @
     switch true
       when create?
+        unless me.isa.function create
+          throw new E.Intertype_create_must_be_function "^get_create@1^", type, me.type_of create
         return nameit "create_#{type}", ( P... ) ->
           unless me.isa[ type ] ( R = create.call me, P... )
             throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, me.type_of R
