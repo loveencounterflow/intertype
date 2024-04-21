@@ -200,7 +200,7 @@ class _Intertype
       #.....................................................................................................
       ### TAINT what about generatorfunctions &c? ###
       when default_declarations.asyncfunction template
-        throw E.Intertype_ETEMPTBD '^5345345^', "cannot be asyncfunction"
+        throw new E.Intertype_ETEMPTBD '^5345345^', "cannot be asyncfunction"
     #.......................................................................................................
     ### TAINT case of constant template could be handled when validating the declaration ###
     return nameit "create_#{type}", ->
