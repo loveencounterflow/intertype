@@ -56,5 +56,7 @@ class @Intertype_wrong_arguments_for_create extends @Intertype_error
   constructor: ( ref, need_type, is_type ) -> super ref, "expected `create.#{need_type}()` to return a #{need_type} but it returned a #{is_type}"
 class @Intertype_declaration_override_forbidden extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "type #{rpr type} has already been declared and may not be overridden"
+class @Intertype_wrong_template_arity       extends @Intertype_error
+  constructor: ( ref, type, arity ) -> super ref, "template method for type #{rpr type} has arity #{arity} but must be nullary without `create` method"
 #-----------------------------------------------------------------------------------------------------------
 class @Intertype_ETEMPTBD extends @Intertype_error

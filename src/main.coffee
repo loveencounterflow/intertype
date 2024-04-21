@@ -191,6 +191,8 @@ class _Intertype
     me            = @
     #.......................................................................................................
     if default_declarations.function template
+      if ( template.length isnt 0 )
+        throw new E.Intertype_wrong_template_arity "^get_create@2^", type, template.length
       return nameit "create_#{type}", ->
         if ( arguments.length isnt 0 )
           throw new E.Intertype_wrong_arity "^create_#{type}@3^", 0, arguments.length
