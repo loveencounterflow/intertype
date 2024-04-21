@@ -65,10 +65,14 @@ Types declarations may include a `create` and a `template` entry:
   auto-generated create method.
 * The auto-generated create method will accept no arguments and either
   * return the value stored under `template`, or
-  * call the template method, if it is a function; this is not only how one can have a function being
-    returned by an auto-generated create method, this is also a way to produce new copies instead of always
-    returning the identical same object, and, furthermore, a way to return random (`random_integer`) or
-    time-dependent (`date`) values.
+  * call the template method, if it is a synchronous function; this is not only how one can have a function
+    being returned by an auto-generated create method, this is also a way to produce new copies instead of
+    always returning the identical same object, and, furthermore, a way to return random (`random_integer`)
+    or time-dependent (`date`) values.
+  * anything else but a synchronous function (primitive values, but also asynchronous functions) will just
+    be returned as-is from the auto-generated create method
+    * but this behavior may be slightly modified in the future, especially `object`s as template values
+      should be copied (shallow or deep, as the case may be)
 
 ## Browserify
 
@@ -79,11 +83,10 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 ## To Do
 
 * **[–]** allow name-spacing a la `isa.myproject.foobar()`?
-* **[–]** allow overrides <ins>when so configured</ins>
-  * **[–]** but not of `built_ins`<del>?</del>
+* **[–]** allow overrides <ins>when so configured</ins> but not of <del>`built_ins`?</del> the 'base types'
+  `anything`, `nothing`, `something`, `null`, `undefined`, `unknown`, or the 'meta type' `optional`
 * **[–]** allow declaration objects
-* **[–]** validate that `create` entries are sync functions
-* **[–]** validate arity of template methods
+* **[–]** validate <ins>null</ins>arity of template methods
 
 ## Is Done
 
@@ -109,4 +112,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   determine at what point(s) to insert a type validation; presumably, the return value of `create()` (even
   of one generated from a `template` setting) should be validated
 
+* **[+]** validate that `create` entries are sync functions
 
