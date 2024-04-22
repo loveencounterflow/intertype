@@ -56,19 +56,23 @@ internal_declarations = {
 class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
+  ### if set to `true`, insertion of default_declarations is blocked ###
+  @_minimal: true
+
+  #---------------------------------------------------------------------------------------------------------
   ### TAINT may want to check type, arities ###
-  constructor: ( declarations = null ) ->
-    declarations ?= default_declarations
+  constructor: ( declarations... ) ->
+    declarations.unshift default_declarations unless @constructor._minimal
     #.......................................................................................................
     hide @, 'isa',                @_new_strict_proxy 'isa'
     hide @, 'validate',           @_new_strict_proxy 'validate'
+    hide @, 'create',             @_new_strict_proxy 'create'
+    hide @, 'declarations',       @_new_strict_proxy 'declarations'
     hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
     hide @, 'declare',            ( P... ) => @_declare P...
-    hide @, 'create',             @_new_strict_proxy 'create'
-    hide @, 'declarations',       @_new_strict_proxy 'declarations'
     #.......................................................................................................
-    @declare built_ins, declarations
+    @_declare built_ins, declarations...
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
@@ -217,12 +221,14 @@ class _Intertype
 
 
 #===========================================================================================================
-class Intertype extends _Intertype
+class Intertype_minimal extends _Intertype
+class Intertype         extends _Intertype
+  @_minimal: false
 
 
 #===========================================================================================================
 internal_types  = new _Intertype internal_declarations
-types           = new Intertype default_declarations
+types           = new Intertype()
 { isa
   validate
   create
@@ -230,6 +236,6 @@ types           = new Intertype default_declarations
 
 #===========================================================================================================
 module.exports = {
-  Intertype,
+  Intertype, Intertype_minimal
   types, isa, validate, create, type_of,
   declarations: default_declarations, }
