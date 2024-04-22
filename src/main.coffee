@@ -101,7 +101,9 @@ class _Intertype
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, test ) ->
     template = { override: false, }
-    return { template..., type, test, } if ( @constructor is _Intertype )
+    if ( @constructor is _Intertype )
+      return { template..., type, test, } if default_declarations.function test
+      return { template..., type, test..., }
     #.......................................................................................................
     switch true
       #.....................................................................................................
