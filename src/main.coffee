@@ -105,6 +105,12 @@ class _Intertype
       return { template..., type, test, } if default_declarations.function test
       return { template..., type, test..., }
     #.......................................................................................................
+    if internal_types.isa.text test
+      unless ( declaration = @declarations[ test ] )?
+        throw new E.Intertype_unknown_type '^constructor@1^', type
+      test      = { declaration..., }
+      test.type = type
+    #.......................................................................................................
     switch true
       #.....................................................................................................
       when internal_types.isa.function test
@@ -114,7 +120,13 @@ class _Intertype
         R = { template..., type, test..., }
       #.....................................................................................................
       else
-        throw new E.Intertype_wrong_type '^constructor@1^', "function or object", internal_types.type_of test
+        throw new E.Intertype_wrong_type '^constructor@1^', "type name, function or object", internal_types.type_of test
+    #.......................................................................................................
+    if internal_types.isa.text R.test
+      unless ( declaration = @declarations[ R.test ] )?
+        throw new E.Intertype_unknown_type '^constructor@1^', type
+      R       = { declaration..., }
+      R.type  = type
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
     unless internal_types.isa.function R.test
