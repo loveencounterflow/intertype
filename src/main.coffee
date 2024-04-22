@@ -93,8 +93,8 @@ class _Intertype
         @isa.optional[        type ] = @get_isa_optional      type, declaration.test
         @validate[            type ] = @get_validate          type, declaration.test
         @validate.optional[   type ] = @get_validate_optional type, declaration.test
-        @_tests_for_type_of[  type ] = @isa[ type ] if collection isnt built_ins
         @create[              type ] = @get_create            declaration
+        @_tests_for_type_of[  type ] = declaration.test if collection isnt built_ins
     #.......................................................................................................
     return null
 
