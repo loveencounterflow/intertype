@@ -88,6 +88,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow declaration objects
 * **[–]** what about declarations with missing `test`?
 * **[–]** enable setting `test` to the name of a declared type
+* **[–]** implement a way to keep standard declarations and add own ones on top
 
 ## Is Done
 
