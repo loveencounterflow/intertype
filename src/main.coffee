@@ -64,10 +64,16 @@ class _Intertype
     hide @, 'validate',           @_new_strict_proxy 'validate'
     hide @, '_tests_for_type_of', {}
     hide @, 'type_of',            ( P... ) => @_type_of P...
+    hide @, 'declare',            ( P... ) => @_declare P...
     hide @, 'create',             @_new_strict_proxy 'create'
     hide @, 'declarations',       @_new_strict_proxy 'declarations'
     #.......................................................................................................
-    for collection in [ built_ins, declarations, ]
+    @declare built_ins, declarations
+    return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _declare: ( declarations... ) ->
+    for collection in declarations
       for type, test of collection then do ( type, test ) =>
         #...................................................................................................
         if Reflect.has @declarations, type
@@ -82,7 +88,7 @@ class _Intertype
         @_tests_for_type_of[  type ] = @isa[ type ] if collection isnt built_ins
         @create[              type ] = @get_create            declaration
     #.......................................................................................................
-    return undefined
+    return null
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, test ) ->
