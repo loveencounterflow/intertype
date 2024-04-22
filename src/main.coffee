@@ -79,12 +79,16 @@ class _Intertype
   _declare: ( declarations... ) ->
     for collection in declarations
       for type, test of collection then do ( type, test ) =>
+        declaration = @_compile_declaration_object type, test
         #...................................................................................................
         if Reflect.has @declarations, type
-          throw new E.Intertype_declaration_override_forbidden '^constructor@1^', type
+          if ( ( internal_types?.isa.basetype type ) ? false )
+            throw new E.Intertype_basetype_override_forbidden '^constructor@1^', type
+          unless declaration.override
+            throw new E.Intertype_declaration_override_forbidden '^constructor@2^', type
         #...................................................................................................
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
-        @declarations[        type ] = declaration = @_compile_declaration_object type, test
+        @declarations[        type ] = declaration
         @isa[                 type ] = @get_isa               type, declaration.test
         @isa.optional[        type ] = @get_isa_optional      type, declaration.test
         @validate[            type ] = @get_validate          type, declaration.test
@@ -96,22 +100,24 @@ class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, test ) ->
-    return { type, test, } if ( @constructor is _Intertype )
+    template = { override: false, }
+    return { template..., type, test, } if ( @constructor is _Intertype )
     #.......................................................................................................
     switch true
       #.....................................................................................................
       when internal_types.isa.function test
         unless internal_types.isa.unary test
           throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, test.length
-        R = { type, test, } ### TAINT assign template ###
+        R = { template..., type, test, } ### TAINT assign template ###
       #.....................................................................................................
       when internal_types.isa.object test
-        R = { type, test..., }
+        R = { template..., type, test..., }
       #.....................................................................................................
       else
         throw new E.Intertype_wrong_type '^constructor@1^', "function or object", internal_types.type_of test
     #.......................................................................................................
-    ### TAINT validate result before returning it ###
+    ### TAINT should ideally check entire object? ###
+    internal_types.validate.boolean R.override
     return R
 
   #---------------------------------------------------------------------------------------------------------
