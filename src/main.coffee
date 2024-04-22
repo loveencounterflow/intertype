@@ -219,7 +219,11 @@ internal_types  = new _Intertype internal_declarations
 types           = new Intertype default_declarations
 { isa
   validate
-  create      } = types
+  create
+  type_of     } = types
 
 #===========================================================================================================
-module.exports = { Intertype, types, isa, validate, create, declarations: default_declarations, }
+module.exports = {
+  Intertype,
+  types, isa, validate, create, type_of,
+  declarations: default_declarations, }
