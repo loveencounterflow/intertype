@@ -106,8 +106,6 @@ class _Intertype
     switch true
       #.....................................................................................................
       when internal_types.isa.function test
-        unless internal_types.isa.unary test
-          throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, test.length
         R = { template..., type, test, } ### TAINT assign template ###
       #.....................................................................................................
       when internal_types.isa.object test
@@ -117,6 +115,10 @@ class _Intertype
         throw new E.Intertype_wrong_type '^constructor@1^', "function or object", internal_types.type_of test
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
+    unless internal_types.isa.function R.test
+      throw new E.Intertype_test_must_be_function '^constructor@2^', 'function', internal_types.type_of test
+    unless internal_types.isa.unary R.test
+      throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, R.test.length
     internal_types.validate.boolean R.override
     return R
 

@@ -52,6 +52,8 @@ class @Intertype_create_not_available      extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "type declaration of #{rpr type} has no `create` and no `template` entries, cannot be created"
 class @Intertype_create_must_be_function   extends @Intertype_error
   constructor: ( ref, type, type_of_create ) -> super ref, "expected a function for `create` entry of type #{rpr type}, got a #{type_of_create}"
+class @Intertype_test_must_be_function   extends @Intertype_error
+  constructor: ( ref, type, type_of_test ) -> super ref, "expected a function for `test` entry of type #{rpr type}, got a #{type_of_test}"
 class @Intertype_wrong_arguments_for_create extends @Intertype_error
   constructor: ( ref, need_type, is_type ) -> super ref, "expected `create.#{need_type}()` to return a #{need_type} but it returned a #{is_type}"
 class @Intertype_basetype_override_forbidden extends @Intertype_error
