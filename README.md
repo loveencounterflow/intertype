@@ -110,10 +110,10 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 
 ## To Do
 
-* **[–]** allow name-spacing a la `isa.myproject.foobar()`?
+* **[–]** allow name-spacing a la `isa.myproject.foobar()`<del>?</del> <ins>and use it to implement `fields`
 * **[–]** allow declaration objects
+* **[–]** implement `fields`
 * **[–]** when `fields` are implemented, also implement modified rules for test method
-* **[–]** enable setting `test` to the name of a declared type
 
 ## Is Done
 
@@ -150,4 +150,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   `anything`, `nothing`, `something`, `null`, `undefined`, `unknown`, or the 'meta type' `optional`
 * **[+]** <del>what about declarations with missing `test`?</del> ensure an error is thrown when no test
   method is present
+* **[+]** enable setting `test` to the name of a declared type
 
