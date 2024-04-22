@@ -216,6 +216,9 @@ class Intertype extends _Intertype
 #===========================================================================================================
 internal_types  = new _Intertype internal_declarations
 types           = new Intertype default_declarations
+{ isa
+  validate
+  create      } = types
 
 #===========================================================================================================
-module.exports = { Intertype, types, declarations: default_declarations, }
+module.exports = { Intertype, types, isa, validate, create, declarations: default_declarations, }
