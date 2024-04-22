@@ -23,6 +23,7 @@ built_ins =
 
 #-----------------------------------------------------------------------------------------------------------
 default_declarations =
+  basetype:               ( x ) -> ( ( typeof x ) is 'string' ) and ( x is 'optional' or Reflect.has built_ins, x )
   boolean:                ( x ) -> ( x is true ) or ( x is false )
   function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
   asyncfunction:          ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
