@@ -88,11 +88,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow declaration objects
 * **[–]** what about declarations with missing `test`?
 * **[–]** enable setting `test` to the name of a declared type
-* **[–]** implement a way to keep standard declarations and add own ones on top:
-  * by exporting (a copy of) `default_declarations`
-  * by allowing or requiring a `cfg` object with an appropriate setting (`default_types: true`?)
-  * by implementing a `declare()` method (which accepts an object with named declarations)
-  * by implementing `Intertype#declarations` as a class with an `add()` method or similar
 
 ## Is Done
 
@@ -120,4 +115,9 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 
 * **[+]** validate that `create` entries are sync functions
 * **[+]** validate <ins>null</ins>arity of template methods <ins>when no `create` entry is present</ins>
+* **[+]** implement a way to keep standard declarations and add own ones on top:
+  * by implementing a `declare()` method (which accepts an object with named declarations)
+  * <del>by exporting (a copy of) `default_declarations`</del>
+  * <del>by allowing or requiring a `cfg` object with an appropriate setting (`default_types: true`?)</del>
+  * <del>by implementing `Intertype#declarations` as a class with an `add()` method or similar</del>
 
