@@ -13,6 +13,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Built-In Base Types](#built-in-base-types)
     - [`create.〈type〉()`](#create%E2%8C%A9type%E2%8C%AA)
   - [`declare()`](#declare)
+  - [Namespaces and Object Fields](#namespaces-and-object-fields)
   - [Browserify](#browserify)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -101,6 +102,40 @@ Types declarations may include a `create` and a `template` entry:
   * ... when a `create` entry has been given but has the wrong arity
   * ...
 
+## Namespaces and Object Fields
+
+* two ways to specify fields on objects
+* either in the 'nested style', by using the `fields` entry of a type declaration; for example:
+
+  ```
+  declarations:
+    quantity:
+      test:   'object'
+      fields:
+        q:      'float'
+        u:      'text'
+  ```
+
+* or in the 'flat style', by using dot notation in the type name:
+
+  ```
+  declarations:
+    quantity:       'object'
+    'quantity.q':   'float'
+    'quantity.u':   'text'
+  ```
+
+* the two styles are identical and have the same result.
+* you can now call the following test methods:
+  * `types.isa.quantity x`: returns `true` iff `x` is an object with (at least) two properties `q` and `u`
+    whose individual test methods both return `true` as well
+  * `types.isa.quantity.q x`: returns `true` iff `x` is a `float`
+  * `types.isa.quantity.u x`: returns `true` iff `x` is a `text`
+* at least for the time being,
+  * a type `T` with field declarations must have its `test` entry set to `object`, and,
+  * when flat style is used, that type `T` must be declared before any field is declared.
+* one can make 'flat' additions to an existing declaration (but not 'nested' ones)
+
 
 ## Browserify
 
@@ -114,6 +149,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** allow declaration objects
 * **[–]** implement `fields`
 * **[–]** when `fields` are implemented, also implement modified rules for test method
+* **[–]** consider to replace `override` with the (clearer?) `replace`
 
 ## Is Done
 
