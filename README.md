@@ -136,10 +136,19 @@ Types declarations may include a `create` and a `template` entry:
   * when flat style is used, type `T` must be declared before any field is declared.
 * if there is an existing declaration for type `T`, the only way to add fields to it is by using the flat
   declaration style
-* field declarations constitute isolated namespaces in the sense that only fully-qualified uses of type
-  names are valid. This means that `types.isa.text`—that is, type `text` in the root namespace—is entirely
-  separate from, say, `types.isa.product.rating.text`, which is type `text` in the `rating` namespace of
-  type `product` in the root namespace.
+* field declarations constitute isolated namespaces, meaning that `types.isa.text`—that is, type `text` in
+  the root namespace—is entirely separate from, say, `types.isa.product.rating.text`, which is type `text`
+  in the `rating` namespace of type `product` in the root namespace.
+* fields can be indefinitely nested, e.g.:
+
+  ```
+  types.declare { 'person':                       'object', }
+  types.declare { 'person.name':                  'text',   }
+  types.declare { 'person.address':               'object', }
+  types.declare { 'person.address.city':          'object', }
+  types.declare { 'person.address.city.name':     'text',   }
+  types.declare { 'person.address.city.postcode': 'text',   }
+  ```
 
 ## Browserify
 
@@ -151,6 +160,9 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 
 * **[–]** implement `fields`
 * **[–]** consider to replace `override` with the (clearer?) `replace`
+* **[–]** fix failure to call sub-tests for dotted type references
+* **[–]** fix failure to validate dotted type
+* **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
 
 
 ## Is Done
