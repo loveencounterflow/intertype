@@ -107,7 +107,7 @@ class _Intertype
           set targets[ 'isa.optional'       ], sub_type, @isa.optional[       type ]
           set targets[ 'validate'           ], sub_type, @validate[           type ]
           set targets[ 'validate.optional'  ], sub_type, @validate.optional[  type ]
-          @declarations[ target_type ].sub_tests[ type ] = @isa[ type ]
+          @declarations[ target_type ].sub_tests[ sub_type ] = @isa[ type ]
     #.......................................................................................................
     return null
 
@@ -195,8 +195,8 @@ class _Intertype
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_#{declaration.type}@1^", 1, arguments.length
       return false unless declaration.test.call me, x
-      for target_type, sub_test of declaration.sub_tests
-        return false unless sub_test.call me, x
+      for field_name, sub_test of declaration.sub_tests
+        return false unless sub_test.call me, x[ field_name ]
       return true
 
   #---------------------------------------------------------------------------------------------------------
