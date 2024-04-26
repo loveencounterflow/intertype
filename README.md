@@ -132,10 +132,14 @@ Types declarations may include a `create` and a `template` entry:
   * `types.isa.quantity.q x`: returns `true` iff `x` is a `float`
   * `types.isa.quantity.u x`: returns `true` iff `x` is a `text`
 * at least for the time being,
-  * a type `T` with field declarations must have its `test` entry set to `object`, and,
-  * when flat style is used, that type `T` must be declared before any field is declared.
-* one can make 'flat' additions to an existing declaration (but not 'nested' ones)
-
+  * <del>a type `T` with field declarations must have its `test` entry set to `object`, and,</del>
+  * when flat style is used, type `T` must be declared before any field is declared.
+* if there is an existing declaration for type `T`, the only way to add fields to it is by using the flat
+  declaration style
+* field declarations constitute isolated namespaces in the sense that only fully-qualified uses of type
+  names are valid. This means that `types.isa.text`—that is, type `text` in the root namespace—is entirely
+  separate from, say, `types.isa.product.rating.text`, which is type `text` in the `rating` namespace of
+  type `product` in the root namespace.
 
 ## Browserify
 
@@ -150,6 +154,11 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement `fields`
 * **[–]** when `fields` are implemented, also implement modified rules for test method
 * **[–]** consider to replace `override` with the (clearer?) `replace`
+* **[–]** in `isa.foo.bar x`, `foo` is implemented as a function with a `bar` property; what about the
+  built-in properties of functions like `name` and `length`?
+  * **[–]** can we use `Function::call f, ...` instead of `f.call ...` to avoid possible difficulty if
+    `call` should get shadowed?
+
 
 ## Is Done
 
