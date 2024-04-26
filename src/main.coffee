@@ -192,7 +192,7 @@ class _Intertype
   #---------------------------------------------------------------------------------------------------------
   get_isa: ( type, test ) ->
     me = @
-    return nameit "isa_#{type}", ( x ) ->
+    return nameit "isa.#{declaration.type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
       return test.call me, x
@@ -200,7 +200,7 @@ class _Intertype
   #---------------------------------------------------------------------------------------------------------
   get_isa_optional: ( type, test ) ->
     me = @
-    return nameit "isa_optional_#{type}", ( x ) ->
+    return nameit "isa.optional.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_optional_#{type}@1^", 1, arguments.length
       if x? then ( test.call me, x ) else true
@@ -208,7 +208,7 @@ class _Intertype
   #---------------------------------------------------------------------------------------------------------
   get_validate: ( type, test ) ->
     me = @
-    return nameit "validate_#{type}", ( x ) ->
+    return nameit "validate.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_#{type}@1^", 1, arguments.length
       return x if test.call me, x
@@ -217,7 +217,7 @@ class _Intertype
   #---------------------------------------------------------------------------------------------------------
   get_validate_optional: ( type, test ) ->
     me = @
-    return nameit "validate_optional_#{type}", ( x ) ->
+    return nameit "validate.optional.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_optional_#{type}@1^", 1, arguments.length
       return x unless x?
