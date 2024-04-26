@@ -10,6 +10,7 @@ WG                        = require 'webguy'
   nameit }                = WG.props
 { debug }                 = console
 E                         = require './errors'
+set                       = ( t, k, v ) -> Object.defineProperty t, k, { value: v, enumerable: true, }
 
 
 #===========================================================================================================
@@ -79,7 +80,11 @@ class _Intertype
   _declare: ( declarations... ) ->
     for collection in declarations
       for type, test of collection then do ( type, test ) =>
-        declaration = @_compile_declaration_object type, test
+        #...................................................................................................
+        { target_type
+          targets
+          sub_type    } = @_resolve_dotted_type         type
+        declaration     = @_compile_declaration_object  type, test
         #...................................................................................................
         if Reflect.has @declarations, type
           if ( ( internal_types?.isa.basetype type ) ? false )
@@ -87,16 +92,48 @@ class _Intertype
           unless declaration.override
             throw new E.Intertype_declaration_override_forbidden '^constructor@2^', type
         #...................................................................................................
-        ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
+        # delete declaration.override if declaration.override is false
         @declarations[        type ] = declaration
+        ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
         @isa[                 type ] = @get_isa               type, declaration.test
         @isa.optional[        type ] = @get_isa_optional      type, declaration.test
         @validate[            type ] = @get_validate          type, declaration.test
         @validate.optional[   type ] = @get_validate_optional type, declaration.test
         @create[              type ] = @get_create            declaration
         @_tests_for_type_of[  type ] = declaration.test if collection isnt built_ins
+        #...................................................................................................
+        debug '^5345^', '------------------------------------------------'
+        debug '^5345^', targets
+        for target in targets
+          # debug '^5345^', target,
+          # set target.test, sub_type, -> debug '^5345^', type
+          set target, sub_type, -> debug '^5345^', type
+          debug '^5345^', target
     #.......................................................................................................
     return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _resolve_dotted_type: ( type ) ->
+    ### analyze flat type declarations with dot notation ###
+    target_type = null
+    targets     = []
+    sub_type    = null
+    if ( sub_types = type.split '.' ).length > 1
+      for idx in  [ 0 ... sub_types.length - 1 ]
+        partial_type = sub_types[ .. idx ].join '.'
+        ### NOTE using `Reflect.has()` to avoid triggering Unknown Type Error: ###
+        unless Reflect.has @declarations, partial_type
+          throw new E.Intertype_unknown_partial_type '^constructor@1^', type, partial_type
+      target_type = partial_type
+      sub_type    = sub_types.at -1
+      targets     = [
+        @isa[               target_type ]
+        @isa.optional[      target_type ]
+        @validate[          target_type ]
+        @validate.optional[ target_type ]
+        ]
+      # debug '^334-3^', { type, target_type, targets, sub_type, }
+    return { type, target_type, targets, sub_type, }
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, test ) ->
@@ -108,7 +145,7 @@ class _Intertype
     if internal_types.isa.text test
       unless ( declaration = @declarations[ test ] )?
         throw new E.Intertype_unknown_type '^constructor@1^', type
-      test      = { declaration..., }
+      test      = { template..., declaration..., }
       test.type = type
     #.......................................................................................................
     switch true

@@ -38,6 +38,8 @@ class @Intertype_wrong_type                extends @Intertype_error
 #   constructor: ( message )          -> super null, message
 class @Intertype_unknown_type              extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "unknown type #{rpr type}"
+class @Intertype_unknown_partial_type      extends @Intertype_error
+  constructor: ( ref, type, partial_type ) -> super ref, "unknown partial type #{rpr partial_type} of #{rpr type}"
 class @Intertype_wrong_arity               extends @Intertype_error
   constructor: ( ref, need_arity, is_arity ) -> super ref, "expected #{need_arity} arguments, got #{is_arity}"
 class @Intertype_wrong_arity_range         extends @Intertype_wrong_arity
