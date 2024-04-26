@@ -102,13 +102,12 @@ class _Intertype
         @create[              type ] = @get_create            declaration
         @_tests_for_type_of[  type ] = declaration.test if collection isnt built_ins
         #...................................................................................................
-        debug '^5345^', '------------------------------------------------'
-        debug '^5345^', targets
-        for target in targets
-          # debug '^5345^', target,
-          # set target.test, sub_type, -> debug '^5345^', type
-          set target, sub_type, -> debug '^5345^', type
-          debug '^5345^', target
+        if targets?
+          set targets[ 'isa'                ], sub_type, @isa[                type ]
+          set targets[ 'isa.optional'       ], sub_type, @isa.optional[       type ]
+          set targets[ 'validate'           ], sub_type, @validate[           type ]
+          set targets[ 'validate.optional'  ], sub_type, @validate.optional[  type ]
+          @declarations[ target_type ].sub_tests[ type ] = @isa[ type ]
     #.......................................................................................................
     return null
 
