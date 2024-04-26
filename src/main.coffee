@@ -126,13 +126,12 @@ class _Intertype
           throw new E.Intertype_unknown_partial_type '^constructor@1^', type, partial_type
       target_type = partial_type
       sub_type    = sub_types.at -1
-      targets     = [
-        @isa[               target_type ]
-        @isa.optional[      target_type ]
-        @validate[          target_type ]
-        @validate.optional[ target_type ]
-        ]
-      # debug '^334-3^', { type, target_type, targets, sub_type, }
+      targets     =
+        'isa':                @isa[               target_type ]
+        'isa.optional':       @isa.optional[      target_type ]
+        'validate':           @validate[          target_type ]
+        'validate.optional':  @validate.optional[ target_type ]
+    #.......................................................................................................
     return { type, target_type, targets, sub_type, }
 
   #---------------------------------------------------------------------------------------------------------
