@@ -149,15 +149,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 
 ## To Do
 
-* **[–]** allow name-spacing a la `isa.myproject.foobar()`<del>?</del> <ins>and use it to implement `fields`
-* **[–]** allow declaration objects
 * **[–]** implement `fields`
-* **[–]** when `fields` are implemented, also implement modified rules for test method
 * **[–]** consider to replace `override` with the (clearer?) `replace`
-* **[–]** in `isa.foo.bar x`, `foo` is implemented as a function with a `bar` property; what about the
-  built-in properties of functions like `name` and `length`?
-  * **[–]** can we use `Function::call f, ...` instead of `f.call ...` to avoid possible difficulty if
-    `call` should get shadowed?
 
 
 ## Is Done
@@ -196,4 +189,11 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[+]** <del>what about declarations with missing `test`?</del> ensure an error is thrown when no test
   method is present
 * **[+]** enable setting `test` to the name of a declared type
+* **[+]** allow name-spacing a la `isa.myproject.foobar()`<del>?</del> <ins>and use it to implement `fields`
+* **[+]** when `fields` are implemented, also implement modified rules for test method
+* **[+]** in `isa.foo.bar x`, `foo` is implemented as a function with a `bar` property; what about the
+  built-in properties of functions like `name` and `length`?
+  * <del>**[–]** can we use `Function::call f, ...` instead of `f.call ...` to avoid possible difficulty if
+    `call` should get shadowed?</del>
+* **[+]** allow declaration objects
 
