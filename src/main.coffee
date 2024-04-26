@@ -136,10 +136,11 @@ class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, test ) ->
-    template = { type: null, test: null, override: false, sub_tests: {}, }
+    ### NOTE special treatment of `sub_tests` to ensure it's never shared across types ###
+    template = { type: null, test: null, override: false, sub_tests: null, }
     if ( @constructor is _Intertype )
-      return { template..., type, test, } if default_declarations.function test
-      return { template..., type, test..., }
+      return { template..., type, test,    sub_tests: {}, } if default_declarations.function test
+      return { template..., type, test..., sub_tests: {}, }
     #.......................................................................................................
     if internal_types.isa.text test
       unless ( declaration = @declarations[ test ] )?
@@ -170,6 +171,7 @@ class _Intertype
     unless internal_types.isa.unary R.test
       throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, R.test.length
     internal_types.validate.boolean R.override
+    R.sub_tests = {}
     return R
 
   #---------------------------------------------------------------------------------------------------------
