@@ -194,8 +194,11 @@ class _Intertype
     me = @
     return nameit "isa.#{declaration.type}", ( x ) ->
       if ( arguments.length isnt 1 )
-        throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
-      return test.call me, x
+        throw new E.Intertype_wrong_arity "^isa_#{declaration.type}@1^", 1, arguments.length
+      return false unless declaration.test.call me, x
+      for target_type, sub_test of declaration.sub_tests
+        return false unless sub_test.call me, x
+      return true
 
   #---------------------------------------------------------------------------------------------------------
   get_isa_optional: ( type, test ) ->
