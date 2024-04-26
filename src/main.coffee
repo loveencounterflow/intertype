@@ -116,8 +116,9 @@ class _Intertype
   _resolve_dotted_type: ( type ) ->
     ### analyze flat type declarations with dot notation ###
     target_type = null
-    targets     = []
+    targets     = null
     sub_type    = null
+    #.......................................................................................................
     if ( sub_types = type.split '.' ).length > 1
       for idx in  [ 0 ... sub_types.length - 1 ]
         partial_type = sub_types[ .. idx ].join '.'
