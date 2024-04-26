@@ -95,7 +95,7 @@ class _Intertype
         # delete declaration.override if declaration.override is false
         @declarations[        type ] = declaration
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
-        @isa[                 type ] = @get_isa               type, declaration.test
+        @isa[                 type ] = @get_isa               declaration
         @isa.optional[        type ] = @get_isa_optional      type, declaration.test
         @validate[            type ] = @get_validate          type, declaration.test
         @validate.optional[   type ] = @get_validate_optional type, declaration.test
@@ -190,7 +190,7 @@ class _Intertype
     return      new Proxy { optional, },  get_cfg "^proxy_for_#{name}@1^"
 
   #---------------------------------------------------------------------------------------------------------
-  get_isa: ( type, test ) ->
+  get_isa: ( declaration ) ->
     me = @
     return nameit "isa.#{declaration.type}", ( x ) ->
       if ( arguments.length isnt 1 )
