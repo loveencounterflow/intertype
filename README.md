@@ -13,7 +13,9 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Built-In Base Types](#built-in-base-types)
     - [`create.〈type〉()`](#create%E2%8C%A9type%E2%8C%AA)
   - [`declare()`](#declare)
+    - [Declaration Values (Test Method, Type Name, Object)](#declaration-values-test-method-type-name-object)
   - [Namespaces and Object Fields](#namespaces-and-object-fields)
+  - [Invariants](#invariants)
   - [Browserify](#browserify)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -94,13 +96,33 @@ Types declarations may include a `create` and a `template` entry:
   * the value as either that type's test method, or, if it's an object, as a type declaration
 * the declaration will be rejected if the type name...
   * ... is one of the built-in base types, or
-  * ... is already declared and the declaration does not have an entry `override: true`
+  * ... is already declared
 * the declaration will be rejected if the declaration ...
   * ... is missing a test method
   * ... when the `test` entry is not a unary function
   * ... test method has the wrong arity
   * ... when a `create` entry has been given but has the wrong arity
   * ...
+
+* Type declarations are final, meaning that while you can use the `types.declare()` method after the `types`
+  object has been instantiated, you cannot use it to re-declare a known type.
+* When instantiating `Intertype` with a series of declaration objects, any duplicate names on the objects
+  passed in must be eliminated beforehand.
+
+
+### Declaration Values (Test Method, Type Name, Object)
+
+A valid declaration is either
+
+* a test method, or
+* the name of an existing type, or
+* an object with the following fields:
+  * **`test`**: either a test method or the name of existing type (the latter will be compiled into the
+    former)
+  * **`template`**
+  * **`fields`**: keys are type names, values are declarations
+  * **`create()`**
+
 
 ## Namespaces and Object Fields
 
@@ -150,6 +172,19 @@ Types declarations may include a `create` and a `template` entry:
   types.declare { 'person.address.city.postcode': 'text',   }
   ```
 
+## Invariants
+
+* a declaration that identifies a known type with a string of characters `S` as in `T: 'some.test.here'` is
+  equivalent to using the same string `S` to spell out a (possibly dotted, thus compound chain of) property
+  accessor(s) to `@isa` inside a test method, as in `T: ( x ) -> @isa.some.test.here x`
+* a constant (literal) property accessor (which may be dotted or not) to `isa`, `isa.optional`, `validate`
+  and `validate.optional` is equivalent to the bracket notation with a string literal (or a variable) on the
+  same base; thus, `isa.some.accessor x` is equivalent to `isa[ 'some.accessor' ] x`
+* a type identified by a string that starts with the sequence `optional.` followed by a type name proper, as
+  in `isa[ 'optional.foo.bar' ]` will be mapped onto the same base's `optional` property, followed by the
+  type name proper; thus, `isa[ 'optional.foo.bar' ] x` is equivalent to `isa.optional[ 'foo.bar' ] x` which
+  is equivalent to `isa.optional.foo[ 'bar' ] x`
+
 ## Browserify
 
 ```bash
@@ -159,7 +194,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 ## To Do
 
 * **[–]** implement `fields`
-* **[–]** consider to replace `override` with the (clearer?) `replace`
+* **[–]** <del>consider to replace `override` with the (clearer?) `replace`</del> <ins>disallow
+  overrides</ins>
 * **[–]** fix failure to call sub-tests for dotted type references
 * **[–]** fix failure to validate dotted type
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
