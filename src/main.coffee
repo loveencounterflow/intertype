@@ -88,11 +88,9 @@ class _Intertype
         #...................................................................................................
         if Reflect.has @declarations, type
           if ( ( internal_types?.isa.basetype type ) ? false )
-            throw new E.Intertype_basetype_override_forbidden '^constructor@1^', type
-          unless declaration.override
-            throw new E.Intertype_declaration_override_forbidden '^constructor@2^', type
+            throw new E.Intertype_basetype_redeclaration_forbidden '^constructor@1^', type
+          throw new E.Intertype_declaration_redeclaration_forbidden '^constructor@2^', type
         #...................................................................................................
-        # delete declaration.override if declaration.override is false
         @declarations[        type ] = declaration
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
         @isa[                 type ] = @get_isa               declaration
@@ -155,7 +153,7 @@ class _Intertype
     ###
     ### NOTE special treatment of `sub_tests` to ensure it's never shared across types ###
     debug '^234-1^', type, test if type is 'z'
-    template = { type: null, test: null, override: false, sub_tests: null, }
+    template = { type: null, test: null, sub_tests: null, }
     if ( @constructor is _Intertype )
       return { template..., type, test,    sub_tests: {}, } if default_declarations.function test
       return { template..., type, test..., sub_tests: {}, }
@@ -198,7 +196,6 @@ class _Intertype
       throw new E.Intertype_test_must_be_function '^constructor@2^', 'function', internal_types.type_of test
     unless internal_types.isa.unary R.test
       throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, R.test.length
-    internal_types.validate.boolean R.override
     R.sub_tests = {}
     return R
 

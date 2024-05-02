@@ -58,10 +58,10 @@ class @Intertype_test_must_be_function   extends @Intertype_error
   constructor: ( ref, type, type_of_test ) -> super ref, "expected a function for `test` entry of type #{rpr type}, got a #{type_of_test}"
 class @Intertype_wrong_arguments_for_create extends @Intertype_error
   constructor: ( ref, need_type, is_type ) -> super ref, "expected `create.#{need_type}()` to return a #{need_type} but it returned a #{is_type}"
-class @Intertype_basetype_override_forbidden extends @Intertype_error
-  constructor: ( ref, type ) -> super ref, "#{rpr type} is a built-in base type and may not be overridden"
-class @Intertype_declaration_override_forbidden extends @Intertype_error
-  constructor: ( ref, type ) -> super ref, "type #{rpr type} has already been declared and may not be overridden unless override is set to true"
+class @Intertype_basetype_redeclaration_forbidden extends @Intertype_error
+  constructor: ( ref, type ) -> super ref, "not allowed to re-declare base type #{rpr type}"
+class @Intertype_declaration_redeclaration_forbidden extends @Intertype_error
+  constructor: ( ref, type ) -> super ref, "not allowed to re-declare type #{rpr type}"
 class @Intertype_wrong_template_arity       extends @Intertype_error
   constructor: ( ref, type, arity ) -> super ref, "template method for type #{rpr type} has arity #{arity} but must be nullary without `create` method"
 #-----------------------------------------------------------------------------------------------------------
