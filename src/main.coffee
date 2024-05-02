@@ -136,16 +136,44 @@ class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, test ) ->
+    ###
+
+    _compile_declaration_object: ( type, declaration ) ->
+
+    * handle internal usage
+    * set `R` to object with defaults
+    * if `declaration` is text:
+      * ensure it's a known type
+      * construct test method (Q: if ref type should change later, will this test use the old or the new
+        meaning? A: you can't change type declarations)
+    * if declaration is function:
+      * validate arity
+      * wrap for use as `R.test`
+    * call recursively for each entry in `declaration.fields`
+    * return `R`
+
+    ###
     ### NOTE special treatment of `sub_tests` to ensure it's never shared across types ###
+    debug '^234-1^', type, test if type is 'z'
     template = { type: null, test: null, override: false, sub_tests: null, }
     if ( @constructor is _Intertype )
       return { template..., type, test,    sub_tests: {}, } if default_declarations.function test
       return { template..., type, test..., sub_tests: {}, }
+    debug '^234-2^', type, test if type is 'z'
     #.......................................................................................................
     if internal_types.isa.text test
+      debug '^234-3^', type, test if type is 'z'
       unless ( declaration = @declarations[ test ] )?
         throw new E.Intertype_unknown_type '^constructor@1^', type
-      test      = { template..., declaration..., }
+      ######################################################################################################
+      N = do =>
+        source = """N.f = function(x) { return this.isa.#{test}(x); }"""
+        N = {}
+        eval source, { N, }
+        N
+      test      = { template..., test: ( nameit type, N.f ), }
+      ######################################################################################################
+      # test      = { template..., declaration..., }
       test.type = type
     #.......................................................................................................
     switch true
