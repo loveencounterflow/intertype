@@ -23,7 +23,7 @@ built_ins =
   unknown:                ( x ) -> ( @type_of x ) is 'unknown'
 
 #-----------------------------------------------------------------------------------------------------------
-default_declarations =
+default_declarations = _isa =
   basetype:               ( x ) -> ( ( typeof x ) is 'string' ) and ( x is 'optional' or Reflect.has built_ins, x )
   boolean:                ( x ) -> ( x is true ) or ( x is false )
   function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
@@ -31,7 +31,8 @@ default_declarations =
   symbol:                 ( x ) -> ( typeof x ) is 'symbol'
   object:                 ( x ) -> x? and ( typeof x is 'object' ) and ( ( Object::toString.call x ) is '[object Object]' )
   float:                  ( x ) -> Number.isFinite x
-  text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
+  text:                   ( x ) -> ( typeof x ) is 'string'
+  # text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   regex:                  ( x ) -> x instanceof RegExp
   nullary:                ( x ) -> x? and ( ( x.length is 0 ) or ( x.size is 0 ) )
   unary:                  ( x ) -> x? and ( ( x.length is 1 ) or ( x.size is 1 ) )
@@ -54,16 +55,12 @@ internal_declarations = {
 
 
 #===========================================================================================================
-class _Intertype
-
-  #---------------------------------------------------------------------------------------------------------
-  ### if set to `true`, insertion of default_declarations is blocked ###
-  @_minimal: true
+class Intertype
 
   #---------------------------------------------------------------------------------------------------------
   ### TAINT may want to check type, arities ###
   constructor: ( declarations... ) ->
-    declarations.unshift default_declarations unless @constructor._minimal
+    declarations.unshift default_declarations unless @ instanceof Intertype_minimal
     #.......................................................................................................
     hide @, 'isa',                @_new_strict_proxy 'isa'
     hide @, 'validate',           @_new_strict_proxy 'validate'
@@ -87,7 +84,7 @@ class _Intertype
         declaration     = @_compile_declaration_object  type, test
         #...................................................................................................
         if Reflect.has @declarations, type
-          if ( ( internal_types?.isa.basetype type ) ? false )
+          if _isa.basetype type
             throw new E.Intertype_basetype_redeclaration_forbidden '^constructor@1^', type
           throw new E.Intertype_declaration_redeclaration_forbidden '^constructor@2^', type
         #...................................................................................................
@@ -152,31 +149,27 @@ class _Intertype
 
     ###
     template = { type, test: null, sub_tests: {}, }
-    if ( @constructor is _Intertype )
-      return { template..., test: declaration,  } if default_declarations.function declaration
-      return { template..., declaration...,     }
-    #.......................................................................................................
     R = { template..., }
-    if internal_types.isa.object declaration  then  Object.assign R, declaration
+    if _isa.object declaration  then  Object.assign R, declaration
     else                                            R.test = declaration
-    # debug '^234-1^', type, R, ( internal_types.isa.text R.test ), ( internal_types.isa.function R.test )
+    # debug '^234-1^', type, R, ( _isa.text R.test ), ( _isa.function R.test )
     #.......................................................................................................
     switch true
       #.....................................................................................................
-      when internal_types.isa.text R.test then do ( ref_type = R.test ) =>
+      when _isa.text R.test then do ( ref_type = R.test ) =>
         # debug '^234-2^', type, R, ref_type
         unless ( test = @declarations[ ref_type ]?.test )?
           throw new E.Intertype_unknown_type '^constructor@1^', ref_type
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
-      when internal_types.isa.function R.test then do ( test = R.test ) =>
+      when _isa.function R.test then do ( test = R.test ) =>
         @_validate_test_method type, test
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       else
         throw new E.Intertype_wrong_type '^constructor@1^', "type name, test method, or object", \
-          internal_types.type_of declaration
-    # debug '^234-3^', type, R, ( internal_types.isa.text R.test ), ( internal_types.isa.function R.test )
+          @__type_of _isa, declaration
+    # debug '^234-3^', type, R, ( _isa.text R.test ), ( _isa.function R.test )
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test
@@ -184,9 +177,9 @@ class _Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _validate_test_method: ( type, x ) ->
-    unless internal_types.isa.function x
-      throw new E.Intertype_test_must_be_function '^constructor@2^', type, internal_types.type_of x
-    unless internal_types.isa.unary x
+    unless _isa.function x
+      throw new E.Intertype_test_must_be_function '^constructor@2^', type, @__type_of _isa, x
+    unless _isa.unary x
       throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, x.length
     return x
 
@@ -248,9 +241,13 @@ class _Intertype
   _type_of: ( x ) ->
     if ( arguments.length isnt 1 )
       throw new E.Intertype_wrong_arity "^type_of@1^", 1, arguments.length
+    @__type_of @_tests_for_type_of, x
+
+  #---------------------------------------------------------------------------------------------------------
+  __type_of: ( test_method_map, x ) ->
     return 'null'       if x is null
     return 'undefined'  if x is undefined
-    for type, test of @_tests_for_type_of
+    for type, test of test_method_map
       return type if test x
     return 'unknown'
 
@@ -300,21 +297,17 @@ class _Intertype
 
 
 #===========================================================================================================
-class Intertype_minimal extends _Intertype
-class Intertype         extends _Intertype
-  @_minimal: false
+class Intertype_minimal extends Intertype
 
 
 #===========================================================================================================
-internal_types  = new _Intertype internal_declarations
-types           = new Intertype()
-{ isa
-  validate
-  create
-  type_of     } = types
-
-#===========================================================================================================
-module.exports = {
-  Intertype, Intertype_minimal
-  types, isa, validate, create, type_of,
-  declarations: default_declarations, }
+types = new Intertype()
+do =>
+  { isa
+    validate
+    create
+    type_of     } = types
+  module.exports = {
+    Intertype, Intertype_minimal
+    types, isa, validate, create, type_of,
+    declarations: default_declarations, }
