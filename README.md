@@ -200,6 +200,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** fix failure to validate dotted type
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
 * **[–]** remove indirection of `declare()`, `_declare()`
+* **[–]** make `get_isa()` &c private
+* **[–]** remove 'dogfeeding' (class `_Intertype`), directly use test methods from catalog instead
 
 
 ## Is Done
