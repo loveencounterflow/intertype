@@ -157,28 +157,29 @@ class _Intertype
       return { template..., declaration...,     }
     #.......................................................................................................
     R = { template..., }
+    if internal_types.isa.object declaration  then  Object.assign R, declaration
+    else                                            R.test = declaration
+    # debug '^234-1^', type, R, ( internal_types.isa.text R.test ), ( internal_types.isa.function R.test )
     #.......................................................................................................
     switch true
       #.....................................................................................................
-      when internal_types.isa.text declaration then do ( ref_type = declaration ) =>
+      when internal_types.isa.text R.test then do ( ref_type = R.test ) =>
+        # debug '^234-2^', type, R, ref_type
         unless ( test = @declarations[ ref_type ]?.test )?
           throw new E.Intertype_unknown_type '^constructor@1^', ref_type
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
-      when internal_types.isa.function declaration then do ( test = declaration ) =>
+      when internal_types.isa.function R.test then do ( test = R.test ) =>
         @_validate_test_method type, test
         R.test = nameit type, ( x ) -> test.call @, x
-      #.....................................................................................................
-      when internal_types.isa.object declaration
-        @_validate_test_method type, declaration.test
-        Object.assign R, declaration
       #.....................................................................................................
       else
         throw new E.Intertype_wrong_type '^constructor@1^', "type name, test method, or object", \
           internal_types.type_of declaration
+    # debug '^234-3^', type, R, ( internal_types.isa.text R.test ), ( internal_types.isa.function R.test )
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
-    #.......................................................................................................
+    @_validate_test_method type, R.test
     return R
 
   #---------------------------------------------------------------------------------------------------------
