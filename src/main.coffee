@@ -152,15 +152,12 @@ class _Intertype
 
     ###
     ### NOTE special treatment of `sub_tests` to ensure it's never shared across types ###
-    debug '^234-1^', type, test if type is 'z'
     template = { type: null, test: null, sub_tests: null, }
     if ( @constructor is _Intertype )
       return { template..., type, test,    sub_tests: {}, } if default_declarations.function test
       return { template..., type, test..., sub_tests: {}, }
-    debug '^234-2^', type, test if type is 'z'
     #.......................................................................................................
     if internal_types.isa.text test
-      debug '^234-3^', type, test if type is 'z'
       unless ( declaration = @declarations[ test ] )?
         throw new E.Intertype_unknown_type '^constructor@1^', type
       ######################################################################################################
