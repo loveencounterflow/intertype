@@ -158,9 +158,12 @@ class Intertype
       #.....................................................................................................
       when _isa.text R.test then do ( ref_type = R.test ) =>
         # debug '^234-2^', type, R, ref_type
-        unless ( test = @declarations[ ref_type ]?.test )?
+        ref_declaration = @declarations[ ref_type ]
+        unless ref_declaration?
           throw new E.Intertype_unknown_type '^constructor@1^', ref_type
-        R.test = nameit type, ( x ) -> test.call @, x
+        test        = ref_declaration.test
+        R.test      = nameit type, ( x ) -> test.call @, x
+        Object.assign R.sub_tests, ref_declaration.sub_tests
       #.....................................................................................................
       when _isa.function R.test then do ( test = R.test ) =>
         @_validate_test_method type, test
