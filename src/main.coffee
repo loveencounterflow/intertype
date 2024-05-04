@@ -166,16 +166,18 @@ class _Intertype
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       when internal_types.isa.function declaration then do ( test = declaration ) =>
+        @_validate_test_method type, test
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       when internal_types.isa.object declaration
+        @_validate_test_method type, declaration.test
         Object.assign R, declaration
       #.....................................................................................................
       else
         throw new E.Intertype_wrong_type '^constructor@1^', "type name, test method, or object", \
           internal_types.type_of declaration
     #.......................................................................................................
-    # validate R
+    ### TAINT should ideally check entire object? ###
     #.......................................................................................................
     return R
     #.......................................................................................................
@@ -221,6 +223,14 @@ class _Intertype
       throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, R.test.length
     R.sub_tests = {}
     return R
+
+  #---------------------------------------------------------------------------------------------------------
+  _validate_test_method: ( type, x ) ->
+    unless internal_types.isa.function x
+      throw new E.Intertype_test_must_be_function '^constructor@2^', type, internal_types.type_of x
+    unless internal_types.isa.unary x
+      throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, x.length
+    return x
 
   #---------------------------------------------------------------------------------------------------------
   _new_strict_proxy: ( name ) ->
