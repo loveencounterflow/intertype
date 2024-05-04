@@ -201,7 +201,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
 * **[–]** remove indirection of `declare()`, `_declare()`
 * **[–]** make `get_isa()` &c private
-* **[–]** remove 'dogfeeding' (class `_Intertype`), directly use test methods from catalog instead
 
 
 ## Is Done
@@ -247,4 +246,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   * <del>**[–]** can we use `Function::call f, ...` instead of `f.call ...` to avoid possible difficulty if
     `call` should get shadowed?</del>
 * **[+]** allow declaration objects
+* **[+]** remove 'dogfeeding' (class `_Intertype`), directly use test methods from catalog instead
 
