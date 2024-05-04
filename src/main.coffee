@@ -133,7 +133,7 @@ class _Intertype
     return { type, target_type, targets, sub_type, }
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_declaration_object: ( type, test ) ->
+  _compile_declaration_object: ( type, declaration ) ->
     ###
 
     _compile_declaration_object: ( type, declaration ) ->
@@ -151,11 +151,37 @@ class _Intertype
     * return `R`
 
     ###
-    ### NOTE special treatment of `sub_tests` to ensure it's never shared across types ###
-    template = { type: null, test: null, sub_tests: null, }
+    template = { type, test: null, sub_tests: {}, }
     if ( @constructor is _Intertype )
-      return { template..., type, test,    sub_tests: {}, } if default_declarations.function test
-      return { template..., type, test..., sub_tests: {}, }
+      return { template..., test: declaration,  } if default_declarations.function declaration
+      return { template..., declaration...,     }
+    #.......................................................................................................
+    R = { template..., }
+    #.......................................................................................................
+    switch true
+      #.....................................................................................................
+      when internal_types.isa.text declaration then do ( ref_type = declaration ) =>
+        unless ( test = @declarations[ ref_type ]?.test )?
+          throw new E.Intertype_unknown_type '^constructor@1^', ref_type
+        R.test = nameit type, ( x ) -> test.call @, x
+      #.....................................................................................................
+      when internal_types.isa.function declaration then do ( test = declaration ) =>
+        R.test = nameit type, ( x ) -> test.call @, x
+      #.....................................................................................................
+      when internal_types.isa.object declaration
+        Object.assign R, declaration
+      #.....................................................................................................
+      else
+        throw new E.Intertype_wrong_type '^constructor@1^', "type name, test method, or object", \
+          internal_types.type_of declaration
+    #.......................................................................................................
+    # validate R
+    #.......................................................................................................
+    return R
+    #.......................................................................................................
+    #.......................................................................................................
+    #.......................................................................................................
+    #.......................................................................................................
     #.......................................................................................................
     if internal_types.isa.text test
       unless ( declaration = @declarations[ test ] )?
