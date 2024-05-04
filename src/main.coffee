@@ -91,7 +91,7 @@ class Intertype
         @declarations[        type ] = declaration
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
         @isa[                 type ] = @get_isa               declaration
-        @isa.optional[        type ] = @get_isa_optional      type, declaration.test
+        @isa.optional[        type ] = @get_isa_optional      declaration
         @validate[            type ] = @get_validate          type, declaration.test
         @validate.optional[   type ] = @get_validate_optional type, declaration.test
         @create[              type ] = @get_create            declaration
@@ -214,12 +214,16 @@ class Intertype
       return true
 
   #---------------------------------------------------------------------------------------------------------
-  get_isa_optional: ( type, test ) ->
+  get_isa_optional: ( declaration ) ->
     me = @
-    return nameit "isa.optional.#{type}", ( x ) ->
+    return nameit "isa.optional.#{declaration.type}", ( x ) ->
       if ( arguments.length isnt 1 )
-        throw new E.Intertype_wrong_arity "^isa_optional_#{type}@1^", 1, arguments.length
-      if x? then ( test.call me, x ) else true
+        throw new E.Intertype_wrong_arity "^isa_optional_#{declaration.type}@1^", 1, arguments.length
+      return true unless x?
+      return false unless declaration.test.call me, x
+      for field_name, sub_test of declaration.sub_tests
+        return false unless sub_test.call me, x[ field_name ]
+      return true
 
   #---------------------------------------------------------------------------------------------------------
   get_validate: ( type, test ) ->
