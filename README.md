@@ -199,6 +199,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** fix failure to call sub-tests for dotted type references
 * **[–]** fix failure to validate dotted type
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
+* **[–]** remove indirection of `declare()`, `_declare()`
 
 
 ## Is Done
