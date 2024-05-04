@@ -47,11 +47,11 @@ default_declarations = _isa =
 
 #-----------------------------------------------------------------------------------------------------------
 # internal_declarations = { default_declarations..., }
-internal_declarations = {
-  default_declarations...
-  # foo: ( x ) -> x is 'foo'
-  # bar: ( x ) -> x is 'bar'
-  }
+# internal_declarations = {
+#   default_declarations...
+#   # foo: ( x ) -> x is 'foo'
+#   # bar: ( x ) -> x is 'bar'
+#   }
 
 
 #===========================================================================================================
