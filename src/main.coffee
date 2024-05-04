@@ -180,49 +180,6 @@ class _Intertype
     ### TAINT should ideally check entire object? ###
     #.......................................................................................................
     return R
-    #.......................................................................................................
-    #.......................................................................................................
-    #.......................................................................................................
-    #.......................................................................................................
-    #.......................................................................................................
-    if internal_types.isa.text test
-      unless ( declaration = @declarations[ test ] )?
-        throw new E.Intertype_unknown_type '^constructor@1^', type
-      ######################################################################################################
-      N = do =>
-        source = """N.f = function(x) { return this.isa.#{test}(x); }"""
-        N = {}
-        eval source, { N, }
-        N
-      test      = { template..., test: ( nameit type, N.f ), }
-      ######################################################################################################
-      # test      = { template..., declaration..., }
-      test.type = type
-    #.......................................................................................................
-    switch true
-      #.....................................................................................................
-      when internal_types.isa.function test
-        R = { template..., type, test, } ### TAINT assign template ###
-      #.....................................................................................................
-      when internal_types.isa.object test
-        R = { template..., type, test..., }
-      #.....................................................................................................
-      else
-        throw new E.Intertype_wrong_type '^constructor@1^', "type name, function or object", internal_types.type_of test
-    #.......................................................................................................
-    if internal_types.isa.text R.test
-      unless ( declaration = @declarations[ R.test ] )?
-        throw new E.Intertype_unknown_type '^constructor@1^', type
-      R       = { declaration..., }
-      R.type  = type
-    #.......................................................................................................
-    ### TAINT should ideally check entire object? ###
-    unless internal_types.isa.function R.test
-      throw new E.Intertype_test_must_be_function '^constructor@2^', 'function', internal_types.type_of test
-    unless internal_types.isa.unary R.test
-      throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, R.test.length
-    R.sub_tests = {}
-    return R
 
   #---------------------------------------------------------------------------------------------------------
   _validate_test_method: ( type, x ) ->
