@@ -94,8 +94,8 @@ class Intertype
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
         @isa[                 type ] = @_get_isa                declaration
         @isa.optional[        type ] = @_get_isa_optional       declaration
-        @validate[            type ] = @_get_validate           type, declaration.test
-        @validate.optional[   type ] = @_get_validate_optional  type, declaration.test
+        @validate[            type ] = @_get_validate           declaration
+        @validate.optional[   type ] = @_get_validate_optional  declaration
         @create[              type ] = @get_create              declaration
         @_tests_for_type_of[  type ] = declaration.test if collection isnt built_ins
         #...................................................................................................
@@ -187,30 +187,41 @@ class Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _get_isa: ( declaration ) ->
-    me = @
-    return nameit "isa.#{declaration.type}", ( x ) ->
+    { type
+      test
+      sub_tests } = declaration
+    me            = @
+    #.......................................................................................................
+    return nameit "isa.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
-        throw new E.Intertype_wrong_arity "^isa_#{declaration.type}@1^", 1, arguments.length
-      return false unless declaration.test.call me, x
-      for field_name, sub_test of declaration.sub_tests
+        throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
+      return false unless test.call me, x
+      for field_name, sub_test of sub_tests
         return false unless sub_test.call me, x[ field_name ]
       return true
 
   #---------------------------------------------------------------------------------------------------------
   _get_isa_optional: ( declaration ) ->
-    me = @
-    return nameit "isa.optional.#{declaration.type}", ( x ) ->
+    { type
+      test
+      sub_tests } = declaration
+    me            = @
+    #.......................................................................................................
+    return nameit "isa.optional.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
-        throw new E.Intertype_wrong_arity "^isa_optional_#{declaration.type}@1^", 1, arguments.length
+        throw new E.Intertype_wrong_arity "^isa_optional_#{type}@1^", 1, arguments.length
       return true unless x?
-      return false unless declaration.test.call me, x
-      for field_name, sub_test of declaration.sub_tests
+      return false unless test.call me, x
+      for field_name, sub_test of sub_tests
         return false unless sub_test.call me, x[ field_name ]
       return true
 
   #---------------------------------------------------------------------------------------------------------
-  _get_validate: ( type, test ) ->
-    me = @
+  _get_validate: ( declaration ) ->
+    { type
+      test      } = declaration
+    me            = @
+    #.......................................................................................................
     return nameit "validate.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_#{type}@1^", 1, arguments.length
@@ -218,8 +229,11 @@ class Intertype
       throw new E.Intertype_validation_error "^validate_#{type}@1^", type, me.__type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
-  _get_validate_optional: ( type, test ) ->
-    me = @
+  _get_validate_optional: ( declaration ) ->
+    { type
+      test      } = declaration
+    me            = @
+    #.......................................................................................................
     return nameit "validate.optional.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_optional_#{type}@1^", 1, arguments.length
