@@ -116,11 +116,13 @@ class Intertype
     sub_type    = null
     #.......................................................................................................
     if ( sub_types = type.split '.' ).length > 1
+      #.....................................................................................................
       for idx in  [ 0 ... sub_types.length - 1 ]
         partial_type = sub_types[ .. idx ].join '.'
         ### NOTE using `Reflect.has()` to avoid triggering Unknown Type Error: ###
         unless Reflect.has @declarations, partial_type
           throw new E.Intertype_unknown_partial_type '^constructor@3^', type, partial_type
+      #.....................................................................................................
       target_type = partial_type
       sub_type    = sub_types.at -1
       targets     =
