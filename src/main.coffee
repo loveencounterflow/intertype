@@ -92,11 +92,11 @@ class Intertype
         #...................................................................................................
         @declarations[        type ] = declaration
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
-        @isa[                 type ] = @get_isa               declaration
-        @isa.optional[        type ] = @get_isa_optional      declaration
-        @validate[            type ] = @get_validate          type, declaration.test
-        @validate.optional[   type ] = @get_validate_optional type, declaration.test
-        @create[              type ] = @get_create            declaration
+        @isa[                 type ] = @_get_isa                declaration
+        @isa.optional[        type ] = @_get_isa_optional       declaration
+        @validate[            type ] = @_get_validate           type, declaration.test
+        @validate.optional[   type ] = @_get_validate_optional  type, declaration.test
+        @create[              type ] = @get_create              declaration
         @_tests_for_type_of[  type ] = declaration.test if collection isnt built_ins
         #...................................................................................................
         if targets?
@@ -186,7 +186,7 @@ class Intertype
     return      new Proxy { optional, },  get_cfg "^proxy_for_#{name}@1^"
 
   #---------------------------------------------------------------------------------------------------------
-  get_isa: ( declaration ) ->
+  _get_isa: ( declaration ) ->
     me = @
     return nameit "isa.#{declaration.type}", ( x ) ->
       if ( arguments.length isnt 1 )
@@ -197,7 +197,7 @@ class Intertype
       return true
 
   #---------------------------------------------------------------------------------------------------------
-  get_isa_optional: ( declaration ) ->
+  _get_isa_optional: ( declaration ) ->
     me = @
     return nameit "isa.optional.#{declaration.type}", ( x ) ->
       if ( arguments.length isnt 1 )
@@ -209,7 +209,7 @@ class Intertype
       return true
 
   #---------------------------------------------------------------------------------------------------------
-  get_validate: ( type, test ) ->
+  _get_validate: ( type, test ) ->
     me = @
     return nameit "validate.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
@@ -218,7 +218,7 @@ class Intertype
       throw new E.Intertype_validation_error "^validate_#{type}@1^", type, me.__type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
-  get_validate_optional: ( type, test ) ->
+  _get_validate_optional: ( type, test ) ->
     me = @
     return nameit "validate.optional.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
