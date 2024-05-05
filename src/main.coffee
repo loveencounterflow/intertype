@@ -133,33 +133,15 @@ class Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, declaration ) ->
-    ###
-
-    _compile_declaration_object: ( type, declaration ) ->
-
-    * handle internal usage
-    * set `R` to object with defaults
-    * if `declaration` is text:
-      * ensure it's a known type
-      * construct test method (Q: if ref type should change later, will this test use the old or the new
-        meaning? A: you can't change type declarations)
-    * if declaration is function:
-      * validate arity
-      * wrap for use as `R.test`
-    * call recursively for each entry in `declaration.fields`
-    * return `R`
-
-    ###
+    ### TODO: call recursively for each entry in `declaration.fields` ###
     template = { type, test: undefined, sub_tests: {}, }
     R = { template..., }
     if _isa.object declaration  then  Object.assign R, declaration
     else                                            R.test = declaration
-    # debug '^234-1^', type, R, ( _isa.text R.test ), ( _isa.function R.test )
     #.......................................................................................................
     switch true
       #.....................................................................................................
       when _isa.text R.test then do ( ref_type = R.test ) =>
-        # debug '^234-2^', type, R, ref_type
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
           throw new E.Intertype_unknown_type '^constructor@4^', ref_type
@@ -174,7 +156,6 @@ class Intertype
       else
         throw new E.Intertype_wrong_type '^constructor@5^', "type name, test method, or object", \
           @__type_of _isa, R.test
-    # debug '^234-3^', type, R, ( _isa.text R.test ), ( _isa.function R.test )
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test
