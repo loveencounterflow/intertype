@@ -31,19 +31,21 @@ default_declarations = _isa =
   symbol:                 ( x ) -> ( typeof x ) is 'symbol'
   object:                 ( x ) -> x? and ( typeof x is 'object' ) and ( ( Object::toString.call x ) is '[object Object]' )
   float:                  ( x ) -> Number.isFinite x
+  infinity:               ( x ) -> ( x is +Infinity ) or ( x is -Infinity )
   text:                   ( x ) -> ( typeof x ) is 'string'
+  list:                   ( x ) -> Array.isArray x
   # text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   regex:                  ( x ) -> x instanceof RegExp
-  nullary:                ( x ) -> x? and ( ( x.length is 0 ) or ( x.size is 0 ) )
-  unary:                  ( x ) -> x? and ( ( x.length is 1 ) or ( x.size is 1 ) )
-  binary:                 ( x ) -> x? and ( ( x.length is 2 ) or ( x.size is 2 ) )
-  trinary:                ( x ) -> x? and ( ( x.length is 3 ) or ( x.size is 3 ) )
+  # nullary:                ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 0 )
+  # unary:                  ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 1 )
+  # binary:                 ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 2 )
+  # trinary:                ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 3 )
   #.........................................................................................................
-  IT_listener:            ( x ) -> ( @isa.function x ) or ( @isa.asyncfunction x )
-  IT_note_$key:           ( x ) -> ( @isa.text x ) or ( @isa.symbol x )
-  unary_or_binary:        ( x ) -> ( @isa.unary   x ) or ( @isa.binary  x )
-  binary_or_trinary:      ( x ) -> ( @isa.binary  x ) or ( @isa.trinary x )
-  $freeze:                ( x ) -> @isa.boolean x
+  # IT_listener:            ( x ) -> ( @isa.function x ) or ( @isa.asyncfunction x )
+  # IT_note_$key:           ( x ) -> ( @isa.text x ) or ( @isa.symbol x )
+  # unary_or_binary:        ( x ) -> ( @isa.unary   x ) or ( @isa.binary  x )
+  # binary_or_trinary:      ( x ) -> ( @isa.binary  x ) or ( @isa.trinary x )
+  # $freeze:                ( x ) -> @isa.boolean x
 
 #-----------------------------------------------------------------------------------------------------------
 # internal_declarations = { default_declarations..., }
@@ -182,7 +184,7 @@ class Intertype
   _validate_test_method: ( type, x ) ->
     unless _isa.function x
       throw new E.Intertype_test_must_be_function '^constructor@2^', type, @__type_of _isa, x
-    unless _isa.unary x
+    unless x.length is 1
       throw new E.Intertype_function_with_wrong_arity '^constructor@2^', 1, x.length
     return x
 
