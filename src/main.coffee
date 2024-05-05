@@ -150,7 +150,7 @@ class Intertype
     * return `R`
 
     ###
-    template = { type, test: null, sub_tests: {}, }
+    template = { type, test: undefined, sub_tests: {}, }
     R = { template..., }
     if _isa.object declaration  then  Object.assign R, declaration
     else                                            R.test = declaration
