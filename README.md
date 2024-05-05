@@ -201,6 +201,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
 * **[–]** remove indirection of `declare()`, `_declare()`
 * **[–]** make `get_isa()` &c private
+* **[–]** in `_compile_declaration_object()`, call recursively for each entry in `declaration.fields`
+* **[–]** in `_compile_declaration_object()`, add validation for return value
 * **[–]** implement possibility to use prefix `optional` with symbolic type declarations as in `{ foo:
   'optional.float', }`
 
