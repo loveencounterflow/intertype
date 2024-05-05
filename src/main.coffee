@@ -232,7 +232,7 @@ class Intertype
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_#{type}@1^", 1, arguments.length
       return x if test.call me, x
-      throw new E.Intertype_validation_error "^validate_#{type}@1^", type, typeof x ### TAINT `typeof` will give some strange results ###
+      throw new E.Intertype_validation_error "^validate_#{type}@1^", type, me.__type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
   get_validate_optional: ( type, test ) ->
@@ -242,7 +242,7 @@ class Intertype
         throw new E.Intertype_wrong_arity "^validate_optional_#{type}@1^", 1, arguments.length
       return x unless x?
       return x if test.call me, x
-      throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@1^", type, typeof x ### TAINT `typeof` will give some strange results ###
+      throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@1^", type, me.__type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
   _type_of: ( x ) ->
