@@ -73,10 +73,15 @@ class Intertype
     hide @, 'type_of',            ( P... ) => @_type_of P...
     hide @, 'declare',            ( P... ) => @_declare P...
     #.......................................................................................................
+    # @_add_forbidden_optional_methods()
     @_declare built_ins, declarations...
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
+  _add_forbidden_optional_methods: ->
+    @isa.optional       = ( x ) -> throw new E.Intertype_illegal_isa_optional       '^constructor@1^'
+    @validate.optional  = ( x ) -> throw new E.Intertype_illegal_validate_optional  '^constructor@2^'
+    @create.optional    = ( x ) -> throw new E.Intertype_illegal_create_optional    '^constructor@3^'
   _declare: ( declarations... ) ->
     for collection in declarations
       for type, test of collection then do ( type, test ) =>
