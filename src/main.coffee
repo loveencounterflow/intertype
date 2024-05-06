@@ -82,8 +82,12 @@ class Intertype
     @isa.optional       = ( x ) -> throw new E.Intertype_illegal_isa_optional       '^constructor@1^'
     @validate.optional  = ( x ) -> throw new E.Intertype_illegal_validate_optional  '^constructor@2^'
     @create.optional    = ( x ) -> throw new E.Intertype_illegal_create_optional    '^constructor@3^'
+
+  #---------------------------------------------------------------------------------------------------------
   _declare: ( declarations... ) ->
     for collection in declarations
+      unless _isa.object collection
+        throw new E.Intertype_validation_error '^declare@1^', 'object', @__type_of _isa, collection
       for type, test of collection then do ( type, test ) =>
         #...................................................................................................
         { target_type
