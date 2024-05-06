@@ -73,15 +73,8 @@ class Intertype
     hide @, 'type_of',            ( P... ) => @_type_of P...
     hide @, 'declare',            ( P... ) => @_declare P...
     #.......................................................................................................
-    # @_add_forbidden_optional_methods()
     @_declare built_ins, declarations...
     return undefined
-
-  #---------------------------------------------------------------------------------------------------------
-  _add_forbidden_optional_methods: ->
-    @isa.optional       = ( x ) -> throw new E.Intertype_illegal_isa_optional       '^constructor@1^'
-    @validate.optional  = ( x ) -> throw new E.Intertype_illegal_validate_optional  '^constructor@2^'
-    @create.optional    = ( x ) -> throw new E.Intertype_illegal_create_optional    '^constructor@3^'
 
   #---------------------------------------------------------------------------------------------------------
   _declare: ( declarations... ) ->
@@ -196,10 +189,19 @@ class Intertype
       throw new E.Intertype_function_with_wrong_arity '^constructor@10^', 1, x.length
     return x
 
+
   #---------------------------------------------------------------------------------------------------------
   _new_strict_proxy: ( name ) ->
     ### Create a proxy for a new object that will throw an `Intertype_unknown_type` error when
     a non-existing property is accessed ###
+    #.......................................................................................................
+    optional_from_name = -> switch name
+      when 'isa'          then ( x ) -> throw new E.Intertype_illegal_isa_optional       '^constructor@1^'
+      when 'validate'     then ( x ) -> throw new E.Intertype_illegal_validate_optional  '^constructor@2^'
+      when 'create'       then ( x ) -> throw new E.Intertype_illegal_create_optional    '^constructor@3^'
+      when 'declarations' then {}
+      else throw new E.Intertype_internal_error '^constructor@4^', "unknown name #{rpr name}"
+    #.......................................................................................................
     get_cfg = ( ref ) =>
       get: ( target, key ) =>
         return undefined          if key is Symbol.toStringTag
@@ -209,8 +211,9 @@ class Intertype
         # return target.apply       if key is 'apply'
         return R if ( R = Reflect.get target, key )?
         throw new E.Intertype_unknown_type ref, key
-    optional =  new Proxy {},             get_cfg "^proxy_for_#{name}_optional@1^"
-    return      new Proxy { optional, },  get_cfg "^proxy_for_#{name}@1^"
+    #.......................................................................................................
+    optional =  new Proxy optional_from_name(), get_cfg "^proxy_for_#{name}_optional@1^"
+    return      new Proxy { optional, },        get_cfg "^proxy_for_#{name}@1^"
 
   #---------------------------------------------------------------------------------------------------------
   _get_isa: ( declaration ) ->

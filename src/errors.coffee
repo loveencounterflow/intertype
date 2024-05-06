@@ -34,6 +34,8 @@ class @Intertype_error extends Error
 #   constructor: ( ref, name )        -> super ref, "expected value for #{name}, got nothing"
 class @Intertype_wrong_type                extends @Intertype_error
   constructor: ( ref, types, type ) -> super ref, "expected #{types}, got a #{type}"
+class @Intertype_internal_error            extends @Intertype_error
+  constructor: ( ref, message ) -> super ref, message
 # class @Intertype_user_error                extends @Intertype_error
 #   constructor: ( message )          -> super null, message
 class @Intertype_unknown_type              extends @Intertype_error
