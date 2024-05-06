@@ -66,5 +66,11 @@ class @Intertype_wrong_template_arity       extends @Intertype_error
   constructor: ( ref, type, arity ) -> super ref, "template method for type #{rpr type} has arity #{arity} but must be nullary without `create` method"
 class @Intertype_optional_used_alone        extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "not allowed to use `optional` on its own in type declaration for #{rpr type}"
+class @Intertype_illegal_isa_optional       extends @Intertype_error
+  constructor: ( ref ) -> super ref, "`optional` is not a legal type for `isa` methods"
+class @Intertype_illegal_validate_optional  extends @Intertype_error
+  constructor: ( ref ) -> super ref, "`optional` is not a legal type for `validate` methods"
+class @Intertype_illegal_create_optional    extends @Intertype_error
+  constructor: ( ref ) -> super ref, "`optional` is not a legal type for `create` methods"
 #-----------------------------------------------------------------------------------------------------------
 class @Intertype_ETEMPTBD extends @Intertype_error
