@@ -139,7 +139,7 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    template = { type, test: undefined, sub_tests: {}, }
+    template = { type, test: undefined, sub_tests: {}, is_optional: false, }
     R = { template..., }
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
@@ -149,12 +149,14 @@ class Intertype
       when _isa.text R.test then do ( ref_type = R.test ) =>
         { is_optional
           ref_type    } = @_parse_ref_type type, ref_type
-        debug '^324-1^', { type, is_optional, ref_type, }
+        R.is_optional   = is_optional
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
           throw new E.Intertype_unknown_type '^constructor@7^', ref_type
-        test        = ref_declaration.test
-        R.test      = nameit type, ( x ) -> test.call @, x
+        do ( test = ref_declaration.test ) =>
+          if is_optional then R.test = nameit type, ( x ) -> return true unless x?; return test.call @, x
+          else                R.test = nameit type, ( x ) -> test.call @, x
+          return null
         Object.assign R.sub_tests, ref_declaration.sub_tests
       #.....................................................................................................
       when _isa.function R.test then do ( test = R.test ) =>
