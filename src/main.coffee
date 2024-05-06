@@ -148,8 +148,8 @@ class Intertype
     ### TODO: call recursively for each entry in `declaration.fields` ###
     template = { type, test: undefined, sub_tests: {}, }
     R = { template..., }
-    if _isa.object declaration  then  Object.assign R, declaration
-    else                                            R.test = declaration
+    if _isa.object declaration then Object.assign R, declaration
+    else                            R.test = declaration
     #.......................................................................................................
     switch true
       #.....................................................................................................
