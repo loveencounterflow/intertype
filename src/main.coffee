@@ -154,6 +154,9 @@ class Intertype
     switch true
       #.....................................................................................................
       when _isa.text R.test then do ( ref_type = R.test ) =>
+        { is_optional
+          ref_type    } = @_parse_ref_type type, ref_type
+        debug '^324-1^', { type, is_optional, ref_type, }
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
           throw new E.Intertype_unknown_type '^constructor@7^', ref_type
@@ -172,6 +175,18 @@ class Intertype
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test
     return R
+
+  #---------------------------------------------------------------------------------------------------------
+  _parse_ref_type: ( type, ref_type ) ->
+    is_optional = false
+    if ( ref_type_parts = ref_type.split '.' ).length is 1
+      if ref_type_parts[ 0 ] is 'optional'
+        throw new E.Intertype_optional_used_alone '^_parse_ref_type@1^', type
+    else if ref_type_parts[ 0 ] is 'optional'
+      ref_type_parts.shift()
+      is_optional = true
+      ref_type    = ref_type_parts.join '.'
+    return { is_optional, ref_type, }
 
   #---------------------------------------------------------------------------------------------------------
   _validate_test_method: ( type, x ) ->
