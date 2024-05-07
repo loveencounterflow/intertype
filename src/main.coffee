@@ -118,7 +118,13 @@ class Intertype
     targets     = null
     sub_type    = null
     #.......................................................................................................
-    if ( sub_types = type.split '.' ).length > 1
+    sub_types = type.split '.'
+    if ( basetype = sub_types[ 0 ] ) is 'optional'
+      throw new E.Intertype_illegal_use_of_optional '^_resolve_dotted_type@2^', type
+    if ( _isa.basetype basetype ) and Reflect.has @declarations, basetype
+      throw new E.Intertype_illegal_use_of_basetype '^_resolve_dotted_type@3^', type, basetype
+    #.......................................................................................................
+    if sub_types.length > 1
       #.....................................................................................................
       for idx in  [ 0 ... sub_types.length - 1 ]
         partial_type = sub_types[ .. idx ].join '.'
