@@ -83,15 +83,15 @@ class Intertype
         throw new E.Intertype_validation_error '^declare@1^', 'object', @__type_of _isa, collection
       for type, test of collection then do ( type, test ) =>
         #...................................................................................................
-        { target_type
-          targets
-          sub_type    } = @_resolve_dotted_type         type
-        declaration     = @_compile_declaration_object  type, test
-        #...................................................................................................
         if Reflect.has @declarations, type
           if _isa.basetype type
             throw new E.Intertype_basetype_redeclaration_forbidden '^declare@2^', type
           throw new E.Intertype_declaration_redeclaration_forbidden '^declare@3^', type
+        #...................................................................................................
+        { target_type
+          targets
+          sub_type    } = @_resolve_dotted_type         type
+        declaration     = @_compile_declaration_object  type, test
         #...................................................................................................
         @declarations[        type ] = declaration
         ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
