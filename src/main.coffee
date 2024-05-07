@@ -130,7 +130,7 @@ class Intertype
         partial_type = sub_types[ .. idx ].join '.'
         ### NOTE using `Reflect.has()` to avoid triggering Unknown Type Error: ###
         unless Reflect.has @declarations, partial_type
-          throw new E.Intertype_unknown_partial_type '^constructor@6^', type, partial_type
+          throw new E.Intertype_unknown_partial_type '^_resolve_dotted_type@1^', type, partial_type
       #.....................................................................................................
       target_type = partial_type
       sub_type    = sub_types.at -1
