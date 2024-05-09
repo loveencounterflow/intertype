@@ -241,6 +241,10 @@ class Intertype
         throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
       return false unless test.call me, x
       for field_name, sub_test of sub_tests
+        unless default_types.has declaration.type
+          debug '^323^', declaration.type, declaration.is_optional, field_name, x
+        # unless x? and declaration
+        # return ( if declaration.is_optional then true else false )
         return false unless sub_test.call me, x[ field_name ]
       return true
 
