@@ -235,6 +235,7 @@ class Intertype
       sub_tests } = declaration
     me            = @
     #.......................................................................................................
+    return nameit "isa.#{type}", @_get_isa_optional declaration if declaration.is_optional
     return nameit "isa.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
@@ -265,6 +266,7 @@ class Intertype
       test      } = declaration
     me            = @
     #.......................................................................................................
+    return nameit "validate.#{type}", @_get_validate_optional declaration if declaration.is_optional
     return nameit "validate.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_#{type}@1^", 1, arguments.length
