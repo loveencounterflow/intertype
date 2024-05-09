@@ -228,7 +228,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
 * **[–]** test whether basic types are immutable with instances of `Intertype_minimal`
 * **[–]** to fix implementation failure connected to RHS `optional` prefix:
-  * **[–]** commit current state, mistakes and all
+  * **[+]** commit current state, mistakes and all
   * **[–]** identify and rip out all places concerned with `is_optional` and/or RHS `optional` prefix
   * **[–]** reduce tests such that valuable tests are preserved but ones using RHS `optional` prefix are
     skipped
