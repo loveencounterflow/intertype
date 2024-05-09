@@ -163,8 +163,10 @@ class Intertype
         unless ref_declaration?
           throw new E.Intertype_unknown_type '^constructor@7^', ref_type
         do ( test = ref_declaration.test ) =>
-          if is_optional then R.test = nameit type, ( x ) -> return true unless x?; return test.call @, x
-          else                R.test = nameit type, ( x ) -> test.call @, x
+          if is_optional then R.test = nameit type, ( x ) -> ### debug '^879-1^', is_optional, type, test, x; ###
+            return true unless x?; return test.call @, x
+          else                R.test = nameit type, ( x ) -> ### debug '^879-2^', is_optional, type, test, x; ###
+            test.call @, x
           return null
         Object.assign R.sub_tests, ref_declaration.sub_tests
       #.....................................................................................................
