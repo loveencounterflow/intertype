@@ -148,7 +148,7 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    template = { type, test: undefined, sub_tests: {}, is_optional: false, }
+    template = { type, test: undefined, sub_tests: {}, }
     R = { template..., }
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
@@ -156,18 +156,10 @@ class Intertype
     switch true
       #.....................................................................................................
       when _isa.text R.test then do ( ref_type = R.test ) =>
-        { is_optional
-          ref_type    } = @_parse_ref_type type, ref_type
-        R.is_optional   = is_optional
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
           throw new E.Intertype_unknown_type '^constructor@7^', ref_type
-        do ( test = ref_declaration.test ) =>
-          if is_optional then R.test = nameit type, ( x ) -> ### debug '^879-1^', is_optional, type, test, x; ###
-            return true unless x?; return test.call @, x
-          else                R.test = nameit type, ( x ) -> ### debug '^879-2^', is_optional, type, test, x; ###
-            test.call @, x
-          return null
+        do ( test = ref_declaration.test ) => R.test = nameit type, ( x ) -> test.call @, x
         Object.assign R.sub_tests, ref_declaration.sub_tests
       #.....................................................................................................
       when _isa.function R.test then do ( test = R.test ) =>
@@ -181,18 +173,6 @@ class Intertype
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test
     return R
-
-  #---------------------------------------------------------------------------------------------------------
-  _parse_ref_type: ( type, ref_type ) ->
-    is_optional = false
-    if ( ref_type_parts = ref_type.split '.' ).length is 1
-      if ref_type_parts[ 0 ] is 'optional'
-        throw new E.Intertype_optional_used_alone '^_parse_ref_type@1^', type
-    else if ref_type_parts[ 0 ] is 'optional'
-      ref_type_parts.shift()
-      is_optional = true
-      ref_type    = ref_type_parts.join '.'
-    return { is_optional, ref_type, }
 
   #---------------------------------------------------------------------------------------------------------
   _validate_test_method: ( type, x ) ->
@@ -235,16 +215,11 @@ class Intertype
       sub_tests } = declaration
     me            = @
     #.......................................................................................................
-    return nameit "isa.#{type}", @_get_isa_optional declaration if declaration.is_optional
     return nameit "isa.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
       return false unless test.call me, x
       for field_name, sub_test of sub_tests
-        unless default_types.has declaration.type
-          debug '^323^', declaration.type, declaration.is_optional, field_name, x
-        # unless x? and declaration
-        # return ( if declaration.is_optional then true else false )
         return false unless sub_test.call me, x[ field_name ]
       return true
 
@@ -270,7 +245,6 @@ class Intertype
       test      } = declaration
     me            = @
     #.......................................................................................................
-    return nameit "validate.#{type}", @_get_validate_optional declaration if declaration.is_optional
     return nameit "validate.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_#{type}@1^", 1, arguments.length
