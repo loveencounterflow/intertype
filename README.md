@@ -221,10 +221,8 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 ## To Do
 
 * **[–]** implement `fields`
-* **[–]** in `_compile_declaration_object()`, call recursively for each entry in `declaration.fields`
 * **[–]** in `_compile_declaration_object()`, add validation for return value
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
-* **[–]** test whether basic types are immutable with instances of `Intertype_minimal`
 * **[–]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
   (`isa`, `isa.optional`, `validate`, `validate.optional`); can we bake those right into `declarations[ type
   ].test()`? But then what when more fields get declared?
@@ -303,4 +301,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   * **[+]** reduce tests such that valuable tests are preserved but ones using RHS `optional` prefix are
     skipped
   * **[+]** whatever the outcome, update docs
+* **[+]** test whether basic types are immutable with instances of `Intertype_minimal`
+* **[+]** in `_compile_declaration_object()`, call recursively for each entry in `declaration.fields`
 
