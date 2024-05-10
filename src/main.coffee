@@ -275,15 +275,22 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _get_validate_optional: ( declaration ) ->
     { type
-      test      } = declaration
+      test
+      sub_tests } = declaration
     me            = @
     #.......................................................................................................
     return nameit "validate.optional.#{type}", ( x ) ->
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^validate_optional_#{type}@1^", 1, arguments.length
+      #.......................................................................................................
       return x unless x?
-      return x if test.call me, x
-      throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@1^", type, me.__type_of _isa, x
+      unless test.call me, x
+        throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@2^", type, me.__type_of _isa, x
+      for field_name, sub_test of sub_tests
+        unless sub_test.call me, x[ field_name ]
+          throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@3^", type, me.__type_of _isa, x
+      #.......................................................................................................
+      return x
 
   #---------------------------------------------------------------------------------------------------------
   _type_of: ( x ) ->
