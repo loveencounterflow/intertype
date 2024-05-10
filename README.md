@@ -238,8 +238,10 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   * **[–]** whatever the outcome, update docs
 * **[–]** currently `basetype` is declared as `( ( typeof x ) is 'string' ) and ( x is 'optional' or
   Reflect.has built_ins, x )`
-  * checking for `string` is redundant
+  * <del>checking for `string` is redundant</del> <ins>checking for `( ( typeof x ) is 'string' )` is *not*
+    redundant as it prevents errors when `isa.basetype()` is called with a non-object value</ins>
   * should `optional` be included?
+  * **[–]** fix wrong usage of `Reflect.has()` in `_isa.basetype()` (returns `true` for `toString`)
 * **[–]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
   (`isa`, `isa.optional`, `validate`, `validate.optional`); can we bake those right into `declarations[ type
   ].test()`? But then what when more fields get declared?
@@ -247,6 +249,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     declarations before being used first; this could happen implicitly on first use
   * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
     declared for a given type
+* **[–]** unify usage, orthography of 'built ins', 'builtins' (?), 'base type(s)', 'basetype(s)'
 
 ## Is Done
 
