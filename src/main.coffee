@@ -23,6 +23,8 @@ built_ins =
   unknown:                ( x ) -> ( @type_of x ) is 'unknown'
 
 _TMP_builtin_typenames          = new Set Object.keys built_ins
+_TMP_builtin_typenames_matcher  = /// \b ( #{[ _TMP_builtin_typenames..., ].join '|'} ) \b ///
+
 #-----------------------------------------------------------------------------------------------------------
 default_declarations = _isa =
   basetype:               ( x ) -> _TMP_builtin_typenames.has x
@@ -157,6 +159,10 @@ class Intertype
     switch true
       #.....................................................................................................
       when _isa.text R.test then do ( ref_type = R.test ) =>
+        if /\boptional\b/.test ref_type # ( ref_type is 'optional' ) or ( ref_type.startsWith 'optional.' )
+          throw new E.Intertype_illegal_use_of_optional '^_compile_declaration_object@1^', type
+        if ( basetype = @_extract_first_builtin_typename ref_type )?
+          throw new E.Intertype_illegal_use_of_basetype '^_resolve_dotted_type@3^', type, basetype
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
           throw new E.Intertype_unknown_type '^_compile_declaration_object@2^', ref_type
@@ -183,6 +189,13 @@ class Intertype
       throw new E.Intertype_function_with_wrong_arity '^_validate_test_method@2^', 1, x.length
     return x
 
+  #---------------------------------------------------------------------------------------------------------
+  _extract_first_builtin_typename: ( type ) ->
+    unless _isa.text type
+      throw new E.Intertype_internal_error '^_extract_first_builtin_typename@1^',
+        "expected text, got a #{@__type_of _isa, type}"
+    return null unless ( match = type.match _TMP_builtin_typenames_matcher )?
+    return match[ 0 ]
 
   #---------------------------------------------------------------------------------------------------------
   _new_strict_proxy: ( name ) ->
