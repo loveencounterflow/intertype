@@ -14,7 +14,7 @@ set                       = ( t, k, v ) -> Object.defineProperty t, k, { value: 
 
 
 #===========================================================================================================
-built_ins =
+basetypes =
   anything:               ( x ) -> true
   nothing:                ( x ) -> not x?
   something:              ( x ) -> x?
@@ -22,12 +22,12 @@ built_ins =
   undefined:              ( x ) -> x is undefined
   unknown:                ( x ) -> ( @type_of x ) is 'unknown'
 
-_TMP_builtin_typenames          = new Set Object.keys built_ins
-_TMP_builtin_typenames_matcher  = /// \b ( #{[ _TMP_builtin_typenames..., ].join '|'} ) \b ///
+_TMP_basetype_names          = new Set Object.keys basetypes
+_TMP_basetype_names_matcher  = /// \b ( #{[ _TMP_basetype_names..., ].join '|'} ) \b ///
 
 #-----------------------------------------------------------------------------------------------------------
 default_declarations = _isa =
-  basetype:               ( x ) -> _TMP_builtin_typenames.has x
+  basetype:               ( x ) -> _TMP_basetype_names.has x
   boolean:                ( x ) -> ( x is true ) or ( x is false )
   function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
   asyncfunction:          ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
@@ -79,7 +79,7 @@ class Intertype
     hide @, 'type_of',            ( P... ) => @_type_of P...
     hide @, 'declare',            ( P... ) => @_declare P...
     #.......................................................................................................
-    @_declare built_ins, declarations...
+    @_declare basetypes, declarations...
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ class Intertype
         @validate[            type ] = @_get_validate           declaration
         @validate.optional[   type ] = @_get_validate_optional  declaration
         @create[              type ] = @get_create              declaration
-        @_tests_for_type_of[  type ] = declaration.test if collection isnt built_ins
+        @_tests_for_type_of[  type ] = declaration.test if collection isnt basetypes
         #...................................................................................................
         if targets?
           set targets[ 'isa'                ], sub_type, @isa[                type ]
@@ -161,7 +161,7 @@ class Intertype
       when _isa.text R.test then do ( ref_type = R.test ) =>
         if /\boptional\b/.test ref_type # ( ref_type is 'optional' ) or ( ref_type.startsWith 'optional.' )
           throw new E.Intertype_illegal_use_of_optional '^_compile_declaration_object@1^', type
-        if ( basetype = @_extract_first_builtin_typename ref_type )?
+        if ( basetype = @_extract_first_basetype_name ref_type )?
           throw new E.Intertype_illegal_use_of_basetype '^_resolve_dotted_type@3^', type, basetype
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
@@ -190,11 +190,11 @@ class Intertype
     return x
 
   #---------------------------------------------------------------------------------------------------------
-  _extract_first_builtin_typename: ( type ) ->
+  _extract_first_basetype_name: ( type ) ->
     unless _isa.text type
-      throw new E.Intertype_internal_error '^_extract_first_builtin_typename@1^',
+      throw new E.Intertype_internal_error '^_extract_first_basetype_name@1^',
         "expected text, got a #{@__type_of _isa, type}"
-    return null unless ( match = type.match _TMP_builtin_typenames_matcher )?
+    return null unless ( match = type.match _TMP_basetype_names_matcher )?
     return match[ 0 ]
 
   #---------------------------------------------------------------------------------------------------------

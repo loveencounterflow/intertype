@@ -61,7 +61,7 @@ class @Intertype_test_must_be_function   extends @Intertype_error
 class @Intertype_wrong_arguments_for_create extends @Intertype_error
   constructor: ( ref, need_type, is_type ) -> super ref, "expected `create.#{need_type}()` to return a #{need_type} but it returned a #{is_type}"
 class @Intertype_basetype_redeclaration_forbidden extends @Intertype_error
-  constructor: ( ref, type ) -> super ref, "not allowed to re-declare base type #{rpr type}"
+  constructor: ( ref, type ) -> super ref, "not allowed to re-declare basetype #{rpr type}"
 class @Intertype_declaration_redeclaration_forbidden extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "not allowed to re-declare type #{rpr type}"
 class @Intertype_wrong_template_arity       extends @Intertype_error
@@ -77,6 +77,6 @@ class @Intertype_illegal_create_optional    extends @Intertype_error
 class @Intertype_illegal_use_of_optional    extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "illegal use of 'optional' in declaration of type #{rpr type}"
 class @Intertype_illegal_use_of_basetype    extends @Intertype_error
-  constructor: ( ref, type, basetype ) -> super ref, "illegal use of base type #{rpr basetype} in declaration of type #{rpr type}"
+  constructor: ( ref, type, basetype ) -> super ref, "illegal use of basetype #{rpr basetype} in declaration of type #{rpr type}"
 #-----------------------------------------------------------------------------------------------------------
 class @Intertype_ETEMPTBD extends @Intertype_error
