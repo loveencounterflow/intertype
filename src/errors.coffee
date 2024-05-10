@@ -75,7 +75,7 @@ class @Intertype_illegal_validate_optional  extends @Intertype_error
 class @Intertype_illegal_create_optional    extends @Intertype_error
   constructor: ( ref ) -> super ref, "`optional` is not a legal type for `create` methods"
 class @Intertype_illegal_use_of_optional    extends @Intertype_error
-  constructor: ( ref, type ) -> super ref, "illegal use of `optional` in declaration of type #{rpr type}"
+  constructor: ( ref, type ) -> super ref, "illegal use of 'optional' in declaration of type #{rpr type}"
 class @Intertype_illegal_use_of_basetype    extends @Intertype_error
   constructor: ( ref, type, basetype ) -> super ref, "illegal use of base type #{rpr basetype} in declaration of type #{rpr type}"
 #-----------------------------------------------------------------------------------------------------------
