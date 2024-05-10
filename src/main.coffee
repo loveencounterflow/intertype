@@ -158,7 +158,7 @@ class Intertype
       when _isa.text R.test then do ( ref_type = R.test ) =>
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
-          throw new E.Intertype_unknown_type '^constructor@7^', ref_type
+          throw new E.Intertype_unknown_type '^_compile_declaration_object@2^', ref_type
         do ( test = ref_declaration.test ) => R.test = nameit type, ( x ) -> test.call @, x
         Object.assign R.sub_tests, ref_declaration.sub_tests
       #.....................................................................................................
@@ -167,7 +167,7 @@ class Intertype
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       else
-        throw new E.Intertype_wrong_type '^constructor@8^', "type name, test method, or object", \
+        throw new E.Intertype_wrong_type '^_compile_declaration_object@3^', "type name, test method, or object", \
           @__type_of _isa, R.test
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
@@ -177,9 +177,9 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _validate_test_method: ( type, x ) ->
     unless _isa.function x
-      throw new E.Intertype_test_must_be_function '^constructor@9^', type, @__type_of _isa, x
+      throw new E.Intertype_test_must_be_function '^_validate_test_method@1^', type, @__type_of _isa, x
     unless x.length is 1
-      throw new E.Intertype_function_with_wrong_arity '^constructor@10^', 1, x.length
+      throw new E.Intertype_function_with_wrong_arity '^_validate_test_method@2^', 1, x.length
     return x
 
 
