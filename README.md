@@ -180,6 +180,12 @@ A valid declaration is either
 * a constant (literal) property accessor (which may be dotted or not) to `isa`, `isa.optional`, `validate`
   and `validate.optional` is equivalent to the bracket notation with a string literal (or a variable) on the
   same base; thus, `isa.some.accessor x` is equivalent to `isa[ 'some.accessor' ] x`
+* the `type_of()` method of `Intertype_minimal` instances can only report the types of `null` and
+  `undefined` (as `'null'` and `undefined'`); all other values are considered `'unknown'`. However, it is
+  possible to test for `isa.anything x`, `isa.nothing x`, `isa.something x`, `isa.unknown x` (and, of
+  course, `isa.undefined x` and `isa.null x`).
+
+<!--
 * a type identified by a string that starts with the sequence `optional.` followed by a type name proper, as
   in `isa[ 'optional.foo.bar' ]` will be mapped onto the same base's `optional` property, followed by the
   type name proper; thus, `isa[ 'optional.foo.bar' ] x` is equivalent to `isa.optional[ 'foo.bar' ] x` which
@@ -190,17 +196,9 @@ A valid declaration is either
 * an 'implicitly optional' type doesn't change its behavior when being used in an 'explicitly optional'
   context; thus, when one has declared `foo` as an `optional.float`, then `isa.foo x` and `isa.optional.foo
   x` will behave identically
-* the `type_of()` method of `Intertype_minimal` instances can only report the types of `null` and
-  `undefined` (as `'null'` and `undefined'`); all other values are considered `'unknown'`. However, it is
-  possible to test for `isa.anything x`, `isa.nothing x`, `isa.something x`, `isa.unknown x` (and, of
-  course, `isa.undefined x` and `isa.null x`).
+ -->
 
 
-`optional` &c: fixed semantics on top-level, may not be overridden, but free with dotted type names
-
-
-what's the role of `unknown` when there's `something` and `anything`? Do `unknown` and/or
-`something`+`nothing` and/or `anything` themselves not make type system complete / total?
 
 partial / incomplete type system
 total type system
@@ -227,15 +225,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** in `_compile_declaration_object()`, add validation for return value
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
 * **[–]** test whether basic types are immutable with instances of `Intertype_minimal`
-* **[–]** to fix implementation failure connected to RHS `optional` prefix:
-  * **[+]** commit current state, mistakes and all
-  * **[–]** identify and rip out all places concerned with `is_optional` and/or RHS `optional` prefix
-  * **[+]** reduce tests such that valuable tests are preserved but ones using RHS `optional` prefix are
-    skipped
-  * **[–]** consider to disallow `optional` except in front of a simple type name (without dots)
-    * what does `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even if we
-      never want to implement the latter)?
-  * **[–]** whatever the outcome, update docs
 * **[–]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
   (`isa`, `isa.optional`, `validate`, `validate.optional`); can we bake those right into `declarations[ type
   ].test()`? But then what when more fields get declared?
@@ -243,6 +232,9 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     declarations before being used first; this could happen implicitly on first use
   * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
     declared for a given type
+* **[–]** what does `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even if we
+  never want to implement the latter)?
+  * **[–]** consider to disallow `optional` except in front of a simple type name (without dots)
 
 ## Is Done
 
@@ -305,4 +297,10 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     redundant as it prevents errors when `isa.basetype()` is called with a non-object value</ins>
   * should `optional` be included?
   * **[+]** fix wrong usage of `Reflect.has()` in `_isa.basetype()` (returns `true` for `toString`)
+* **[+]** to fix implementation failure connected to RHS `optional` prefix:
+  * **[+]** commit current state, mistakes and all
+  * **[+]** identify and rip out all places concerned with `is_optional` and/or RHS `optional` prefix
+  * **[+]** reduce tests such that valuable tests are preserved but ones using RHS `optional` prefix are
+    skipped
+  * **[+]** whatever the outcome, update docs
 
