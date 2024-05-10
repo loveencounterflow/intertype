@@ -10,7 +10,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 
 - [InterType](#intertype)
   - [Exported Classes](#exported-classes)
-  - [Built-In Base Types](#built-in-base-types)
+  - [Base Types](#base-types)
     - [`create.〈type〉()`](#create%E2%8C%A9type%E2%8C%AA)
   - [`declare()`](#declare)
     - [Declaration Values (Test Method, Type Name, Object)](#declaration-values-test-method-type-name-object)
@@ -31,13 +31,13 @@ A JavaScript type checker with helpers to implement own types and do object shap
   types ('default types')
 * `{ Intertype_minimal } = require 'intertype'`: instances of `Intertype_minimal` will not include the
   default types
-* in both cases, instances will include the built-in base types
+* in both cases, instances will include the basetypes
 
 
-## Built-In Base Types
+## Base Types
 
-The following types are built-in and treated specially; they are always present and cannot be overwritten or
-omitted. The definitions of their test methods reads like pseudo-code:
+The following basetypes are built-in and treated specially; they are always present and cannot be
+overwritten or omitted. The definitions of their test methods reads like pseudo-code:
 
 ```coffee
 anything:   ( x ) -> true
@@ -57,10 +57,10 @@ unknown:    ( x ) -> ( @type_of x ) is 'unknown'
 * `unknown` is the default type name returned by `type_of x` when no other type test (except for `anything`,
   `nothing` and `something`) returns `true`.
 
-In addition to the above, `optional` is also reserved. `optional` is not a type proper, rather, it is a type
-modifier to allow for optional `null`s and `undefined`s. It is used in constructs like `isa.optional.integer
-x` and `validate.optional.integer x` to state succinctly that 'if x is given (i.e. not `null` or
-`undefined`), it should be an integer'.
+In addition to the above, the 'metatype' or 'quasitype' `optional` is also reserved. `optional` is not a
+type proper, rather, it is a type modifier to allow for optional `null`s and `undefined`s. It is used in
+constructs like `isa.optional.integer x` and `validate.optional.integer x` to state succinctly that 'if x is
+given (i.e. not `null` or `undefined`), it should be an integer'.
 
 ### `create.〈type〉()`
 
@@ -95,7 +95,7 @@ Types declarations may include a `create` and a `template` entry:
   * the key as the type (name), and
   * the value as either that type's test method, or, if it's an object, as a type declaration
 * the declaration will be rejected if the type name...
-  * ... is one of the built-in base types, or
+  * ... is one of the basetypes, or
   * ... is already declared
 * the declaration will be rejected if the declaration ...
   * ... is missing a test method
@@ -236,12 +236,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     * what does `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even if we
       never want to implement the latter)?
   * **[–]** whatever the outcome, update docs
-* **[–]** currently `basetype` is declared as `( ( typeof x ) is 'string' ) and ( x is 'optional' or
-  Reflect.has built_ins, x )`
-  * <del>checking for `string` is redundant</del> <ins>checking for `( ( typeof x ) is 'string' )` is *not*
-    redundant as it prevents errors when `isa.basetype()` is called with a non-object value</ins>
-  * should `optional` be included?
-  * **[–]** fix wrong usage of `Reflect.has()` in `_isa.basetype()` (returns `true` for `toString`)
 * **[–]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
   (`isa`, `isa.optional`, `validate`, `validate.optional`); can we bake those right into `declarations[ type
   ].test()`? But then what when more fields get declared?
@@ -249,7 +243,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     declarations before being used first; this could happen implicitly on first use
   * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
     declared for a given type
-* **[–]** unify usage, orthography of 'built ins', 'builtins' (?), 'base type(s)', 'basetype(s)'
 
 ## Is Done
 
@@ -282,7 +275,7 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   * <del>by exporting (a copy of) `default_declarations`</del>
   * <del>by allowing or requiring a `cfg` object with an appropriate setting (`default_types: true`?)</del>
   * <del>by implementing `Intertype#declarations` as a class with an `add()` method or similar</del>
-* **[+]** allow overrides <ins>when so configured</ins> but not of <del>`built_ins`?</del> the 'base types'
+* **[+]** allow overrides <ins>when so configured</ins> but not of <del>`built_ins`?</del> the 'basetypes'
   `anything`, `nothing`, `something`, `null`, `undefined`, `unknown`, or the 'meta type' `optional`
 * **[+]** <del>what about declarations with missing `test`?</del> ensure an error is thrown when no test
   method is present
@@ -304,4 +297,12 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   avoid 'JavaScript Rip-Off' effect when detaching unbound method
 * **[+]** <del>test whether correct error is thrown</del> <ins>throw meaningful error</ins> when `declare`
   is called with unsuitable arguments
+* **[+]** unify usage, orthography of 'built ins', 'builtins' (?), 'base type(s)', 'basetype(s)' ->
+  'basetype(s)'
+* **[+]** currently `basetype` is declared as `( ( typeof x ) is 'string' ) and ( x is 'optional' or
+  Reflect.has built_ins, x )`
+  * <del>checking for `string` is redundant</del> <ins>checking for `( ( typeof x ) is 'string' )` is *not*
+    redundant as it prevents errors when `isa.basetype()` is called with a non-object value</ins>
+  * should `optional` be included?
+  * **[+]** fix wrong usage of `Reflect.has()` in `_isa.basetype()` (returns `true` for `toString`)
 
