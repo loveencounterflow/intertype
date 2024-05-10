@@ -22,9 +22,10 @@ built_ins =
   undefined:              ( x ) -> x is undefined
   unknown:                ( x ) -> ( @type_of x ) is 'unknown'
 
+_TMP_builtin_typenames          = new Set Object.keys built_ins
 #-----------------------------------------------------------------------------------------------------------
 default_declarations = _isa =
-  basetype:               ( x ) -> ( ( typeof x ) is 'string' ) and ( x is 'optional' or Reflect.has built_ins, x )
+  basetype:               ( x ) -> _TMP_builtin_typenames.has x
   boolean:                ( x ) -> ( x is true ) or ( x is false )
   function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
   asyncfunction:          ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
