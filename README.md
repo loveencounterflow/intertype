@@ -230,13 +230,23 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** to fix implementation failure connected to RHS `optional` prefix:
   * **[+]** commit current state, mistakes and all
   * **[–]** identify and rip out all places concerned with `is_optional` and/or RHS `optional` prefix
-  * **[–]** reduce tests such that valuable tests are preserved but ones using RHS `optional` prefix are
+  * **[+]** reduce tests such that valuable tests are preserved but ones using RHS `optional` prefix are
     skipped
   * **[–]** consider to disallow `optional` except in front of a simple type name (without dots)
     * what does `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even if we
       never want to implement the latter)?
   * **[–]** whatever the outcome, update docs
-
+* **[–]** currently `basetype` is declared as `( ( typeof x ) is 'string' ) and ( x is 'optional' or
+  Reflect.has built_ins, x )`
+  * checking for `string` is redundant
+  * should `optional` be included?
+* **[–]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
+  (`isa`, `isa.optional`, `validate`, `validate.optional`); can we bake those right into `declarations[ type
+  ].test()`? But then what when more fields get declared?
+  * this wouldn't pose a problem if we required that `intertype` instances be closed for further
+    declarations before being used first; this could happen implicitly on first use
+  * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
+    declared for a given type
 
 ## Is Done
 
