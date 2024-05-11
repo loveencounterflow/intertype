@@ -168,10 +168,10 @@ class Intertype
         if /\boptional\b/.test ref_type # ( ref_type is 'optional' ) or ( ref_type.startsWith 'optional.' )
           throw new E.Intertype_illegal_use_of_optional '^_compile_declaration_object@1^', type
         if ( basetype = @_extract_first_basetype_name ref_type )?
-          throw new E.Intertype_illegal_use_of_basetype '^_resolve_dotted_type@3^', type, basetype
+          throw new E.Intertype_illegal_use_of_basetype '^_compile_declaration_object@2^', type, basetype
         ref_declaration = @declarations[ ref_type ]
         unless ref_declaration?
-          throw new E.Intertype_unknown_type '^_compile_declaration_object@2^', ref_type
+          throw new E.Intertype_unknown_type '^_compile_declaration_object@3^', ref_type
         do ( test = ref_declaration.test ) => R.test = nameit type, ( x ) -> test.call @, x
         # debug '^_compile_declaration_object@332^', { type, ref_type, test: R.test, }
         Object.assign R.sub_tests, ref_declaration.sub_tests
@@ -181,7 +181,7 @@ class Intertype
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       else
-        throw new E.Intertype_wrong_type '^_compile_declaration_object@3^', "type name, test method, or object", \
+        throw new E.Intertype_wrong_type '^_compile_declaration_object@4^', "type name, test method, or object", \
           @__type_of _isa, R.test
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
