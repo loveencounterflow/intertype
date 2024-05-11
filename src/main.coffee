@@ -105,7 +105,7 @@ class Intertype
         @validate[            type ] = @_get_validate           declaration
         @validate.optional[   type ] = @_get_validate_optional  declaration
         @create[              type ] = @get_create              declaration
-        @_tests_for_type_of[  type ] = declaration.test if collection isnt basetypes
+        @_tests_for_type_of[  type ] = declaration.test if collection isnt basetypes ### TAINT should better check against _TMP_basetype_names ? ###
         #...................................................................................................
         if targets?
           set targets[ 'isa'                ], sub_type, @isa[                type ]
