@@ -100,7 +100,6 @@ class Intertype
         declaration     = @_compile_declaration_object  type, test
         #...................................................................................................
         @declarations[        type ] = declaration
-        ### TAINT pass `declaration` as sole argument, as for `create.type()` ###
         @isa[                 type ] = @_get_isa                declaration
         @isa.optional[        type ] = @_get_isa_optional       declaration
         @validate[            type ] = @_get_validate           declaration
