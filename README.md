@@ -230,9 +230,23 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     declarations before being used first; this could happen implicitly on first use
   * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
     declared for a given type
-* **[–]** what does `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even if we
-  never want to implement the latter)?
+* **[–]** what should RHS `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even
+  if we never want to implement the latter)? Observe that wile `optional.foo.bar` might mean something
+  different than `foo.optional.bar`, when testing for `isa.optional.foo.bar x` we apparently still
+  understand `foo.bar` as a (compound) fully qualified name of a type (`bar` in namespace `foo`) that in its
+  entirety may be present or absent
   * **[–]** consider to disallow `optional` except in front of a simple type name (without dots)
+* **[–]** clarify difference between basetypes and meta/quasitype `optional`, provide a type for the union
+  of both
+* **[–]** need a term for the 'sub-methods' that get attached as props to the 'target methods'(??), e.g.
+  after `isa.quantity()` has been set 'sub-methods' `isa.quantity.q()`, `isa.quantity.u()` will be set as
+  properties of their 'target' `isa.quantity`; the current terminology is unfortunate and obfuscates more
+  than it elicits
+* **[–]** would it be worth the effort to try and implement a 'permanent debugging' facility, one whose
+  calls are left in the code (maybe in the form of specially formatted comments) and can be activated when
+  needed? One could imagine those to produce a complete trace when activated that goes into an SQLite DB and
+  can then be inspected and filtered as needed. This would obviously be outside the scope of the present
+  package
 
 ## Is Done
 
