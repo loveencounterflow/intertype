@@ -60,7 +60,9 @@ default_declarations = _isa =
 
 
 #===========================================================================================================
-default_types = new Set Object.keys default_declarations
+default_types         = new Set Object.keys default_declarations
+_TMP_minimal_types    = ( new Set Object.keys basetypes ).union default_types   ### TAINT unfortunate choice of name ###
+_TMP_isa_minimal_type = ( x ) -> _TMP_minimal_types.has x
 
 #===========================================================================================================
 class Intertype
