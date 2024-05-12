@@ -241,19 +241,15 @@ class Intertype
 
   #---------------------------------------------------------------------------------------------------------
   _get_isa_optional: ( declaration ) ->
-    { type
-      test
-      sub_tests } = declaration
+    { type      } = declaration
     me            = @
+    test          = @isa[ type ]
+    method_name   = "isa.optional.#{type}"
     #.......................................................................................................
-    return nameit "isa.optional.#{type}", ( x ) ->
-      if ( arguments.length isnt 1 )
-        throw new E.Intertype_wrong_arity "^isa_optional_#{type}@1^", 1, arguments.length
+    return nameit method_name, ( x ) ->
+      me._validate_arity_for_method method_name, 1, arguments.length
       return true unless x?
-      return false unless test.call me, x
-      for field_name, sub_test of sub_tests
-        return false unless sub_test.call me, x[ field_name ]
-      return true
+      return test x
 
   #---------------------------------------------------------------------------------------------------------
   _get_validate: ( declaration ) ->
