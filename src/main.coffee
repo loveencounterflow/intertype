@@ -267,12 +267,11 @@ class Intertype
   _get_validate_optional: ( declaration ) ->
     { type      } = declaration
     me            = @
-    test          = @isa[ type ]
+    test          = @isa.optional[ type ]
     method_name   = "validate.optional.#{type}"
     #.......................................................................................................
     return nameit method_name, ( x ) ->
       me._validate_arity_for_method method_name, 1, arguments.length
-      return x unless x?
       return x if test x
       throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@2^", type, me.__type_of _isa, x
 
