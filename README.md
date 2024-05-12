@@ -223,13 +223,6 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement `fields`
 * **[–]** in `_compile_declaration_object()`, add validation for return value
 * **[–]** implement using `optional` in a declarations, as in `{ foo: 'optional.text', }`
-* **[–]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
-  (`isa`, `isa.optional`, `validate`, `validate.optional`); can we bake those right into `declarations[ type
-  ].test()`? But then what when more fields get declared?
-  * this wouldn't pose a problem if we required that `intertype` instances be closed for further
-    declarations before being used first; this could happen implicitly on first use
-  * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
-    declared for a given type
 * **[–]** what should RHS `optional.foo.bar` mean, is it potentially different from `foo.optional.bar` (even
   if we never want to implement the latter)? Observe that wile `optional.foo.bar` might mean something
   different than `foo.optional.bar`, when testing for `isa.optional.foo.bar x` we apparently still
@@ -317,4 +310,11 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   * **[+]** whatever the outcome, update docs
 * **[+]** test whether basic types are immutable with instances of `Intertype_minimal`
 * **[+]** in `_compile_declaration_object()`, call recursively for each entry in `declaration.fields`
+* **[+]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
+  (`isa`, `isa.optional`, `validate`, `validate.optional`) <del>; can we bake those right into `declarations[ type
+  ].test()`? But then what when more fields get declared?
+  * this wouldn't pose a problem if we required that `intertype` instances be closed for further
+    declarations before being used first; this could happen implicitly on first use
+  * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
+    declared for a given type</del>
 
