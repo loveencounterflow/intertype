@@ -282,13 +282,13 @@ class Intertype
     method_name   = "validate.optional.#{type}"
     #.......................................................................................................
     return nameit method_name, ( x ) ->
-      me._validate_arity method_name, 1, arguments.length
+      me._validate_arity_for_method method_name, 1, arguments.length
       return x unless x?
       return x if test x
       throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@2^", type, me.__type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
-  _validate_arity: ( method_name, need_arity, is_arity ) ->
+  _validate_arity_for_method: ( method_name, need_arity, is_arity ) ->
     return is_arity if need_arity is is_arity
     throw new E.Intertype_wrong_arity_for_method "^validate_arity@1^", method_name, need_arity, is_arity
 
