@@ -230,10 +230,10 @@ class Intertype
       test
       sub_tests } = declaration
     me            = @
+    method_name   = "isa.#{type}"
     #.......................................................................................................
-    return nameit "isa.#{type}", ( x ) ->
-      if ( arguments.length isnt 1 )
-        throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
+    return nameit method_name, ( x ) ->
+      me._validate_arity_for_method method_name, 1, arguments.length
       return false unless test.call me, x
       for field_name, sub_test of sub_tests
         return false unless sub_test.call me, x[ field_name ]
