@@ -44,6 +44,8 @@ class @Intertype_unknown_partial_type      extends @Intertype_error
   constructor: ( ref, type, partial_type ) -> super ref, "unknown partial type #{rpr partial_type} of #{rpr type}"
 class @Intertype_wrong_arity               extends @Intertype_error
   constructor: ( ref, need_arity, is_arity ) -> super ref, "expected #{need_arity} arguments, got #{is_arity}"
+class @Intertype_wrong_arity_for_method    extends @Intertype_error
+  constructor: ( ref, method_name, need_arity, is_arity ) -> super ref, "method #{rpr method_name} expects #{need_arity} arguments, got #{is_arity}"
 class @Intertype_wrong_arity_range         extends @Intertype_wrong_arity
   constructor: ( ref, min, max, is_arity ) -> super ref, "between #{min} and #{max}", is_arity
 class @Intertype_function_with_wrong_arity extends @Intertype_error
