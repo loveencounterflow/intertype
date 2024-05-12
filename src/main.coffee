@@ -90,7 +90,6 @@ class Intertype
       unless _isa.object collection
         throw new E.Intertype_validation_error '^declare@1^', 'object', @__type_of _isa, collection
       for type, test of collection then do ( type, test ) =>
-        # debug '^998-1^', "declare type                  ", { type, test, } unless _TMP_isa_minimal_type type
         #...................................................................................................
         if Reflect.has @declarations, type
           if _isa.basetype type
@@ -111,15 +110,11 @@ class Intertype
         @_tests_for_type_of[  type ] = declaration.test if collection isnt basetypes ### TAINT should better check against _TMP_basetype_names ? ###
         #...................................................................................................
         if targets?
-          # debug '^998-2^', "declare targets               ", { type, target_type, sub_type, }
           set targets[ 'isa'                ], sub_type, @isa[                type ]
           set targets[ 'isa.optional'       ], sub_type, @isa.optional[       type ]
           set targets[ 'validate'           ], sub_type, @validate[           type ]
           set targets[ 'validate.optional'  ], sub_type, @validate.optional[  type ]
           @declarations[ target_type ].sub_tests[ sub_type ] = @isa[ type ]
-        # debug '^998-3^', @isa.quantity, @isa.quantity { q: 3, u: 'g'} if ( type is 'quantity' ) or ( target_type is 'quantity' )
-        # debug '^998-3a^', @isa.optional.quantity, @isa.optional.quantity { q: 3, u: 'g', } if ( type is 'quantity' ) or ( target_type is 'quantity' )
-        # debug '^998-3a^', @isa.optional.quantity, @isa.optional.quantity null if ( type is 'quantity' ) or ( target_type is 'quantity' )
     #.......................................................................................................
     return null
 
@@ -235,10 +230,8 @@ class Intertype
       test
       sub_tests } = declaration
     me            = @
-    # debug '^998-4^', "create isa          method for", { type } unless _TMP_isa_minimal_type type
     #.......................................................................................................
     return nameit "isa.#{type}", ( x ) ->
-      # debug '^998-5^', "isa", { type, x } #, me.isa[ type ]
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_#{type}@1^", 1, arguments.length
       return false unless test.call me, x
@@ -252,10 +245,8 @@ class Intertype
       test
       sub_tests } = declaration
     me            = @
-    # debug '^998-6^', "create isa.optional method for", { type } unless _TMP_isa_minimal_type type
     #.......................................................................................................
     return nameit "isa.optional.#{type}", ( x ) ->
-      # debug '^998-7^', "isa.optional", { type, x } #, me.isa[ type ]
       if ( arguments.length isnt 1 )
         throw new E.Intertype_wrong_arity "^isa_optional_#{type}@1^", 1, arguments.length
       return true unless x?
