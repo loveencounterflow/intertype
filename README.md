@@ -311,10 +311,10 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[+]** test whether basic types are immutable with instances of `Intertype_minimal`
 * **[+]** in `_compile_declaration_object()`, call recursively for each entry in `declaration.fields`
 * **[+]** find a way to avoid code duplication in handling of field `sub_tests` across all four test methods
-  (`isa`, `isa.optional`, `validate`, `validate.optional`) <del>; can we bake those right into `declarations[ type
-  ].test()`? But then what when more fields get declared?
-  * this wouldn't pose a problem if we required that `intertype` instances be closed for further
-    declarations before being used first; this could happen implicitly on first use
-  * if we didn't want that, we'd have to re-formulate the declaration's test method each time a field is
-    declared for a given type</del>
+  (`isa`, `isa.optional`, `validate`, `validate.optional`) <del>; can we bake those right into
+  `declarations[ type ].test()`? But then what when more fields get declared?</del>
+  * <del>this wouldn't pose a problem if we required that `intertype` instances be closed for further
+    declarations before being used first; this could happen implicitly on first use</del>
+  * <del>if we didn't want that, we'd have to re-formulate the declaration's test method each time a field
+    is declared for a given type</del>
 
