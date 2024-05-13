@@ -240,6 +240,10 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   needed? One could imagine those to produce a complete trace when activated that goes into an SQLite DB and
   can then be inspected and filtered as needed. This would obviously be outside the scope of the present
   package
+* **[–]** when fields are declared but no `create()` method is given, generate a `create()` method that
+  accepts any number of objects thst are condensed into one object using `Object.assign()`, and then another
+  `Object assign` against the template gives the value of the newly created object
+  * **[–]** test for the recursive case
 
 ## Is Done
 
