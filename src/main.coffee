@@ -176,8 +176,7 @@ class Intertype
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       else
-        throw new E.Intertype_wrong_type '^_compile_declaration_object@4^', "type name, test method, or object", \
-          @__type_of _isa, R.test
+        throw new E.Intertype_wrong_type_for_test_method '^_compile_declaration_object@4^', @__type_of _isa, R.test
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test

@@ -80,5 +80,7 @@ class @Intertype_illegal_use_of_optional    extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "illegal use of 'optional' in declaration of type #{rpr type}"
 class @Intertype_illegal_use_of_basetype    extends @Intertype_error
   constructor: ( ref, type, basetype ) -> super ref, "illegal use of basetype #{rpr basetype} in declaration of type #{rpr type}"
+class @Intertype_wrong_type_for_test_method extends @Intertype_error
+  constructor: ( ref, type ) -> super ref, "expected type name, method, or object to indicate test method, got a #{type}"
 #-----------------------------------------------------------------------------------------------------------
 class @Intertype_ETEMPTBD extends @Intertype_error
