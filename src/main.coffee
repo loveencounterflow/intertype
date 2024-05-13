@@ -106,7 +106,7 @@ class Intertype
         @isa.optional[        type ] = @_get_isa_optional       declaration
         @validate[            type ] = @_get_validate           declaration
         @validate.optional[   type ] = @_get_validate_optional  declaration
-        @create[              type ] = @get_create              declaration
+        @create[              type ] = @_get_create             declaration
         @_tests_for_type_of[  type ] = declaration.test if collection isnt basetypes ### TAINT should better check against _TMP_basetype_names ? ###
         #...................................................................................................
         if targets?
@@ -295,7 +295,7 @@ class Intertype
     return 'unknown'
 
   #---------------------------------------------------------------------------------------------------------
-  get_create: ( declaration ) ->
+  _get_create: ( declaration ) ->
     { type
       create
       template  } = declaration
@@ -303,7 +303,7 @@ class Intertype
     switch true
       when create?
         unless me.isa.function create
-          throw new E.Intertype_create_must_be_function "^get_create@1^", type, me.type_of create
+          throw new E.Intertype_create_must_be_function "^_get_create@1^", type, me.type_of create
         return nameit "create_#{type}", ( P... ) ->
           unless me.isa[ type ] ( R = create.call me, P... )
             throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, me.type_of R
@@ -322,7 +322,7 @@ class Intertype
     #.......................................................................................................
     if default_declarations.function template
       if ( template.length isnt 0 )
-        throw new E.Intertype_wrong_template_arity "^get_create@2^", type, template.length
+        throw new E.Intertype_wrong_template_arity "^_get_create@2^", type, template.length
       return nameit "create_#{type}", ->
         if ( arguments.length isnt 0 )
           throw new E.Intertype_wrong_arity "^create_#{type}@3^", 0, arguments.length
