@@ -240,10 +240,20 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   needed? One could imagine those to produce a complete trace when activated that goes into an SQLite DB and
   can then be inspected and filtered as needed. This would obviously be outside the scope of the present
   package
-* **[–]** when fields are declared but no `create()` method is given, generate a `create()` method that
-  accepts any number of objects thst are condensed into one object using `Object.assign()`, and then another
-  `Object assign` against the template gives the value of the newly created object
-  * **[–]** test for the recursive case
+* **[–]** test `create()` method for the recursive case
+* **[–]** test that a declaration with fields defaults to `{ test: 'object', }`
+* **[–]** test that incorrect templates are rejected
+* **[–]** acquire deep-freezing method
+  * **[–]** use deep-freezing for declaration
+  * **[–]** use deep-freezing for generated values when so configured / by default? maybe instantiation
+    setting?
+* **[–]** what do when, in the declaration, ...
+  * **[–]** there's `fields` but no `template`
+  * **[–]** there's `template` but no `fields`
+  * **[–]** there's `template` but no `fields`, and all fields in `template` are constants (is it even worth
+    caring about?)
+  * **[–]** there's `template` but it's a function
+
 
 ## Is Done
 
@@ -321,4 +331,13 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     declarations before being used first; this could happen implicitly on first use</del>
   * <del>if we didn't want that, we'd have to re-formulate the declaration's test method each time a field
     is declared for a given type</del>
+* **[+]** implement value creation for all the builtin types
+* **[+]** when fields are declared but no `create()` method is given, generate a `create()` method that
+  accepts any number of objects that, together with the template, will be condensed into one object using
+  `Object.assign()`
+* **[+]** test that template functions are called, even when used in template fields
+* **[+]** we should use a recursive `merge()` method, call it `deepmerge()`, instead of `Object.assign()`
+  when creating values from templates; this method should be exported for the benefit of users who want to
+  implement their own `create()` method; conceivably, `deepmerge()` could / should beimplemented in
+  `webguy.props`
 
