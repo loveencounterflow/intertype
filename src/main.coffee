@@ -259,11 +259,11 @@ class Intertype
     a non-existing property is accessed ###
     #.......................................................................................................
     optional_from_name = -> switch name
-      when 'isa'          then ( x ) -> throw new E.Intertype_illegal_isa_optional       '^constructor@1^'
-      when 'validate'     then ( x ) -> throw new E.Intertype_illegal_validate_optional  '^constructor@2^'
-      when 'create'       then ( x ) -> throw new E.Intertype_illegal_create_optional    '^constructor@3^'
+      when 'isa'          then ( x ) -> throw new E.Intertype_illegal_isa_optional       '^_new_strict_proxy@1^'
+      when 'validate'     then ( x ) -> throw new E.Intertype_illegal_validate_optional  '^_new_strict_proxy@3^'
+      when 'create'       then ( x ) -> throw new E.Intertype_illegal_create_optional    '^_new_strict_proxy@4^'
       when 'declarations' then {}
-      else throw new E.Intertype_internal_error '^constructor@4^', "unknown name #{rpr name}"
+      else throw new E.Intertype_internal_error '^_new_strict_proxy@5^', "unknown name #{rpr name}"
     #.......................................................................................................
     get_cfg = ( ref ) =>
       get: ( target, key ) =>
@@ -315,7 +315,7 @@ class Intertype
     return nameit method_name, ( x ) ->
       me._validate_arity_for_method method_name, 1, arguments.length
       return x if test x
-      throw new E.Intertype_validation_error "^validate_#{type}@2^", type, __type_of _isa, x
+      throw new E.Intertype_validation_error "^#{method_name}@1^", type, __type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
   _get_validate_optional: ( declaration ) ->
@@ -327,7 +327,7 @@ class Intertype
     return nameit method_name, ( x ) ->
       me._validate_arity_for_method method_name, 1, arguments.length
       return x if test x
-      throw new E.Intertype_optional_validation_error "^validate_optional_#{type}@2^", type, __type_of _isa, x
+      throw new E.Intertype_optional_validation_error "^#{method_name}@1^", type, __type_of _isa, x
 
   #---------------------------------------------------------------------------------------------------------
   _validate_arity_for_method: ( method_name, need_arity, is_arity ) ->
