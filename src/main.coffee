@@ -198,6 +198,7 @@ class Intertype
     R = { template..., }
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
+    R.test = 'object' if ( not R.test? and @_looks_like_an_object_declaration declaration )
     #.......................................................................................................
     switch true
       #.....................................................................................................
