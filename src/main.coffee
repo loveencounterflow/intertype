@@ -354,7 +354,7 @@ class Intertype
       template  } = declaration
     me            = @
     #.......................................................................................................
-    if default_declarations.function template
+    if _isa.function template
       if ( template.length isnt 0 )
       return nameit "create_#{type}", ->
         throw new E.Intertype_wrong_template_arity "^_get_create@1^", type, template.length
