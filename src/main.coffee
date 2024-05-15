@@ -26,7 +26,7 @@ _TMP_basetype_names          = new Set Object.keys basetypes
 _TMP_basetype_names_matcher  = /// \b ( #{[ _TMP_basetype_names..., ].join '|'} ) \b ///
 
 #-----------------------------------------------------------------------------------------------------------
-default_declarations = _isa =
+_isa =
   basetype:               ( x ) -> _TMP_basetype_names.has x
   boolean:                ( x ) -> ( x is true ) or ( x is false )
   function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
@@ -37,8 +37,8 @@ default_declarations = _isa =
   infinity:               ( x ) -> ( x is +Infinity ) or ( x is -Infinity )
   text:                   ( x ) -> ( typeof x ) is 'string'
   list:                   ( x ) -> Array.isArray x
-  # text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   regex:                  ( x ) -> x instanceof RegExp
+  # text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   # nullary:                ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 0 )
   # unary:                  ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 1 )
   # binary:                 ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 2 )
@@ -57,6 +57,42 @@ default_declarations = _isa =
 #   # foo: ( x ) -> x is 'foo'
 #   # bar: ( x ) -> x is 'bar'
 #   }
+
+#-----------------------------------------------------------------------------------------------------------
+default_declarations =
+  basetype:
+    test:         _isa.basetype
+  boolean:
+    test:         _isa.boolean
+    template:     false
+  function:
+    test:         _isa.function
+    template:     -> ->
+  asyncfunction:
+    test:         _isa.asyncfunction
+    template:     -> await undefined
+  symbol:
+    test:         _isa.symbol
+    template:     -> Symbol ''
+  object:
+    test:         _isa.object
+    template:     -> {}
+  float:
+    test:         _isa.float
+    template:     0
+  infinity:
+    test:         _isa.infinity
+    template:     Infinity
+  text:
+    test:         _isa.text
+    template:     ''
+  list:
+    test:         _isa.list
+    template:     -> []
+  regex:
+    test:         _isa.regex
+    template:     -> new RegExp()
+
 
 
 #===========================================================================================================
