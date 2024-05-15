@@ -151,6 +151,12 @@ class Intertype
           set targets[ 'validate'           ], sub_type, @validate[           type ]
           set targets[ 'validate.optional'  ], sub_type, @validate.optional[  type ]
           @declarations[ target_type ].sub_tests[ sub_type ] = @isa[ type ]
+        #...................................................................................................
+        ### TAINT turn into method, must also look into template should fields be missing ###
+        if declaration.fields?
+          for field_name, test of declaration.fields
+            fq_type_name = "#{type}.#{field_name}"
+            @declare { ["#{fq_type_name}"]: test, }
     #.......................................................................................................
     return null
 
