@@ -336,6 +336,8 @@ class Intertype
       unless me.isa[ type ] ( R = template )
         throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@7^", type, me.type_of R
       return R
+      unless me.isa[ type ] template
+        throw new E.Intertype_wrong_template_type "^_get_create@2^", type, me.type_of R
 
 
 #===========================================================================================================

@@ -68,6 +68,8 @@ class @Intertype_declaration_redeclaration_forbidden extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "not allowed to re-declare type #{rpr type}"
 class @Intertype_wrong_template_arity       extends @Intertype_error
   constructor: ( ref, type, arity ) -> super ref, "template method for type #{rpr type} has arity #{arity} but must be nullary without `create` method"
+class @Intertype_wrong_template_type        extends @Intertype_error
+  constructor: ( ref, type, arity ) -> super ref, "template for type #{rpr type} doesn't validate as a #{type}"
 class @Intertype_optional_used_alone        extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "not allowed to use `optional` on its own in type declaration for #{rpr type}"
 class @Intertype_illegal_isa_optional       extends @Intertype_error
