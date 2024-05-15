@@ -29,8 +29,12 @@ _TMP_basetype_names_matcher  = /// \b ( #{[ _TMP_basetype_names..., ].join '|'} 
 _isa =
   basetype:               ( x ) -> _TMP_basetype_names.has x
   boolean:                ( x ) -> ( x is true ) or ( x is false )
-  function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
   asyncfunction:          ( x ) -> ( Object::toString.call x ) is '[object AsyncFunction]'
+  generatorfunction:      ( x ) => ( Object::toString.call x ) is '[object GeneratorFunction]'
+  generator:              ( x ) => ( Object::toString.call x ) is '[object Generator]'
+  asyncgeneratorfunction: ( x ) => ( Object::toString.call x ) is '[object AsyncGeneratorFunction]'
+  asyncgenerator:         ( x ) => ( Object::toString.call x ) is '[object AsyncGenerator]'
+  function:               ( x ) -> ( Object::toString.call x ) is '[object Function]'
   symbol:                 ( x ) -> ( typeof x ) is 'symbol'
   object:                 ( x ) -> x? and ( typeof x is 'object' ) and ( ( Object::toString.call x ) is '[object Object]' )
   float:                  ( x ) -> Number.isFinite x
@@ -65,12 +69,20 @@ default_declarations =
   boolean:
     test:         _isa.boolean
     template:     false
-  function:
-    test:         _isa.function
-    template:     -> ->
   asyncfunction:
     test:         _isa.asyncfunction
     template:     -> await undefined
+  generatorfunction:
+    test:         _isa.generatorfunction
+  asyncgeneratorfunction:
+    test:         _isa.asyncgeneratorfunction
+  asyncgenerator:
+    test:         _isa.asyncgenerator
+  generator:
+    test:         _isa.generator
+  function:
+    test:         _isa.function
+    template:     -> ->
   symbol:
     test:         _isa.symbol
     template:     -> Symbol ''
