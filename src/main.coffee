@@ -313,12 +313,12 @@ class Intertype
     #.......................................................................................................
     if default_declarations.function template
       if ( template.length isnt 0 )
-        throw new E.Intertype_wrong_template_arity "^_get_create@2^", type, template.length
       return nameit "create_#{type}", ->
+        throw new E.Intertype_wrong_template_arity "^_get_create@1^", type, template.length
         if ( arguments.length isnt 0 )
-          throw new E.Intertype_wrong_arity "^create_#{type}@3^", 0, arguments.length
+          throw new E.Intertype_wrong_arity "^create_#{type}@1^", 0, arguments.length
         unless me.isa[ type ] ( R = template.call me )
-          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@4^", type, me.type_of R
+          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@2^", type, me.type_of R
         return R
     #.......................................................................................................
     ### TAINT case of constant template could be handled when validating the declaration ###
