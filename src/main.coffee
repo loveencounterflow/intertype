@@ -353,11 +353,14 @@ class Intertype
     { type
       template  } = declaration
     me            = @
+    use_assign    = @_looks_like_an_object_declaration declaration
+    method_name   = "create_#{type}"
+    # debug '^3234^', declaration, { use_assign, type: ( __type_of _isa, ) } if declaration.type is 'q'
     #.......................................................................................................
     if _isa.function template
       if ( template.length isnt 0 )
-      return nameit "create_#{type}", ->
         throw new E.Intertype_wrong_template_arity "^_get_create@1^", type, template.length
+      return nameit method_name, ->
         if ( arguments.length isnt 0 )
           throw new E.Intertype_wrong_arity "^create_#{type}@1^", 0, arguments.length
         unless me.isa[ type ] ( R = template.call me )
@@ -365,14 +368,35 @@ class Intertype
         return R
     #.......................................................................................................
     ### TAINT case of constant template could be handled when validating the declaration ###
-    return nameit "create_#{type}", ->
-      if ( arguments.length isnt 0 )
-        throw new E.Intertype_wrong_arity "^create_#{type}@6^", 0, arguments.length
-      unless me.isa[ type ] ( R = template )
-        throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@7^", type, me.type_of R
-      return R
+    if use_assign
+      Object.freeze declaration.template ### TAINT should deep-freeze ###
+      R = nameit method_name, ( P... ) ->
+        debug '^3234^', deepmerge template, P...
+        unless me.isa[ type ] ( R = me._call_and_reassign_functions deepmerge template, P... )
+          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@3^", type, me.type_of R
+        return R
+    else
       unless me.isa[ type ] template
         throw new E.Intertype_wrong_template_type "^_get_create@2^", type, me.type_of R
+      R = nameit method_name, ->
+        if ( arguments.length isnt 0 )
+          throw new E.Intertype_wrong_arity "^create_#{type}@4^", 0, arguments.length
+        return template
+    #.......................................................................................................
+    return R
+
+  #---------------------------------------------------------------------------------------------------------
+  _call_and_reassign_functions: ( R ) ->
+    for key, value of R
+      if _isa.function value  then  R[ key ] = value.call @
+      else if _isa.object R   then  R[ key ] = @_call_and_reassign_functions value
+    return R
+
+  #---------------------------------------------------------------------------------------------------------
+  _looks_like_an_object_declaration: ( declaration ) ->
+    ( declaration? and ( \
+      ( _isa.object declaration.fields ) \
+        or ( not declaration.fields? and _isa.object declaration.template ) ) )
 
 
 #===========================================================================================================
@@ -385,6 +409,16 @@ __type_of = ( test_method_map, x ) ->
   for type, test of test_method_map
     return type if test x
   return 'unknown'
+
+#===========================================================================================================
+deepmerge = ( P... ) ->
+  R = {}
+  for p in P
+    unless _isa.object p
+      throw new E.Intertype_wrong_type "^deepmerge@1^", 'an object', __type_of _isa, p
+    for key, value of p
+      R[ key ] = if ( _isa.object value ) then ( deepmerge value ) else value
+  return R
 
 #===========================================================================================================
 types = new Intertype()
