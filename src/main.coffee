@@ -430,4 +430,6 @@ do =>
   module.exports = {
     Intertype, Intertype_minimal
     types, isa, validate, create, type_of,
-    declarations: default_declarations, }
+    declarations: default_declarations,
+    deepmerge,
+    __type_of   }
