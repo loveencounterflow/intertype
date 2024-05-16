@@ -121,6 +121,7 @@ class Intertype
     declarations.unshift default_declarations unless @ instanceof Intertype_minimal
     #.......................................................................................................
     hide @, 'isa',                @_new_strict_proxy 'isa'
+    hide @, 'evaluate',           @_new_strict_proxy 'evaluate'
     hide @, 'validate',           @_new_strict_proxy 'validate'
     hide @, 'create',             @_new_strict_proxy 'create'
     hide @, 'declarations',       @_new_strict_proxy 'declarations'
@@ -152,6 +153,8 @@ class Intertype
         @declarations[        type ] = declaration
         @isa[                 type ] = @_get_isa                declaration
         @isa.optional[        type ] = @_get_isa_optional       declaration
+        @evaluate[            type ] = @_get_evaluate           declaration
+        @evaluate.optional[   type ] = @_get_evaluate_optional  declaration
         @validate[            type ] = @_get_validate           declaration
         @validate.optional[   type ] = @_get_validate_optional  declaration
         @create[              type ] = @_get_create             declaration
@@ -160,6 +163,8 @@ class Intertype
         if targets?
           set targets[ 'isa'                ], sub_type, @isa[                type ]
           set targets[ 'isa.optional'       ], sub_type, @isa.optional[       type ]
+          set targets[ 'evaluate'           ], sub_type, @evaluate[           type ]
+          set targets[ 'evaluate.optional'  ], sub_type, @evaluate.optional[  type ]
           set targets[ 'validate'           ], sub_type, @validate[           type ]
           set targets[ 'validate.optional'  ], sub_type, @validate.optional[  type ]
           @declarations[ target_type ].sub_tests[ sub_type ] = @isa[ type ]
@@ -169,6 +174,9 @@ class Intertype
           for field_name, test of declaration.fields
             fq_type_name = "#{type}.#{field_name}"
             @declare { ["#{fq_type_name}"]: test, }
+        #...................................................................................................
+        for prefix from walk_prefixes type
+          @declarations[ prefix ].sub_fields.push type
     #.......................................................................................................
     return null
 
@@ -198,6 +206,8 @@ class Intertype
       targets     =
         'isa':                @isa[               target_type ]
         'isa.optional':       @isa.optional[      target_type ]
+        'evaluate':           @evaluate[          target_type ]
+        'evaluate.optional':  @evaluate.optional[ target_type ]
         'validate':           @validate[          target_type ]
         'validate.optional':  @validate.optional[ target_type ]
     #.......................................................................................................
@@ -206,7 +216,7 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    template = { type, test: undefined, sub_tests: {}, }
+    template = { type, test: undefined, sub_tests: {}, sub_fields: [], }
     R = { template..., }
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
@@ -260,6 +270,7 @@ class Intertype
     #.......................................................................................................
     optional_from_name = -> switch name
       when 'isa'          then ( x ) -> throw new E.Intertype_illegal_isa_optional       '^_new_strict_proxy@1^'
+      when 'evaluate'     then ( x ) -> throw new E.Intertype_illegal_evaluate_optional  '^_new_strict_proxy@2^'
       when 'validate'     then ( x ) -> throw new E.Intertype_illegal_validate_optional  '^_new_strict_proxy@3^'
       when 'create'       then ( x ) -> throw new E.Intertype_illegal_create_optional    '^_new_strict_proxy@4^'
       when 'declarations' then {}
@@ -304,6 +315,40 @@ class Intertype
       me._validate_arity_for_method method_name, 1, arguments.length
       return true unless x?
       return test x
+
+  #---------------------------------------------------------------------------------------------------------
+  _get_evaluate: ( declaration ) ->
+    { type
+      test
+      sub_tests
+      sub_fields } = declaration
+    me            = @
+    method_name   = "evaluate.#{type}"
+    #.......................................................................................................
+    return nameit method_name, ( x ) ->
+      me._validate_arity_for_method method_name, 1, arguments.length
+      R         = {}
+      R[ type ] = me.isa[ type ] x
+      if x?
+        for field_name, sub_test of sub_tests
+          Object.assign R, me.evaluate[ type ][ field_name ] x?[ field_name ]
+      else
+        for fq_name in sub_fields
+          R[ fq_name ] = false
+      return R
+
+  #---------------------------------------------------------------------------------------------------------
+  _get_evaluate_optional: ( declaration ) ->
+    { type
+      test
+      sub_tests } = declaration
+    me            = @
+    method_name   = "evaluate.optional.#{type}"
+    #.......................................................................................................
+    return nameit method_name, ( x ) ->
+      me._validate_arity_for_method method_name, 1, arguments.length
+      throw new E.Intertype_illegal_evaluate_optional "^#{method_name}@1^"
+      return R
 
   #---------------------------------------------------------------------------------------------------------
   _get_validate: ( declaration ) ->
@@ -433,6 +478,21 @@ deepmerge = ( P... ) ->
   return R
 
 #===========================================================================================================
+walk_prefixes = ( fq_name ) ->
+  ### Given a fully qualified type name, walk over all the prefixes of the name, if any. This is used to
+  determine the transitive sub-types of types with fields.
+
+  Example: calling `walk_prefixes 'one.two.three.four'` will iterate over `'one'`, `'one.two'`,
+  `'one.two.three'`. ###
+  unless _isa.text fq_name
+    throw new E.Intertype_wrong_type "^deepmerge@1^", 'a text', __type_of _isa, p
+  parts = fq_name.split '.'
+  for idx in [ 0 ... parts.length - 1 ]
+    yield ( parts[ .. idx ].join '.' )
+  return null
+
+
+#===========================================================================================================
 types = new Intertype()
 do =>
   { isa
@@ -444,4 +504,5 @@ do =>
     types, isa, validate, create, type_of,
     declarations: default_declarations,
     deepmerge,
+    walk_prefixes,
     __type_of   }

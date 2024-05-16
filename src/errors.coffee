@@ -74,6 +74,8 @@ class @Intertype_optional_used_alone        extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "not allowed to use `optional` on its own in type declaration for #{rpr type}"
 class @Intertype_illegal_isa_optional       extends @Intertype_error
   constructor: ( ref ) -> super ref, "`optional` is not a legal type for `isa` methods"
+class @Intertype_illegal_evaluate_optional  extends @Intertype_error
+  constructor: ( ref ) -> super ref, "`optional` is not a legal type for `evaluate` methods"
 class @Intertype_illegal_validate_optional  extends @Intertype_error
   constructor: ( ref ) -> super ref, "`optional` is not a legal type for `validate` methods"
 class @Intertype_illegal_create_optional    extends @Intertype_error
