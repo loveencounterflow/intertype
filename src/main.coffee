@@ -42,6 +42,7 @@ _isa =
   text:                   ( x ) -> ( typeof x ) is 'string'
   list:                   ( x ) -> Array.isArray x
   regex:                  ( x ) -> x instanceof RegExp
+  set:                    ( x ) -> x instanceof Set
   # text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   # nullary:                ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 0 )
   # unary:                  ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 1 )
@@ -104,6 +105,9 @@ default_declarations =
   regex:
     test:         _isa.regex
     template:     -> new RegExp()
+  set:
+    test:         _isa.set
+    template:     -> new Set()
 
 
 
