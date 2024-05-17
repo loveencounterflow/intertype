@@ -122,7 +122,6 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   ### TAINT may want to check type, arities ###
   constructor: ( declarations... ) ->
-    declarations.unshift default_declarations unless @ instanceof Intertype_minimal
     #.......................................................................................................
     hide @, 'isa',                @_new_strict_proxy 'isa'
     hide @, 'evaluate',           @_new_strict_proxy 'evaluate'
@@ -131,11 +130,17 @@ class Intertype
     hide @, 'declarations',       @_new_strict_proxy 'declarations'
     hide @, '_tests_for_type_of', {}
     ### NOTE redirected to prevent 'JavaScript rip-off' effect ###
-    hide @, 'type_of',            ( P... ) => @_type_of P...
-    hide @, 'declare',            ( P... ) => @_declare P...
+    hide @, 'type_of',            ( P... ) => @_type_of           P...
+    hide @, 'declare',            ( P... ) => @_declare_usertypes P...
     #.......................................................................................................
-    @_declare basetypes, declarations...
+    @_declare_basetypes basetypes
+    @_declare_usertypes default_declarations unless @ instanceof Intertype_minimal
+    @_declare_usertypes declarations...
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _declare_basetypes: ( P... ) -> @_declare P...
+  _declare_usertypes: ( P... ) -> @_declare P...
 
   #---------------------------------------------------------------------------------------------------------
   _declare: ( declarations... ) ->
@@ -220,7 +225,7 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    template = { type, test: undefined, sub_tests: {}, sub_fields: [], }
+    template = { type, role: 'usertype', test: undefined, sub_tests: {}, sub_fields: [], }
     R = { template..., }
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
