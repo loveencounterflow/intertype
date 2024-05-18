@@ -130,8 +130,8 @@ class Intertype
     hide @, 'declarations',       @_new_strict_proxy 'declarations'
     hide @, '_tests_for_type_of', {}
     ### NOTE redirected to prevent 'JavaScript rip-off' effect ###
-    hide @, 'type_of',            ( P... ) => @_type_of           P...
-    hide @, 'declare',            ( P... ) => @_declare_usertypes P...
+    hide @, 'type_of',            nameit 'type_of', ( P... ) => @_type_of           P...
+    hide @, 'declare',            nameit 'declare', ( P... ) => @_declare_usertypes P...
     #.......................................................................................................
     @_declare_basetypes basetypes
     @_declare_usertypes default_declarations unless @ instanceof Intertype_minimal
@@ -139,11 +139,11 @@ class Intertype
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _declare_basetypes: ( P... ) -> @_declare P...
-  _declare_usertypes: ( P... ) -> @_declare P...
+  _declare_basetypes: ( P... ) -> @_declare { role: 'basetype', }, P...
+  _declare_usertypes: ( P... ) -> @_declare { role: 'usertype', }, P...
 
   #---------------------------------------------------------------------------------------------------------
-  _declare: ( declarations... ) ->
+  _declare: ( cfg, declarations... ) ->
     for collection in declarations
       unless _isa.object collection
         throw new E.Intertype_validation_error '^declare@1^', 'object', __type_of _isa, collection
@@ -157,7 +157,7 @@ class Intertype
         { target_type
           targets
           sub_type    } = @_resolve_dotted_type         type
-        declaration     = @_compile_declaration_object  type, test
+        declaration     = @_compile_declaration_object  cfg, type, test
         #...................................................................................................
         @declarations[        type ] = declaration
         @isa[                 type ] = @_get_isa                declaration
@@ -223,13 +223,18 @@ class Intertype
     return { type, target_type, targets, sub_type, }
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_declaration_object: ( type, declaration ) ->
+  _get_declaration_template: ( type, cfg = null ) ->
+    { type, cfg..., test: undefined, sub_tests: {}, sub_fields: [], }
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_declaration_object: ( cfg, type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    template = { type, role: 'usertype', test: undefined, sub_tests: {}, sub_fields: [], }
-    R = { template..., }
+    R = @_get_declaration_template type, cfg
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
-    R.test = 'object' if ( not R.test? and @_looks_like_an_object_declaration declaration )
+    #.......................................................................................................
+    if not R.test?
+      R.test = 'object' if ( R.role is 'qualifier' ) or ( @_looks_like_an_object_declaration declaration )
     #.......................................................................................................
     switch true
       #.....................................................................................................
@@ -301,17 +306,28 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _get_isa: ( declaration ) ->
     { type
+      role
       test
       sub_tests } = declaration
     me            = @
     method_name   = "isa.#{type}"
     #.......................................................................................................
-    return nameit method_name, ( x ) ->
-      me._validate_arity_for_method method_name, 1, arguments.length
-      return false unless test.call me, x
-      for field_name, sub_test of sub_tests
-        return false unless sub_test.call me, x[ field_name ]
-      return true
+    return switch true
+      #.....................................................................................................
+      when role is 'qualifier' then nameit method_name, ( x ) ->
+        me._validate_arity_for_method method_name, 1, arguments.length
+        for field_name, sub_test of sub_tests
+          return true if sub_test.call me, x
+        return false
+      #.....................................................................................................
+      when role in [ 'basetype', 'usertype', ] then nameit method_name, ( x ) ->
+        me._validate_arity_for_method method_name, 1, arguments.length
+        return false unless test.call me, x
+        for field_name, sub_test of sub_tests
+          return false unless sub_test.call me, x[ field_name ]
+        return true
+      #.....................................................................................................
+      else throw new Error '85734982578457238457'
 
   #---------------------------------------------------------------------------------------------------------
   _get_isa_optional: ( declaration ) ->
