@@ -287,7 +287,6 @@ class Intertype
       when 'evaluate'     then ( x ) -> throw new E.Intertype_illegal_evaluate_optional  '^_new_strict_proxy@2^'
       when 'validate'     then ( x ) -> throw new E.Intertype_illegal_validate_optional  '^_new_strict_proxy@3^'
       when 'create'       then ( x ) -> throw new E.Intertype_illegal_create_optional    '^_new_strict_proxy@4^'
-      when 'declarations' then {}
       else throw new E.Intertype_internal_error '^_new_strict_proxy@5^', "unknown name #{rpr name}"
     #.......................................................................................................
     get_cfg = ( ref ) =>
@@ -300,8 +299,11 @@ class Intertype
         return R if ( R = Reflect.get target, key )?
         throw new E.Intertype_unknown_type ref, key
     #.......................................................................................................
-    optional =  new Proxy optional_from_name(), get_cfg "^proxy_for_#{name}_optional@1^"
-    return      new Proxy { optional, },        get_cfg "^proxy_for_#{name}@1^"
+    switch name
+      when 'declarations' then  optional = @_get_declaration_template 'optional', { role: 'optional', }
+      when 'optional'     then  optional = new Proxy {},                          get_cfg "^proxy_for_#{name}_optional@1^"
+      else                      optional = new Proxy ( optional_from_name name ), get_cfg "^proxy_for_#{name}_optional@1^"
+    return new Proxy { optional, }, get_cfg "^proxy_for_#{name}@1^"
 
   #---------------------------------------------------------------------------------------------------------
   _get_isa: ( declaration ) ->
