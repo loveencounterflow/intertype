@@ -316,12 +316,14 @@ class Intertype
     #.......................................................................................................
     return switch true
       #.....................................................................................................
+      ### deal with sum types (tagged unions, variants) ###
       when role is 'qualifier' then nameit method_name, ( x ) ->
         me._validate_arity_for_method method_name, 1, arguments.length
         for field_name, sub_test of sub_tests
           return true if sub_test.call me, x
         return false
       #.....................................................................................................
+      ### deal with product types (records) ###
       when role in [ 'basetype', 'usertype', ] then nameit method_name, ( x ) ->
         me._validate_arity_for_method method_name, 1, arguments.length
         return false unless test.call me, x
