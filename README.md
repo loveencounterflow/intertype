@@ -14,6 +14,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
     - [`create.〈type〉()`](#create%E2%8C%A9type%E2%8C%AA)
   - [`declare()`](#declare)
   - [`evaluate` methods](#evaluate-methods)
+  - [Sum Types (Variants) and Product Types (Records)](#sum-types-variants-and-product-types-records)
     - [Declaration Values (Test Method, Type Name, Object)](#declaration-values-test-method-type-name-object)
   - [Namespaces and Object Fields](#namespaces-and-object-fields)
   - [Invariants](#invariants)
@@ -131,6 +132,39 @@ Types declarations may include a `create` and a `template` entry:
   `person.address.city`); they will appear in order of their declaration with `type` coming first, so the
   object returned by `evaluate.person x` will always have `person` as its first key, and the one returned by
   `evaluate.person.address x` will always have `person.address` as its first key
+
+## Sum Types (Variants) and Product Types (Records)
+
+* Variants can be defined with or without a *qualifier*, a syntactic element that precedes a type name
+* Variants *without* qualifiers ('unqualified variants') can be defined by using a logical disjunction
+  (`or`, `||`) in the test method. For example, one could declare a type `boolordeep` like this:
+
+  ```coffee
+  declarations:
+    boolordeep: ( x ) -> ( @isa.boolean x ) or ( x is 'deep' )
+  ```
+
+  which will be satisfied by any one of the three values `true`, `false`, and (the string) `'deep'`, to the
+  exclusion of any other values.
+* '*Qualified* variants' do use an explicit qualifier that is meant to be used in conjunction with other
+  types, for example:
+
+  ```coffee
+  declarations:
+    nonempty: { role: 'qualifier', }
+    'nonempty.list':  ( x ) -> ( @isa.list  x ) and ( x.length  isnt 0 )
+    'nonempty.set':   ( x ) -> ( @isa.set   x ) and ( x.size    isnt 0 )
+  ```
+
+  * Having declared the above types—the qualifier `nonempty` with its two branch types `nonempty.list` and
+    `nonempty.set`—we can now test for any of:
+    * `isa.nonempty.list  x`: whether `x` is a `list` with non-zero `x.length`
+    * `isa.nonempty.set   x`: whether `x` is a `set` with non-zero `x.size`
+    * `isa.nonempty       x`: whether `x` satisifes either `isa.nonempty.list x` or `isa.nonempty.set x`
+  * In other words, the qualifier is what becomes the variant—`isa.nonempty.list` and `isa.nonempty.set` are
+    ordinary tpes (though conceivably one could declare them as unqualified variants, as shown above)
+* 'Product types' or 'records', on the other hand, are types that mandate the presence not of alternatives,
+  but of named fields each of which must satisfy its own test method for the record to be valid
 
 ### Declaration Values (Test Method, Type Name, Object)
 
@@ -293,6 +327,9 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   * **[–]** qualifiers should be distinguished from `optional` which is and remains a prefix that can before
     any other legal (known, declared) (fully quylified) type name, so `isa.optional.nonempty.text x` may be
     legal but `isa.nonempty.optional.text x` won't
+* **[–]** use prototypes of test methods `throws()` &c for new version of `guy-test`
+* **[–]** use prototype of set equality for `equals()` implementation in `webguy`
+
 
 ## Is Done
 
