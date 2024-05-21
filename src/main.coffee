@@ -128,12 +128,14 @@ default_declarations =
   #.........................................................................................................
   'empty':            { role: 'qualifier', }
   'nonempty':         { role: 'qualifier', }
-  'empty.list':       ( x ) -> ( @isa.list  x ) and ( x.length  is  0 )
-  'empty.text':       ( x ) -> ( @isa.text  x ) and ( x.length  is  0 )
-  'empty.set':        ( x ) -> ( @isa.set   x ) and ( x.size    is  0 )
-  'nonempty.list':    ( x ) -> ( @isa.list  x ) and ( x.length  >   0 )
-  'nonempty.text':    ( x ) -> ( @isa.text  x ) and ( x.length  >   0 )
-  'nonempty.set':     ( x ) -> ( @isa.set   x ) and ( x.size    >   0 )
+  'empty.list':       ( x ) -> ( @isa.list    x ) and ( x.length                  is  0 )
+  'empty.text':       ( x ) -> ( @isa.text    x ) and ( x.length                  is  0 )
+  'empty.set':        ( x ) -> ( @isa.set     x ) and ( x.size                    is  0 )
+  'empty.object':     ( x ) -> ( @isa.object  x ) and ( ( Object.keys x ).length  is  0 )
+  'nonempty.list':    ( x ) -> ( @isa.list    x ) and ( x.length                  >   0 )
+  'nonempty.text':    ( x ) -> ( @isa.text    x ) and ( x.length                  >   0 )
+  'nonempty.set':     ( x ) -> ( @isa.set     x ) and ( x.size                    >   0 )
+  'nonempty.object':  ( x ) -> ( @isa.object  x ) and ( ( Object.keys x ).length  >   0 )
   #.........................................................................................................
   'positive':           { role: 'qualifier', }
   'negative':           { role: 'qualifier', }
@@ -151,8 +153,16 @@ default_declarations =
   'negnaught.float':    ( x ) -> ( @isa.float     x ) and ( x <= 0 )
   'negnaught.integer':  ( x ) -> ( @isa.integer   x ) and ( x <= 0 )
   'negnaught.infinity': ( x ) -> ( @isa.infinity  x ) and ( x <= 0 )
-
-
+  #.........................................................................................................
+  'frozen':             { role: 'qualifier', }
+  'sealed':             { role: 'qualifier', }
+  'extensible':         { role: 'qualifier', }
+  'frozen.list':        ( x ) -> ( @isa.list    x ) and ( Object.isFrozen     x )
+  'sealed.list':        ( x ) -> ( @isa.list    x ) and ( Object.isSealed     x )
+  'extensible.list':    ( x ) -> ( @isa.list    x ) and ( Object.isExtensible x )
+  'frozen.object':      ( x ) -> ( @isa.object  x ) and ( Object.isFrozen     x )
+  'sealed.object':      ( x ) -> ( @isa.object  x ) and ( Object.isSealed     x )
+  'extensible.object':  ( x ) -> ( @isa.object  x ) and ( Object.isExtensible x )
 
 #===========================================================================================================
 default_types         = new Set Object.keys default_declarations
