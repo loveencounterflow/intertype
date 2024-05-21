@@ -153,6 +153,7 @@ default_declarations =
   'negnaught.float':    ( x ) -> ( @isa.float     x ) and ( x <= 0 )
   'negnaught.integer':  ( x ) -> ( @isa.integer   x ) and ( x <= 0 )
   'negnaught.infinity': ( x ) -> ( @isa.infinity  x ) and ( x <= 0 )
+  'cardinal':           'posnaught.integer'
   #.........................................................................................................
   'frozen':             { role: 'qualifier', }
   'sealed':             { role: 'qualifier', }
@@ -163,6 +164,27 @@ default_declarations =
   'frozen.object':      ( x ) -> ( @isa.object  x ) and ( Object.isFrozen     x )
   'sealed.object':      ( x ) -> ( @isa.object  x ) and ( Object.isSealed     x )
   'extensible.object':  ( x ) -> ( @isa.object  x ) and ( Object.isExtensible x )
+  #.........................................................................................................
+  'odd':                    { role: 'qualifier', }
+  'even':                   { role: 'qualifier', }
+  'odd.positive':           { role: 'qualifier', }
+  'odd.negative':           { role: 'qualifier', }
+  'odd.posnaught':          { role: 'qualifier', }
+  'odd.negnaught':          { role: 'qualifier', }
+  'even.positive':          { role: 'qualifier', }
+  'even.negative':          { role: 'qualifier', }
+  'even.posnaught':         { role: 'qualifier', }
+  'even.negnaught':         { role: 'qualifier', }
+  'odd.integer':            ( x ) -> ( @isa.integer x ) and ( x %% 2 ) is 1
+  'even.integer':           ( x ) -> ( @isa.integer x ) and ( x %% 2 ) is 0
+  'odd.positive.integer':   ( x ) -> ( @isa.positive.integer x ) and ( @isa.odd.integer  x )
+  'even.positive.integer':  ( x ) -> ( @isa.positive.integer x ) and ( @isa.even.integer x )
+  'odd.negative.integer':   ( x ) -> ( @isa.negative.integer x ) and ( @isa.odd.integer  x )
+  'even.negative.integer':  ( x ) -> ( @isa.negative.integer x ) and ( @isa.even.integer x )
+  'odd.posnaught.integer':  ( x ) -> ( @isa.posnaught.integer x ) and ( @isa.odd.integer  x )
+  'even.posnaught.integer': ( x ) -> ( @isa.posnaught.integer x ) and ( @isa.even.integer x )
+  'odd.negnaught.integer':  ( x ) -> ( @isa.negnaught.integer x ) and ( @isa.odd.integer  x )
+  'even.negnaught.integer': ( x ) -> ( @isa.negnaught.integer x ) and ( @isa.even.integer x )
 
 #===========================================================================================================
 default_types         = new Set Object.keys default_declarations
