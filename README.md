@@ -329,6 +329,9 @@ browserify --require intertype --debug -o public/browserified/intertype.js
     legal but `isa.nonempty.optional.text x` won't
 * **[–]** use prototypes of test methods `throws()` &c for new version of `guy-test`
 * **[–]** use prototype of set equality for `equals()` implementation in `webguy`
+* **[–]** in addition to setting `role`, allow users to set `{ test: '@qualifier' }` which then can be
+  shortened to `empty: '@qualifier'` in dotted field enumerations (maybe really the preferred way to
+  differentiate qualifier trees from nested records)
 
 
 ## Is Done
