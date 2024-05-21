@@ -1,6 +1,6 @@
 {
   "name": "intertype",
-  "version": "201.1.0",
+  "version": "202.0.0",
   "description": "A JavaScript typechecker",
   "main": "lib/main.js",
   "scripts": {
