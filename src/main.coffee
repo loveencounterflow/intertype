@@ -606,10 +606,12 @@ do =>
     validate
     create
     type_of     } = types
+  testing = { _isa, }
   module.exports = {
     Intertype, Intertype_minimal
     types, isa, validate, create, type_of,
     declarations: default_declarations,
     deepmerge,
     walk_prefixes,
+    testing,
     __type_of   }
