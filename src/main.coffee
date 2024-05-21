@@ -43,6 +43,11 @@ _isa =
   list:                   ( x ) -> Array.isArray x
   regex:                  ( x ) -> x instanceof RegExp
   set:                    ( x ) -> x instanceof Set
+  nan:                    ( x ) => Number.isNaN         x
+  finite:                 ( x ) => Number.isFinite      x ### TAINT make sure no non-numbers slip through ###
+  integer:                ( x ) => Number.isInteger     x ### TAINT make sure no non-numbers slip through ###
+  safeinteger:            ( x ) => Number.isSafeInteger x ### TAINT make sure no non-numbers slip through ###
+
   # text:                   { template: '', test: ( ( x ) -> ( typeof x ) is 'string' ), }
   # nullary:                ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 0 )
   # unary:                  ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and ( x.length is 1 )
@@ -108,6 +113,44 @@ default_declarations =
   set:
     test:         _isa.set
     template:     -> new Set()
+  nan:
+    test:         _isa.nan
+    template:     NaN
+  finite:
+    test:         _isa.finite
+    template:     0
+  integer:
+    test:         _isa.integer
+    template:     0
+  safeinteger:
+    test:         _isa.safeinteger
+    template:     0
+  #.........................................................................................................
+  'empty':            { role: 'qualifier', }
+  'nonempty':         { role: 'qualifier', }
+  'empty.list':       ( x ) -> ( @isa.list  x ) and ( x.length  is  0 )
+  'empty.text':       ( x ) -> ( @isa.text  x ) and ( x.length  is  0 )
+  'empty.set':        ( x ) -> ( @isa.set   x ) and ( x.size    is  0 )
+  'nonempty.list':    ( x ) -> ( @isa.list  x ) and ( x.length  >   0 )
+  'nonempty.text':    ( x ) -> ( @isa.text  x ) and ( x.length  >   0 )
+  'nonempty.set':     ( x ) -> ( @isa.set   x ) and ( x.size    >   0 )
+  #.........................................................................................................
+  'positive':           { role: 'qualifier', }
+  'negative':           { role: 'qualifier', }
+  'posnaught':          { role: 'qualifier', }
+  'negnaught':          { role: 'qualifier', }
+  'positive.float':     ( x ) -> ( @isa.float     x ) and ( x >  0 )
+  'positive.integer':   ( x ) -> ( @isa.integer   x ) and ( x >  0 )
+  'positive.infinity':  ( x ) -> ( @isa.infinity  x ) and ( x >  0 )
+  'negative.float':     ( x ) -> ( @isa.float     x ) and ( x <  0 )
+  'negative.integer':   ( x ) -> ( @isa.integer   x ) and ( x <  0 )
+  'negative.infinity':  ( x ) -> ( @isa.infinity  x ) and ( x <  0 )
+  'posnaught.float':    ( x ) -> ( @isa.float     x ) and ( x >= 0 )
+  'posnaught.integer':  ( x ) -> ( @isa.integer   x ) and ( x >= 0 )
+  'posnaught.infinity': ( x ) -> ( @isa.infinity  x ) and ( x >= 0 )
+  'negnaught.float':    ( x ) -> ( @isa.float     x ) and ( x <= 0 )
+  'negnaught.integer':  ( x ) -> ( @isa.integer   x ) and ( x <= 0 )
+  'negnaught.infinity': ( x ) -> ( @isa.infinity  x ) and ( x <= 0 )
 
 
 
