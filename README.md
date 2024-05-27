@@ -334,6 +334,9 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement method to supply all types that are present in `_isa` but missing from
   `default_declarations`
 * **[–]** consider to relegate private module exports to sub-key `testing` or similar
+* **[–]** implement a type `forbidden` that, in contradistinction to established rules, does throw an error
+  from its test method when a record with a field thusly marked is encountered; this is to ease transition
+  when extransous fields are removed from record types
 
 
 ## Is Done
@@ -448,4 +451,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   so far
 * **[+]** use prototypes of test methods `throws()` &c for new version of `guy-test`
 * **[+]** use prototype of set equality for `equals()` implementation in `webguy`
+* **[+]** allow `undefined`, `null` in `create` methods that result in record
 
