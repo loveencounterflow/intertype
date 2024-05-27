@@ -592,7 +592,7 @@ walk_prefixes = ( fq_name ) ->
   Example: calling `walk_prefixes 'one.two.three.four'` will iterate over `'one'`, `'one.two'`,
   `'one.two.three'`. ###
   unless _isa.text fq_name
-    throw new E.Intertype_wrong_type "^deepmerge@1^", 'a text', __type_of _isa, p
+    throw new E.Intertype_wrong_type "^walk_prefixes@1^", 'a text', __type_of _isa, p
   parts = fq_name.split '.'
   for idx in [ 0 ... parts.length - 1 ]
     yield ( parts[ .. idx ].join '.' )
