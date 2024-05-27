@@ -578,6 +578,7 @@ __type_of = ( test_method_map, x ) ->
 deepmerge = ( P... ) ->
   R = {}
   for p in P
+    continue unless p?
     unless _isa.object p
       throw new E.Intertype_wrong_type "^deepmerge@1^", 'an object', __type_of _isa, p
     for key, value of p
