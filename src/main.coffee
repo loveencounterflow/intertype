@@ -43,6 +43,7 @@ _isa =
   list:                   ( x ) -> Array.isArray x
   regex:                  ( x ) -> x instanceof RegExp
   set:                    ( x ) -> x instanceof Set
+  map:                    ( x ) -> x instanceof Map
   nan:                    ( x ) => Number.isNaN         x
   finite:                 ( x ) => Number.isFinite      x ### TAINT make sure no non-numbers slip through ###
   integer:                ( x ) => Number.isInteger     x ### TAINT make sure no non-numbers slip through ###
@@ -113,6 +114,9 @@ default_declarations =
   set:
     test:         _isa.set
     template:     -> new Set()
+  map:
+    test:         _isa.map
+    template:     -> new Map()
   nan:
     test:         _isa.nan
     template:     NaN
@@ -131,10 +135,12 @@ default_declarations =
   'empty.list':       ( x ) -> ( @isa.list    x ) and ( x.length                  is  0 )
   'empty.text':       ( x ) -> ( @isa.text    x ) and ( x.length                  is  0 )
   'empty.set':        ( x ) -> ( @isa.set     x ) and ( x.size                    is  0 )
+  'empty.map':        ( x ) -> ( @isa.map     x ) and ( x.size                    is  0 )
   'empty.object':     ( x ) -> ( @isa.object  x ) and ( ( Object.keys x ).length  is  0 )
   'nonempty.list':    ( x ) -> ( @isa.list    x ) and ( x.length                  >   0 )
   'nonempty.text':    ( x ) -> ( @isa.text    x ) and ( x.length                  >   0 )
   'nonempty.set':     ( x ) -> ( @isa.set     x ) and ( x.size                    >   0 )
+  'nonempty.map':     ( x ) -> ( @isa.map     x ) and ( x.size                    >   0 )
   'nonempty.object':  ( x ) -> ( @isa.object  x ) and ( ( Object.keys x ).length  >   0 )
   #.........................................................................................................
   'positive':           { role: 'qualifier', }
