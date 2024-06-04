@@ -221,7 +221,7 @@ class Intertype
   _declare: ( cfg, declarations... ) ->
     for collection in declarations
       unless _isa.object collection
-        throw new E.Intertype_validation_error '^declare@1^', 'object', __type_of _isa, collection
+        throw new E.Intertype_validation_error '^declare@1^', 'object', __type_of @, _isa, collection
       for type, test of collection then do ( type, test ) =>
         #...................................................................................................
         if Reflect.has @declarations, type
@@ -330,7 +330,7 @@ class Intertype
         R.test = nameit type, ( x ) -> test.call @, x
       #.....................................................................................................
       else
-        throw new E.Intertype_wrong_type_for_test_method '^_compile_declaration_object@4^', __type_of _isa, R.test
+        throw new E.Intertype_wrong_type_for_test_method '^_compile_declaration_object@4^', __type_of @, _isa, R.test
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test
@@ -339,7 +339,7 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _validate_test_method: ( type, x ) ->
     unless _isa.function x
-      throw new E.Intertype_test_must_be_function '^_validate_test_method@1^', type, __type_of _isa, x
+      throw new E.Intertype_test_must_be_function '^_validate_test_method@1^', type, __type_of @, _isa, x
     unless x.length is 1
       throw new E.Intertype_function_with_wrong_arity '^_validate_test_method@2^', 1, x.length
     return x
@@ -348,7 +348,7 @@ class Intertype
   _extract_first_basetype_name: ( type ) ->
     unless _isa.text type
       throw new E.Intertype_internal_error '^_extract_first_basetype_name@1^',
-        "expected text, got a #{__type_of _isa, type}"
+        "expected text, got a #{__type_of @, _isa, type}"
     return null unless ( match = type.match _TMP_basetype_names_matcher )?
     return match[ 0 ]
 
@@ -464,7 +464,7 @@ class Intertype
     return nameit method_name, ( x ) ->
       me._validate_arity_for_method method_name, 1, arguments.length
       return x if test x
-      throw new E.Intertype_validation_error "^#{method_name}@1^", type, __type_of _isa, x
+      throw new E.Intertype_validation_error "^#{method_name}@1^", type, __type_of @, _isa, x
 
   #---------------------------------------------------------------------------------------------------------
   _get_validate_optional: ( declaration ) ->
@@ -476,7 +476,7 @@ class Intertype
     return nameit method_name, ( x ) ->
       me._validate_arity_for_method method_name, 1, arguments.length
       return x if test x
-      throw new E.Intertype_optional_validation_error "^#{method_name}@1^", type, __type_of _isa, x
+      throw new E.Intertype_optional_validation_error "^#{method_name}@1^", type, __type_of @, _isa, x
 
   #---------------------------------------------------------------------------------------------------------
   _validate_arity_for_method: ( method_name, need_arity, is_arity ) ->
@@ -487,7 +487,7 @@ class Intertype
   _type_of: ( x ) ->
     if ( arguments.length isnt 1 )
       throw new E.Intertype_wrong_arity "^type_of@1^", 1, arguments.length
-    return __type_of @_tests_for_type_of, x
+    return __type_of @, @_tests_for_type_of, x
 
   #---------------------------------------------------------------------------------------------------------
   _get_create: ( declaration ) ->
@@ -517,7 +517,7 @@ class Intertype
     me            = @
     use_assign    = @_looks_like_an_object_declaration declaration
     method_name   = "create_#{type}"
-    # debug '^3234^', declaration, { use_assign, type: ( __type_of _isa, ) } if declaration.type is 'q'
+    # debug '^3234^', declaration, { use_assign, type: ( __type_of @, _isa, ) } if declaration.type is 'q'
     #.......................................................................................................
     if _isa.function template
       if ( template.length isnt 0 )
@@ -567,11 +567,16 @@ class Intertype
 class Intertype_minimal extends Intertype
 
 #===========================================================================================================
-__type_of = ( test_method_map, x ) ->
+_context_from_test_method_map = ( map ) ->
+  null
+
+#===========================================================================================================
+__type_of = ( ctx, test_method_map, x ) ->
   return 'null'       if x is null
   return 'undefined'  if x is undefined
+  ctx ?= _context_from_test_method_map test_method_map
   for type, test of test_method_map
-    return type if test x
+    return type if test.call ctx, x
   return 'unknown'
 
 #===========================================================================================================
@@ -580,7 +585,7 @@ deepmerge = ( P... ) ->
   for p in P
     continue unless p?
     unless _isa.object p
-      throw new E.Intertype_wrong_type "^deepmerge@1^", 'an object', __type_of _isa, p
+      throw new E.Intertype_wrong_type "^deepmerge@1^", 'an object', __type_of null, _isa, p
     for key, value of p
       R[ key ] = if ( _isa.object value ) then ( deepmerge value ) else value
   return R
@@ -593,7 +598,7 @@ walk_prefixes = ( fq_name ) ->
   Example: calling `walk_prefixes 'one.two.three.four'` will iterate over `'one'`, `'one.two'`,
   `'one.two.three'`. ###
   unless _isa.text fq_name
-    throw new E.Intertype_wrong_type "^walk_prefixes@1^", 'a text', __type_of _isa, p
+    throw new E.Intertype_wrong_type "^walk_prefixes@1^", 'a text', __type_of null, _isa, p
   parts = fq_name.split '.'
   for idx in [ 0 ... parts.length - 1 ]
     yield ( parts[ .. idx ].join '.' )
