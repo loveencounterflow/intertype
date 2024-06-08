@@ -337,6 +337,13 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** implement a type `forbidden` that, in contradistinction to established rules, does throw an error
   from its test method when a record with a field thusly marked is encountered; this is to ease transition
   when extransous fields are removed from record types
+* **[–]** allow `create` methods on dotted type names (as in `create.posnaught.integer '4'`)
+* **[–]** implement `base` argument for `create.integer()`, `create.cardinal()`
+* **[–]** when Hengist-NG offers benchmarking, implement type CFG setting `cached` to allow for transparent
+  caching of `create` method results; this is hoped to bring gains when frequently-called functions need a
+  `cfg` argument
+* **[–]** add type declaration setting to configure what should happen when a `create` method throws an
+  error
 
 
 ## Is Done
