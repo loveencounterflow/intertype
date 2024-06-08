@@ -98,13 +98,21 @@ default_declarations =
     template:     -> {}
   float:
     test:         _isa.float
-    template:     0
+    create: ( x ) ->
+      return 0 if x in [ false, null, undefined, 0, '0', ]
+      return 1 if x in [ true,  '1', ]
+      return x if Number.isFinite x
+      return parseFloat x if @isa.text
+      return x
   infinity:
     test:         _isa.infinity
     template:     Infinity
   text:
     test:         _isa.text
-    template:     ''
+    create: ( x ) ->
+      return '' unless x?
+      return x if @isa.text x
+      return rpr x
   list:
     test:         _isa.list
     template:     -> []
@@ -125,7 +133,12 @@ default_declarations =
     template:     0
   integer:
     test:         _isa.integer
-    template:     0
+    create: ( x ) ->
+      return 0 if x in [ false, null, undefined, 0, '0', ]
+      return 1 if x in [ true,  '1', ]
+      return x if Number.isInteger x
+      return parseInt x, 10 if @isa.text
+      return x
   safeinteger:
     test:         _isa.safeinteger
     template:     0
@@ -159,7 +172,15 @@ default_declarations =
   'negnaught.float':    ( x ) -> ( @isa.float     x ) and ( x <= 0 )
   'negnaught.integer':  ( x ) -> ( @isa.integer   x ) and ( x <= 0 )
   'negnaught.infinity': ( x ) -> ( @isa.infinity  x ) and ( x <= 0 )
-  'cardinal':           'posnaught.integer'
+  #.........................................................................................................
+  cardinal:
+    test:         'posnaught.integer'
+    create: ( x ) ->
+      return 0 if x in [ false, null, undefined, 0, '0', ]
+      return 1 if x in [ true,  '1', ]
+      return x if Number.isInteger x
+      return parseInt x, 10 if @isa.text
+      return x
   #.........................................................................................................
   'frozen':             { role: 'qualifier', }
   'sealed':             { role: 'qualifier', }
