@@ -9,6 +9,11 @@ WG                        = require 'webguy'
 
 
 #-----------------------------------------------------------------------------------------------------------
+rpr_list = ( x ) ->
+  return "(no arguments)" if x.length is 0
+  return ( rpr x ).replace /^\[\s*(.*?)\s*\]/, '$1'
+
+#-----------------------------------------------------------------------------------------------------------
 class @Intertype_error extends Error
   constructor: ( ref, message ) ->
     super()
@@ -61,7 +66,7 @@ class @Intertype_create_must_be_function   extends @Intertype_error
 class @Intertype_test_must_be_function   extends @Intertype_error
   constructor: ( ref, type, type_of_test ) -> super ref, "expected a function for `test` entry of type #{rpr type}, got a #{type_of_test}"
 class @Intertype_wrong_arguments_for_create extends @Intertype_error
-  constructor: ( ref, need_type, is_value, evaluation, is_type ) -> super ref, "expected `create.#{need_type}()` to return a #{need_type} but it returned a #{is_type}:\n#{rpr is_value}\nevaluation: #{rpr evaluation}"
+  constructor: ( ref, type, args, evaluation ) -> super ref, "these arguments are not suitable for `create.#{type}()`: #{rpr_list args}\nevaluation: #{rpr evaluation}"
 class @Intertype_basetype_redeclaration_forbidden extends @Intertype_error
   constructor: ( ref, type ) -> super ref, "not allowed to re-declare basetype #{rpr type}"
 class @Intertype_declaration_redeclaration_forbidden extends @Intertype_error

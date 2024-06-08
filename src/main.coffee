@@ -508,7 +508,7 @@ class Intertype
         return nameit "create_#{type}", ( P... ) ->
           unless me.isa[ type ] ( R = create.call me, P... )
             evaluation = me.evaluate[ type ] R
-            throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, R, evaluation, me.type_of R
+            throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, P, evaluation
           return R
       when template?
         return @_get_create_from_template declaration
@@ -533,7 +533,7 @@ class Intertype
           throw new E.Intertype_wrong_arity "^create_#{type}@1^", 0, arguments.length
         unless me.isa[ type ] ( R = template.call me )
           evaluation = me.evaluate[ type ] R
-          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@2^", type, R, evaluation, me.type_of R
+          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, P, evaluation
         return R
     #.......................................................................................................
     ### TAINT case of constant template could be handled when validating the declaration ###
@@ -543,7 +543,7 @@ class Intertype
         # debug '^3234^', deepmerge template, P...
         unless me.isa[ type ] ( R = me._call_and_reassign_functions deepmerge template, P... )
           evaluation = me.evaluate[ type ] R
-          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@3^", type, R, evaluation, me.type_of R
+          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, P, evaluation
         return R
     else
       unless me.isa[ type ] template
