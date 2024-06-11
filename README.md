@@ -344,6 +344,12 @@ browserify --require intertype --debug -o public/browserified/intertype.js
   `cfg` argument
 * **[–]** add type declaration setting to configure what should happen when a `create` method throws an
   error
+* **[–]** implement `memo` API where type checks &c can leave data that are by-products of type-checking
+  to enable users to avoid duplicating work already done
+  * **[–]** do we have to think of ways to do this safely for asynchronous cases?
+* **[–]** when `declaration.test` is the name of another type, use that type's create method, if any
+* **[–]** re-name all test, create, validate methods of types `r.s.t` to include both method and type, as in
+  `test.r.s.t`, `create.r.s.t`, `validate.r.s.t` &c
 
 
 ## Is Done
@@ -459,4 +465,5 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[+]** use prototypes of test methods `throws()` &c for new version of `guy-test`
 * **[+]** use prototype of set equality for `equals()` implementation in `webguy`
 * **[+]** allow `undefined`, `null` in `create` methods that result in record
+* **[+]** implement `kind` to remember what type name, if any, was used as `test`
 
