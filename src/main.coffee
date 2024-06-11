@@ -133,6 +133,7 @@ default_declarations =
     template:     0
   integer:
     test:         _isa.integer
+    kind:         'float'
     create: ( x ) ->
       return 0 if x in [ false, null, undefined, 0, '0', ]
       return 1 if x in [ true,  '1', ]
@@ -325,18 +326,21 @@ class Intertype
     return { type, target_type, targets, sub_type, }
 
   #---------------------------------------------------------------------------------------------------------
-  _get_declaration_template: ( type, cfg = null ) ->
-    { type, cfg..., test: undefined, sub_tests: {}, sub_fields: [], }
+  _get_declaration_template: ( type, cfg = null, kind = null ) ->
+    kind = if _isa.text kind then kind else 'unknown'
+    return { type, kind, cfg..., test: undefined, sub_tests: {}, sub_fields: [], }
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( cfg, type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    R = @_get_declaration_template type, cfg
+    R = @_get_declaration_template type, cfg, declaration.test ? null
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
     #.......................................................................................................
     if not R.test?
-      R.test = 'object' if ( R.role is 'qualifier' ) or ( @_looks_like_an_object_declaration declaration )
+      if ( R.role is 'qualifier' ) or ( @_looks_like_an_object_declaration declaration )
+        R.test = 'object'
+        R.kind = 'object' if R.kind is 'unknown'
     #.......................................................................................................
     switch true
       #.....................................................................................................
