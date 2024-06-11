@@ -526,19 +526,21 @@ class Intertype
       create
       template  } = declaration
     me            = @
+    debug '^Ωit___3', declaration
+    # create       ?= if
     switch true
       when create?
         unless me.isa.function create
           throw new E.Intertype_create_must_be_function "^_get_create@1^", type, me.type_of create
-        return nameit "create_#{type}", ( P... ) ->
+        return nameit "create.#{type}", ( P... ) ->
           unless me.isa[ type ] ( R = create.call me, P... )
             evaluation = me.evaluate[ type ] R
-            throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, P, evaluation
+            throw new E.Intertype_wrong_arguments_for_create "^create.#{type}@1^", type, P, evaluation
           return R
       when template?
         return @_get_create_from_template declaration
-    return nameit "create_#{type}", ( P... ) ->
-      throw new E.Intertype_create_not_available "^create_#{type}@2^", type
+    return nameit "create.#{type}", ( P... ) ->
+      throw new E.Intertype_create_not_available "^create.#{type}@2^", type
 
   #---------------------------------------------------------------------------------------------------------
   _get_create_from_template: ( declaration ) ->
@@ -547,7 +549,7 @@ class Intertype
       template  } = declaration
     me            = @
     use_assign    = @_looks_like_an_object_declaration declaration
-    method_name   = "create_#{type}"
+    method_name   = "create.#{type}"
     # debug '^3234^', declaration, { use_assign, type: ( __type_of @, _isa, ) } if declaration.type is 'q'
     #.......................................................................................................
     if _isa.function template
@@ -555,10 +557,10 @@ class Intertype
         throw new E.Intertype_wrong_template_arity "^_get_create@1^", type, template.length
       return nameit method_name, ->
         if ( arguments.length isnt 0 )
-          throw new E.Intertype_wrong_arity "^create_#{type}@1^", 0, arguments.length
+          throw new E.Intertype_wrong_arity "^create.#{type}@1^", 0, arguments.length
         unless me.isa[ type ] ( R = template.call me )
           evaluation = me.evaluate[ type ] R
-          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, P, evaluation
+          throw new E.Intertype_wrong_arguments_for_create "^create.#{type}@1^", type, P, evaluation
         return R
     #.......................................................................................................
     ### TAINT case of constant template could be handled when validating the declaration ###
@@ -568,14 +570,14 @@ class Intertype
         # debug '^3234^', deepmerge template, P...
         unless me.isa[ type ] ( R = me._call_and_reassign_functions deepmerge template, P... )
           evaluation = me.evaluate[ type ] R
-          throw new E.Intertype_wrong_arguments_for_create "^create_#{type}@1^", type, P, evaluation
+          throw new E.Intertype_wrong_arguments_for_create "^create.#{type}@1^", type, P, evaluation
         return R
     else
       unless me.isa[ type ] template
         throw new E.Intertype_wrong_template_type "^_get_create@2^", type, me.type_of R
       R = nameit method_name, ->
         if ( arguments.length isnt 0 )
-          throw new E.Intertype_wrong_arity "^create_#{type}@4^", 0, arguments.length
+          throw new E.Intertype_wrong_arity "^create.#{type}@4^", 0, arguments.length
         return template
     #.......................................................................................................
     return R
