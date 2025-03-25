@@ -20,7 +20,7 @@ GUY                       = require 'guy'
   log     }               = GUY.trm
 { hide }                  = GUY.props
 { props: {
-    nameit } }            = require '../../../apps/webguy'
+    nameit } }            = require 'webguy'
 
 
 ############################################################################################################
