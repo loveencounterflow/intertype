@@ -1,33 +1,59 @@
-lockfileVersion: '6.0'
+lockfileVersion: '9.0'
 
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-dependencies:
-  webguy:
-    specifier: ^5.2.1
-    version: 5.2.1
+importers:
+
+  .:
+    dependencies:
+      guy:
+        specifier: ^14.1.0
+        version: 14.1.0
+      webguy:
+        specifier: ^5.2.1
+        version: 5.2.1
 
 packages:
 
-  /dayjs@1.11.10:
+  dayjs@1.11.10:
     resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
-    dev: false
 
-  /intertype@7.6.3:
+  guy@14.1.0:
+    resolution: {integrity: sha512-iraLTMV2gRbp6G2FlAx1PUyOd75geWKojry7PeEc4XpvUsPHK+xPMBxgzzOGsgeIj8B9JG1bhCEcDxmOuH2jfQ==}
+
+  intertype-legacy@7.7.1:
+    resolution: {integrity: sha512-Bj3k9bCu8vA6JLIvnCrJXOdkecgY5wtCmORclJ87uq22N53swREHT5bezSeK5TwcxgSJEDg2wEfcn4kNr9Qv8A==}
+
+  intertype@7.6.3:
     resolution: {integrity: sha512-77FmgaqGydWBc5OIde+geMj4+dGZ1i5UIFXM4C9QHiEIBjh+Gojycsb7XtRYYLNhNJepa+jotHXfAGPngHatzw==}
+
+  multimix@5.0.0:
+    resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
+
+  webguy@5.2.1:
+    resolution: {integrity: sha512-wI3/JPpQjcnsTjZbh+dtAt2ZbSvC2pIOhheiwg2YrUY65vZSRAIP/flTn8anMmvYWTMJjxGIqxC/NvDUob2cUg==}
+
+snapshots:
+
+  dayjs@1.11.10: {}
+
+  guy@14.1.0:
+    dependencies:
+      intertype-legacy: 7.7.1
+
+  intertype-legacy@7.7.1:
     dependencies:
       multimix: 5.0.0
-    dev: false
 
-  /multimix@5.0.0:
-    resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
-    dev: false
+  intertype@7.6.3:
+    dependencies:
+      multimix: 5.0.0
 
-  /webguy@5.2.1:
-    resolution: {integrity: sha512-wI3/JPpQjcnsTjZbh+dtAt2ZbSvC2pIOhheiwg2YrUY65vZSRAIP/flTn8anMmvYWTMJjxGIqxC/NvDUob2cUg==}
+  multimix@5.0.0: {}
+
+  webguy@5.2.1:
     dependencies:
       dayjs: 1.11.10
       intertype: 7.6.3
-    dev: false
