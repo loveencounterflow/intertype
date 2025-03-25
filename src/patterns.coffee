@@ -51,9 +51,8 @@ Patterns to recognize some literals
     * `.45e-43.2`:   JS errors with `Unexpected number`
     * `45e4৩`:       JS errors with `Invalid or unexpected token`
     * `37.e88`:      sole trailing dot before the e/E-marked exponent considered bad habit
-    * `123.4.e3`:    JS parses this as attribute access, return `undefined`; it evaluates but should've
-      never been allowed in the first place; JS does allow stuff like `false.d`, `/./.d` &c but these are
-      arguably more border cases / quirks / warts than useful, clear notations
+    * `123.4.e3`:    JS parses this as attribute access and returns `undefined` for a notation that should
+      arguably not be legal part of the language in the first place
 
 ###
 

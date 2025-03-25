@@ -288,6 +288,10 @@ class Intertype
             @declare { ["#{fq_type_name}"]: test, }
         #...................................................................................................
         for prefix from walk_prefixes type
+          # debug 'Ωit___1', { type, prefix, kind: declaration.kind, ref_create: @create[ declaration.kind ] ? null, } if /quantity|foo|mass|zap/.test type
+          # debug 'Ωit___2', { type, prefix, kind: declaration.kind, create: @create[ type ] ? null, } if /quantity|foo|mass|zap/.test type
+          # target_for_create_method          = get_from_dotted_name @create, prefix
+          set_dotted_name @create, prefix, @create[ type ]
           @declarations[ prefix ].sub_fields.push type
     #.......................................................................................................
     return null
@@ -333,7 +337,8 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_object: ( cfg, type, declaration ) ->
     ### TODO: call recursively for each entry in `declaration.fields` ###
-    R = @_get_declaration_template type, cfg, declaration.test ? null
+    kind  = if _isa.text declaration then declaration else declaration.test ? null
+    R = @_get_declaration_template type, cfg, kind
     if _isa.object declaration then Object.assign R, declaration
     else                            R.test = declaration
     #.......................................................................................................
@@ -362,6 +367,9 @@ class Intertype
       #.....................................................................................................
       else
         throw new E.Intertype_wrong_type_for_test_method '^_compile_declaration_object@4^', __type_of @, _isa, R.test
+    #.......................................................................................................
+    unless R.kind is 'unknown'
+      R.create ?= @create[ R.kind ] ? null
     #.......................................................................................................
     ### TAINT should ideally check entire object? ###
     @_validate_test_method type, R.test
@@ -526,7 +534,7 @@ class Intertype
       create
       template  } = declaration
     me            = @
-    debug '^Ωit___3', declaration
+    # debug '^Ωit___4', declaration
     # create       ?= if
     switch true
       when create?
@@ -637,6 +645,19 @@ walk_prefixes = ( fq_name ) ->
     yield ( parts[ .. idx ].join '.' )
   return null
 
+#===========================================================================================================
+get_from_dotted_name = ( x, dotted_name ) ->
+  R     = x
+  R     = R[ part ] for part in dotted_name.split '.'
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+set_dotted_name = ( x, dotted_name, value ) ->
+  [ parts..., last_part, ]  = dotted_name.split '.'
+  target                    = x
+  target                    = target[ part ] for part in parts
+  target[ last_part ]       = value
+  return value
 
 #===========================================================================================================
 types = new Intertype()

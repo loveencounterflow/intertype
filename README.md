@@ -350,6 +350,18 @@ browserify --require intertype --debug -o public/browserified/intertype.js
 * **[–]** when `declaration.test` is the name of another type, use that type's create method, if any
 * **[–]** re-name all test, create, validate methods of types `r.s.t` to include both method and type, as in
   `test.r.s.t`, `create.r.s.t`, `validate.r.s.t` &c
+* **[–]** implement 'ad-hoc calling convention' on several API entry points, e.g.
+  * **[–]** `validate ( ( x ) -> x is 4 ), value` will return `x` if the check returns `true` and throw an
+    error otherwise
+* **[–]** improve error message for failed objects: list properties line by line, either only failed ones
+  or with failed ones highlighted
+* **[–]** implement type `class`:
+  ```coffee
+  declare.class
+    isa:        ( x ) -> ( ( Object::toString.call x ) is '[object Function]' ) and \
+      ( Object.getOwnPropertyDescriptor x, 'prototype' )?.writable is false
+  ```
+
 
 
 ## Is Done
