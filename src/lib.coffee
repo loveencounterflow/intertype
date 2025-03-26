@@ -30,7 +30,7 @@ $type_of = ( x ) ->
 
 
 #===========================================================================================================
-class Types
+class Intertype
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( cfg ) ->
@@ -153,5 +153,5 @@ class Typespace
 #===========================================================================================================
 # if module is require.main then await do =>
 do =>
-  types = new Types()
-  module.exports = { Types, Type, Typespace, types, }
+  types = new Intertype()
+  module.exports = { Intertype, Type, Typespace, types, }
