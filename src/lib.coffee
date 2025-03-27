@@ -13,19 +13,36 @@ GUY                       = require 'guy'
 
 #===========================================================================================================
 $isa =
-  text:     ( x ) -> typeof x is 'string'
-  function: ( x ) -> ( Object::toString.call x ) is '[object Function]'
+  text:       ( x ) -> typeof x is 'string'
+  function:   ( x ) -> ( Object::toString.call x ) is '[object Function]'
+  # nan:                    ( x ) => Number.isNaN         x
+  primitive:  ( x ) -> $primitive_types.has $type_of x
+
+#-----------------------------------------------------------------------------------------------------------
+$primitive_types = new Set [
+  'null', 'undefined', 'infinity', 'boolean', 'nan', 'float', 'anyfloat', 'text', ]
 
 #-----------------------------------------------------------------------------------------------------------
 $type_of = ( x ) ->
+  #.........................................................................................................
+  ### Primitives: ###
   return 'null'         if x is null
   return 'undefined'    if x is undefined
-  return 'infinity'     if x is +Infinity
-  return 'infinity'     if x is -Infinity
-  return 'boolean'      if x is true
-  return 'boolean'      if x is false
-  return 'text'         if $isa.text      x
-  return 'function'     if $isa.function  x
+  return 'infinity'     if ( x is +Infinity ) or ( x is -Infinity )
+  return 'boolean'      if ( x is true ) or ( x is false )
+  return 'nan'          if Number.isNaN     x
+  return 'float'        if Number.isFinite  x
+  #.........................................................................................................
+  switch jstypeof = typeof x
+    when 'number'                       then return 'anyfloat' ### depends on `infinity`, `nan`, `float`, `anmyfloat` ###
+    when 'string'                       then return 'text'
+  #.........................................................................................................
+  return 'list'         if Array.isArray  x
+  switch millertype = Object::toString.call x
+    when '[object Function]'            then return 'function'
+    when '[object AsyncFunction]'       then return 'asyncfunction'
+    when '[object GeneratorFunction]'   then return 'generatorfunction'
+  #.........................................................................................................
   return 'something'
 
 
