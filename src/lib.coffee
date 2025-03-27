@@ -60,6 +60,7 @@ class Intertype
     hide @, 'validate',   @validate.bind  @
     hide @, 'create',     @create.bind    @
     hide @, 'type_of',    @type_of.bind   @
+    hide @, 'types_of',   @types_of.bind  @
     hide @, 'memo',       new Map()
     hide @, '_recording', false
     hide @, '_journal',   null
@@ -89,6 +90,14 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   @type_of: $type_of
   type_of:  $type_of
+
+  #---------------------------------------------------------------------------------------------------------
+  types_of: ( typespace, x ) ->
+    unless typespace instanceof Typespace
+      throw new Error "Ω___1 expected an instance of Typespace, got a #{$type_of x}"
+    R = []
+    return ( typename for typename, type of typespace when @isa type, x )
+
 
   #---------------------------------------------------------------------------------------------------------
   validate: ( type, x ) ->
