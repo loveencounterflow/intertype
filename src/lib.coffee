@@ -48,14 +48,14 @@ class Intertype
   isa: ( type, x ) ->
     ### TAINT use proper validation ###
     unless type instanceof Type
-      throw new Error "Ω___2 expected an instance of `Type`, got a #{$type_of R}"
+      throw new Error "Ω___1 expected an instance of `Type`, got a #{$type_of R}"
     #.......................................................................................................
     if @_recording
       @_stack.push type.$typename
       @_journal.push entry = {}
     #.......................................................................................................
     unless ( R = type.isa.call type, x, @ ) in [ true, false, ]
-      throw new Error "Ω___3 expected `true` or `false`, got a #{$type_of R}"
+      throw new Error "Ω___2 expected `true` or `false`, got a #{$type_of R}"
     #.......................................................................................................
     if @_recording
       stack = @_stack.join '.'
@@ -70,11 +70,11 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   validate: ( type, x ) ->
     return x if @isa type, x
-    throw new Error "Ω___4 expected a #{type.$typename}, got a #{$type_of x}"
+    throw new Error "Ω___3 expected a #{type.$typename}, got a #{$type_of x}"
 
   #---------------------------------------------------------------------------------------------------------
   create: ( type, P... ) ->
-    throw new Error "Ω___5 not yet implemented"
+    throw new Error "Ω___4 not yet implemented"
 
   #---------------------------------------------------------------------------------------------------------
   evaluate: ( type, x ) ->
