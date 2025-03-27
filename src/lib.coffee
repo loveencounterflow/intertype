@@ -16,10 +16,10 @@ $isa =
   text:       ( x ) -> typeof x is 'string'
   function:   ( x ) -> ( Object::toString.call x ) is '[object Function]'
   # nan:                    ( x ) => Number.isNaN         x
-  primitive:  ( x ) -> $primitive_types.has $type_of x
+  primitive:  ( x ) -> $primitive_types.includes $type_of x
 
 #-----------------------------------------------------------------------------------------------------------
-$primitive_types = new Set [
+$primitive_types = Object.freeze [
   'null', 'undefined', 'infinity', 'boolean', 'nan', 'float', 'anyfloat', 'text', ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -34,16 +34,19 @@ $type_of = ( x ) ->
   return 'float'        if Number.isFinite  x
   #.........................................................................................................
   switch jstypeof = typeof x
-    when 'number'                       then return 'anyfloat' ### depends on `infinity`, `nan`, `float`, `anmyfloat` ###
+    # when 'number'                       then return 'anyfloat' ### depends on `infinity`, `nan`, `float`, `anmyfloat` ###
     when 'string'                       then return 'text'
   #.........................................................................................................
   return 'list'         if Array.isArray  x
-  switch millertype = Object::toString.call x
-    when '[object Function]'            then return 'function'
-    when '[object AsyncFunction]'       then return 'asyncfunction'
-    when '[object GeneratorFunction]'   then return 'generatorfunction'
+  millertype = Object::toString.call x
+  return ( millertype.replace /^\[object ([^\]]+)\]$/, '$1' ).toLowerCase()
+  # switch millertype = Object::toString.call x
+  #   when '[object Function]'            then return 'function'
+  #   when '[object AsyncFunction]'       then return 'asyncfunction'
+  #   when '[object GeneratorFunction]'   then return 'generatorfunction'
   #.........................................................................................................
-  return 'something'
+  # return millertype[ 8 ... millertype.length - 1 ].toLowerCase()
+  # return 'something'
 
 
 #===========================================================================================================
