@@ -37,6 +37,7 @@ $type_of = ( x ) ->
     when 'string'                       then return 'text'
   #.........................................................................................................
   return 'list'         if Array.isArray  x
+  ### TAINT consider to return x.constructor.name ###
   millertype = Object::toString.call x
   return ( millertype.replace /^\[object ([^\]]+)\]$/, '$1' ).toLowerCase()
   # switch millertype = Object::toString.call x
@@ -96,7 +97,6 @@ class Intertype
     unless typespace instanceof Typespace
       throw new Error "Ω___1 expected an instance of Typespace, got a #{$type_of x}"
     return ( typename for typename, type of typespace when @isa type, x )
-
 
   #---------------------------------------------------------------------------------------------------------
   validate: ( type, x ) ->
