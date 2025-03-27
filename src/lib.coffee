@@ -34,7 +34,6 @@ $type_of = ( x ) ->
   return 'float'        if Number.isFinite  x
   #.........................................................................................................
   switch jstypeof = typeof x
-    # when 'number'                       then return 'anyfloat' ### depends on `infinity`, `nan`, `float`, `anmyfloat` ###
     when 'string'                       then return 'text'
   #.........................................................................................................
   return 'list'         if Array.isArray  x
