@@ -95,7 +95,6 @@ class Intertype
   types_of: ( typespace, x ) ->
     unless typespace instanceof Typespace
       throw new Error "Ω___1 expected an instance of Typespace, got a #{$type_of x}"
-    R = []
     return ( typename for typename, type of typespace when @isa type, x )
 
 
