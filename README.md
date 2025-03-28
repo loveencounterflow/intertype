@@ -148,6 +148,18 @@ Types declarations may include a `create` and a `template` entry:
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
 value of the declared type can be produces by `Intertype::create()`.
 
+> *In the below tables*
+> * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
+>   or `nothing` (`null` or `undefined`, including the property not being set)*
+> * *`fv` is short for the value of the `template` property;*
+> * *`tv` is short for the value of the `template` property;*
+> * *`pod` and POD stand for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object
+>   literal syntax that is not an instance of a class derived from `Object`*
+> * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`*
+> * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`*
+> * *runtime failures happen when trying to call `Intertype::create()`, but compile-time failures happen
+>   when trying to declare a `Typespace` with a type that satisfies one of the error confitions listed here*
+
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
   using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
@@ -165,7 +177,8 @@ value of the declared type can be produces by `Intertype::create()`.
   template field holds a function, call that function, otherwise use the field value as-is. Functions can
   only be set as return values from functions. Where `template` is missing a field, try to supply with the
   `create` method according to that field's declared type.
-* If `template` is not set, the effect is the same as setting `template` to a POD without any properties:
+* If `template` is not set, the effect is the same as setting `template` to a POD without any properties.
+* In any event, the resulting value will be `validate`d using the type's ISA method:
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
 | :---------: | :----------: | :------------: | :----------------------                    |
@@ -181,18 +194,6 @@ value of the declared type can be produces by `Intertype::create()`.
 | —           | —            | —              | ❌ fails (at run time)                   |
 | —           | —            | `something`    | ❌ fails (at compile time)               |
 
-> *In the above tables*
-> * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
->   or `nothing` (`null` or `undefined`, including the property not being set)*
-> * *`fv` is short for the value of the `template` property;*
-> * *`tv` is short for the value of the `template` property;*
-> * *`pod` and POD stand for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object
->   literal syntax that is not an instance of a class derived from `Object`*
-> * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`*
-> * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`*
-> * *runtime failures happen when trying to call `Intertype::create()`, but compile-time failures happen
->   when trying to declare a `Typespace` with a type that satisfies one of the error confitions listed here*
-
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
   by the enumerable key/value pairs of `fields`; where `template` is missing a field, it will be assumed
@@ -200,24 +201,6 @@ value of the declared type can be produces by `Intertype::create()`.
   an enumerable key that is not listed in `fields`.
 
 
-`declaration.fields`
-`declaration.template`
-
-CF?T?
-
-F
-
-T
-
-FT
-
-
-In order to produce a new instance of a given type whose declaration has a `fields` object but no `create()`
-method, the `Intertype::create()` method will look at the `template` property of the type declaration. In
-case `Reflect.has declaration, 'template'` returns `false`, `Intertype::create()` will try to produce an
-object `R = {}` by recursively iterating over the enumerable properties of `fields` and try to perform `R[
-field_name ] = Intertype::create field_type` for each `field_name, field_type` pair. This may fail if any
-`field_type` cannot be created.
 
 ### Template Copying Procedure
 
