@@ -158,10 +158,17 @@ In case none of `create`, `fields` and `template` are set for a given type `T`'s
 | `function`  | —            | `something`    | call `D.create P...`                    |
 | `function`  | `something`  | —              | call `D.create P...`                    |
 | `function`  | `something`  | `something`    | call `D.create P...`                    |
-| —           | —            | —              |                                         |
+| —           | —            | `pod`          |                                         |
+| —           | —            | `function`     |                                         |
+| —           | —            | `notapodorfn`  |                                         |
 | —           | —            | 1              |                                         |
 | —           | 1            | —              |                                         |
 | —           | 1            | 1              |                                         |
+
+*In the above table, `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with
+JS object literal syntax that is not an instance of a class derived from `Object`; `notapodorfn` is a value
+other than `null`, `undefined`, a `function` or a `pod`.*
+
 
 `declaration.create` is an optional synchronous function; if it exists, it will be called with the
 extraneous arguments `P` that are present in the call to `z = Intertype::create T, P...`, (where `T` is a
