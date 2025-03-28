@@ -154,33 +154,36 @@ value of the declared type can be produces by `Intertype::create()`.
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
   using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
-  and `declaration.template` as it sees fit.
+  and `declaration.template` as it sees fit:
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
 | :---------: | :----------: | :------------: | :----------------------                    |
 | `function`  | `pod?`       | `something?`   | call `D.create P...`                       |
 
+* In case `D.create` is not set (including set to `null` or `undefined`) and `fields` is set (to a POD),
+  look up fields in `template` one by one and either use the fields values as-is or, if the template field
+  holds a function, call that function; where `template` is missing fields, try to supply with the `create`
+  method according to that field's declared type. If `template` is not set, the effect is the same as
+  setting `template` to a POD without any properties:
+
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
 | :---------: | :----------: | :------------: | :----------------------                    |
 | —           | `pod`        | `pod`          | create new object, set fields as per below |
 | —           | `pod`        | —              | use `create()` methods of field types      |
-| —           | `pod`        | `function`     | use return value of call to `tv()`         |
-| —           | `pod`        | `notapodorfn`  | ❌ fails                                    |
 
-| `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
-| :---------: | :----------: | :------------: | :----------------------                    |
-| —           | —            | `notapodorfn`  | use `tv` as-is                             |
-| —           | —            | `pod`          | ❌ fails                                    |
-| —           | —            | `function`     | ❌ fails (use `create()` instead)           |
-| —           | —            | —              | ❌ fails                                    |
+* It is not allowed to set `template` to anything except `null` or `undefined` when `fields` is not set:
 
-> *In the above table*
+| `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
+| :---------: | :----------: | :------------: | :----------------------                 |
+| —           | —            | `something`    | ❌ fails                                 |
+
+> *In the above tables*
 > * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
 >   or `nothing` (`null` or `undefined`, including the property not being set)*
 > * *`fv` is short for the value of the `template` property;*
 > * *`tv` is short for the value of the `template` property;*
-> * *`pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object literal
->   syntax that is not an instance of a class derived from `Object`*
+> * *`pod` and POD stand for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object
+>   literal syntax that is not an instance of a class derived from `Object`*
 > * *`notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`*
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
