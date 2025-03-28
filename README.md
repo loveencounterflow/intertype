@@ -146,19 +146,18 @@ Types declarations may include a `create` and a `template` entry:
 ## Value Creation
 
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
-value of the declared type can be produces by `Intertype::create()`.
+value of the declared type can be produced by `Intertype::create()`.
 
 > *In the below tables*
 > * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
->   or `nothing` (`null` or `undefined`, including the property not being set)*
-> * *`fv` is short for the value of the `template` property;*
-> * *`tv` is short for the value of the `template` property;*
+>   or `nothing` (`null` or `undefined`, including the property not being set);*
 > * *`pod` and POD stand for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object
->   literal syntax that is not an instance of a class derived from `Object`*
-> * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`*
-> * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`*
+>   literal syntax that is not an instance of a class derived from `Object`;*
+> * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`;*
+> * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`;*
 > * *runtime failures happen when trying to call `Intertype::create()`, but compile-time failures happen
->   when trying to declare a `Typespace` with a type that satisfies one of the error confitions listed here*
+>   when trying to declare a `Typespace` with a type that satisfies one of the error confitions listed
+>   here.*
 
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
