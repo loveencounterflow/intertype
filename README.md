@@ -148,23 +148,23 @@ Types declarations may include a `create` and a `template` entry:
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
 value of the declared type can be produces by `Intertype::create()`.
 
-In case none of `create`, `fields` and `template` are set for a given type `T`'s `declaration` object, then
+In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration object `D`, then
 `Intertype::create T, P...` will fail with an error.
 
-| `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`              |
-| :---------: | :----------:  | :------------:   | :----------------------                              |
-| —           | —             | —                | ❌ fails                                              |
-| `function`  | —             | —                | call `D.create P...`                                 |
-| `function`  | —             | `something`      | call `D.create P...`                                 |
-| `function`  | `something`   | —                | call `D.create P...`                                 |
-| `function`  | `something`   | `something`      | call `D.create P...`                                 |
-| —           | —             | `d: pod`         | ❌ fails                                              |
-| —           | —             | `fn: function`   | use return value of call to `fn()`                   |
-| —           | —             | `x: notapodorfn` | call `create()` method of type of `x`                |
-| —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below       |
-| —           | —             | 1                |                                                      |
-| —           | `fields: pod` | —                | uses `create()` methods of fields to produce new POD |
-| —           | 1             | 1                |                                                      |
+| `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`                        |
+| :---------: | :----------:  | :------------:   | :----------------------                                        |
+| —           | —             | —                | ❌ fails                                                        |
+| —           | —             | `d: pod`         | ❌ fails                                                        |
+| `function`  | —             | —                | call `D.create P...` (may or may not use `fields`, `template`) |
+| `function`  | —             | `something`      | call `D.create P...` (may or may not use `fields`, `template`) |
+| `function`  | `something`   | —                | call `D.create P...` (may or may not use `fields`, `template`) |
+| `function`  | `something`   | `something`      | call `D.create P...` (may or may not use `fields`, `template`) |
+| —           | —             | `fn: function`   | use return value of call to `fn()`                             |
+| —           | —             | `x: notapodorfn` | call `create()` method of type of `x`                          |
+| —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below                 |
+| —           | —             | 1                |                                                                |
+| —           | `fields: pod` | —                | uses `create()` methods of fields to produce new POD           |
+| —           | 1             | 1                |                                                                |
 
 > *In the above table, `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with
 > JS object literal syntax that is not an instance of a class derived from `Object`; `notapodorfn` is a
