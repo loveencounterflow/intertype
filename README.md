@@ -156,17 +156,17 @@ value of the declared type can be produces by `Intertype::create()`.
   using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
   and `declaration.template` as it sees fit.
 
-| `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`                        |
-| :---------: | :----------:  | :------------:   | :----------------------                                        |
-| —           | —             | —                | ❌ fails                                                        |
-| —           | —             | `d: pod`         | ❌ fails                                                        |
-| `function`  | `something?`  | `something?`     | call `D.create P...` (may or may not use `fields`, `template`) |
-| —           | —             | `fn: function`   | use return value of call to `fn()`                             |
-| —           | —             | `x: notapodorfn` | call `create()` method of type of `x`                          |
-| —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below                 |
-| —           | —             | 1                |                                                                |
-| —           | `fields: pod` | —                | uses `create()` methods of fields to produce new POD           |
-| —           | 1             | 1                |                                                                |
+| `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`        |
+| :---------: | :----------:  | :------------:   | :----------------------                        |
+| —           | —             | —                | ❌ fails                                        |
+| —           | —             | `d: pod`         | ❌ fails                                        |
+| `function`  | `something?`  | `something?`     | call `D.create P...`                           |
+| —           | —             | `fn: function`   | use return value of call to `fn()`             |
+| —           | —             | `x: notapodorfn` | call `create()` method of type of `x`          |
+| —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below |
+| —           | —             | 1                |                                                |
+| —           | `fields: pod` | —                | use `create()` methods of field types          |
+| —           | 1             | 1                |                                                |
 
 > *In the above table
 > * `?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
