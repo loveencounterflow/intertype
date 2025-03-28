@@ -151,19 +151,20 @@ value of the declared type can be produces by `Intertype::create()`.
 In case none of `create`, `fields` and `template` are set for a given type `T`'s `declaration` object, then
 `Intertype::create T, P...` will fail with an error.
 
-| `create`    | `fields`     | `template`       | behavior of `Intertype::create T, P...` |
-| :---------: | :----------: | :------------:   | :----------------------                 |
-| —           | —            | —                | fails                                   |
-| `function`  | —            | —                | call `D.create P...`                    |
-| `function`  | —            | `something`      | call `D.create P...`                    |
-| `function`  | `something`  | —                | call `D.create P...`                    |
-| `function`  | `something`  | `something`      | call `D.create P...`                    |
-| —           | —            | `d: pod`         |                                         |
-| —           | —            | `fn: function`   | use return value of call to `fn`        |
-| —           | —            | `x: notapodorfn` | call creation method of type of `x`     |
-| —           | —            | 1                |                                         |
-| —           | 1            | —                |                                         |
-| —           | 1            | 1                |                                         |
+| `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`        |
+| :---------: | :----------:  | :------------:   | :----------------------                        |
+| —           | —             | —                | fails                                          |
+| `function`  | —             | —                | call `D.create P...`                           |
+| `function`  | —             | `something`      | call `D.create P...`                           |
+| `function`  | `something`   | —                | call `D.create P...`                           |
+| `function`  | `something`   | `something`      | call `D.create P...`                           |
+| —           | —             | `d: pod`         | create new `pod`, set fields as outlined below |
+| —           | —             | `fn: function`   | use return value of call to `fn()`             |
+| —           | —             | `x: notapodorfn` | call `create()` method of type of `x`          |
+| —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below |
+| —           | —             | 1                |                                                |
+| —           | 1             | —                |                                                |
+| —           | 1             | 1                |                                                |
 
 > *In the above table, `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with
 > JS object literal syntax that is not an instance of a class derived from `Object`; `notapodorfn` is a
