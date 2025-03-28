@@ -148,17 +148,19 @@ Types declarations may include a `create` and a `template` entry:
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
 value of the declared type can be produces by `Intertype::create()`.
 
-In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration object `D`, then
-`Intertype::create T, P...` will fail with an error.
+* In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration object `D`,
+  then `Intertype::create T, P...` will fail with an error.
+
+* In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
+  present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
+  using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
+  and `declaration.template` as it sees fit.
 
 | `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`                        |
 | :---------: | :----------:  | :------------:   | :----------------------                                        |
 | —           | —             | —                | ❌ fails                                                        |
 | —           | —             | `d: pod`         | ❌ fails                                                        |
-| `function`  | —             | —                | call `D.create P...` (may or may not use `fields`, `template`) |
-| `function`  | —             | `something`      | call `D.create P...` (may or may not use `fields`, `template`) |
-| `function`  | `something`   | —                | call `D.create P...` (may or may not use `fields`, `template`) |
-| `function`  | `something`   | `something`      | call `D.create P...` (may or may not use `fields`, `template`) |
+| `function`  | `something?`  | `something?`     | call `D.create P...` (may or may not use `fields`, `template`) |
 | —           | —             | `fn: function`   | use return value of call to `fn()`                             |
 | —           | —             | `x: notapodorfn` | call `create()` method of type of `x`                          |
 | —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below                 |
@@ -166,9 +168,12 @@ In case none of `create`, `fields` and `template` are set for a given type `T`'s
 | —           | `fields: pod` | —                | uses `create()` methods of fields to produce new POD           |
 | —           | 1             | 1                |                                                                |
 
-> *In the above table, `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with
-> JS object literal syntax that is not an instance of a class derived from `Object`; `notapodorfn` is a
-> value other than `null`, `undefined`, a `function` or a `pod`.*
+> *In the above table
+> * `?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
+>   or `nothing`
+> * `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object literal
+>   syntax that is not an instance of a class derived from `Object`
+> * `notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`*
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
@@ -176,10 +181,6 @@ In case none of `create`, `fields` and `template` are set for a given type `T`'s
   that the field's declared type can be used to create a value (which may fail). `template` should not have
   an enumerable key that is not listed in `fields`.
 
-`declaration.create` is an optional synchronous function; if it exists, it will be called with the
-extraneous arguments `P` that are present in the call to `z = Intertype::create T, P...`, (where `T` is a
-type) if any; its return value `z` will be validated using `Intertype::validate T, z`. The declaration's
-`create()` method is free to use `declaration.fields` and `declaration.template` as it sees fit.
 
 `declaration.fields`
 `declaration.template`
