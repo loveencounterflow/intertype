@@ -148,9 +148,6 @@ Types declarations may include a `create` and a `template` entry:
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
 value of the declared type can be produces by `Intertype::create()`.
 
-* In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration object `D`,
-  then `Intertype::create T, P...` will fail with an error.
-
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
   using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
@@ -171,7 +168,10 @@ value of the declared type can be produces by `Intertype::create()`.
 | —           | `pod`        | `pod`          | create new object, set fields as per below |
 | —           | `pod`        | —              | use `create()` methods of field types      |
 
-* It is not allowed to set `template` to anything except `null` or `undefined` when `fields` is not set:
+* In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration object `D`,
+  then `Intertype::create T, P...` will fail with an error;
+* it is also not allowed to set `template` to anything except `null` or `undefined` when `fields` is not
+  set:
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | :---------: | :----------: | :------------: | :----------------------                 |
