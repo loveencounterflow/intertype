@@ -151,11 +151,14 @@ value of the declared type can be produces by `Intertype::create()`.
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
   using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
-  and `declaration.template` as it sees fit:
+  and `declaration.template` as it sees fit. Note that setting `create` to anything but a `function` and/or
+  setting `fields` to anything but a `pod` will both result in compile-time errors:
 
-| `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
-| :---------: | :----------: | :------------: | :----------------------                    |
-| `function`  | `pod?`       | `something?`   | call `D.create P...`                       |
+| `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
+| :---------:    | :----------: | :------------: | :----------------------                 |
+| `function`     | `pod?`       | `something?`   | call `D.create P...`                    |
+| `notafunction` | `something?` | —              | ❌ fails (at compile time)               |
+| `function?`    | `notapod`    | —              | ❌ fails (at compile time)               |
 
 * In case `D.create` is not set (including set to `null` or `undefined`) and `fields` is set (to a POD),
   look up fields in `template` one by one and either use the fields values as-is or, if the template field
@@ -169,13 +172,13 @@ value of the declared type can be produces by `Intertype::create()`.
 | —           | `pod`        | —              | use `create()` methods of field types      |
 
 * In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration object `D`,
-  then `Intertype::create T, P...` will fail with an error;
-* it is also not allowed to set `template` to anything except `null` or `undefined` when `fields` is not
-  set:
+  then `Intertype::create T, P...` will fail with an error; also, it is not allowed to set `template` to
+  anything except `null` or `undefined` when neither `create` and `fields` are set:
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | :---------: | :----------: | :------------: | :----------------------                 |
-| —           | —            | `something`    | ❌ fails                                 |
+| —           | —            | —              | ❌ fails (at run time)                   |
+| —           | —            | `something`    | ❌ fails (at compile time)               |
 
 > *In the above tables*
 > * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
@@ -184,7 +187,9 @@ value of the declared type can be produces by `Intertype::create()`.
 > * *`tv` is short for the value of the `template` property;*
 > * *`pod` and POD stand for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object
 >   literal syntax that is not an instance of a class derived from `Object`*
-> * *`notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`*
+> * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`*
+> * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`*
+<!-- > * *`notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`* -->
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
