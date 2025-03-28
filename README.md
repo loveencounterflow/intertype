@@ -156,21 +156,23 @@ value of the declared type can be produces by `Intertype::create()`.
   using `Intertype::validate T, z`. The declaration's `create()` method is free to use `declaration.fields`
   and `declaration.template` as it sees fit.
 
-| `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`        |
-| :---------: | :----------:  | :------------:   | :----------------------                        |
-| —           | —             | —                | ❌ fails                                        |
-| —           | —             | `d: pod`         | ❌ fails                                        |
-| `function`  | `something?`  | `something?`     | call `D.create P...`                           |
-| —           | —             | `fn: function`   | use return value of call to `fn()`             |
-| —           | —             | `x: notapodorfn` | call `create()` method of type of `x`          |
-| —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below |
-| —           | —             | 1                |                                                |
-| —           | `fields: pod` | —                | use `create()` methods of field types          |
-| —           | 1             | 1                |                                                |
+| `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
+| :---------: | :----------: | :------------: | :----------------------                    |
+| `function`  | `something?` | `something?`   | call `D.create P...`                       |
+| —           | `pod`        | `pod`          | create new object, set fields as per below |
+| —           | `pod`        | —              | use `create()` methods of field types      |
+| —           | —            | `notapodorfn`  | use `tv` as-is                             |
+| —           | `pod`        | `function`     | use return value of call to `tv()`         |
+| —           | —            | —              | ❌ fails                                    |
+| —           | —            | `pod`          | ❌ fails                                    |
+| —           | —            | `function`     | ❌ fails (use `create()` instead)           |
+| —           | `pod`        | `notapodorfn`  | ❌ fails                                    |
 
 > *In the above table
 > * `?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
 >   or `nothing`
+> * `fv` is short for the value of the `template` property;
+> * `tv` is short for the value of the `template` property;
 > * `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object literal
 >   syntax that is not an instance of a class derived from `Object`
 > * `notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`*
