@@ -170,6 +170,11 @@ In case none of `create`, `fields` and `template` are set for a given type `T`'s
 > JS object literal syntax that is not an instance of a class derived from `Object`; `notapodorfn` is a
 > value other than `null`, `undefined`, a `function` or a `pod`.*
 
+* As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
+  declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
+  by the enumerable key/value pairs of `fields`; where `template` is missing a field, it will be assumed
+  that the field's declared type can be used to create a value (which may fail). `template` should not have
+  an enumerable key that is not listed in `fields`.
 
 `declaration.create` is an optional synchronous function; if it exists, it will be called with the
 extraneous arguments `P` that are present in the call to `z = Intertype::create T, P...`, (where `T` is a
