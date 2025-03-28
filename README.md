@@ -158,15 +158,21 @@ value of the declared type can be produces by `Intertype::create()`.
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
 | :---------: | :----------: | :------------: | :----------------------                    |
-| `function`  | `something?` | `something?`   | call `D.create P...`                       |
+| `function`  | `pod?`       | `something?`   | call `D.create P...`                       |
+
+| `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
+| :---------: | :----------: | :------------: | :----------------------                    |
 | —           | `pod`        | `pod`          | create new object, set fields as per below |
 | —           | `pod`        | —              | use `create()` methods of field types      |
-| —           | —            | `notapodorfn`  | use `tv` as-is                             |
 | —           | `pod`        | `function`     | use return value of call to `tv()`         |
-| —           | —            | —              | ❌ fails                                    |
+| —           | `pod`        | `notapodorfn`  | ❌ fails                                    |
+
+| `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
+| :---------: | :----------: | :------------: | :----------------------                    |
+| —           | —            | `notapodorfn`  | use `tv` as-is                             |
 | —           | —            | `pod`          | ❌ fails                                    |
 | —           | —            | `function`     | ❌ fails (use `create()` instead)           |
-| —           | `pod`        | `notapodorfn`  | ❌ fails                                    |
+| —           | —            | —              | ❌ fails                                    |
 
 > *In the above table
 > * `?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
