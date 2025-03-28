@@ -174,14 +174,14 @@ value of the declared type can be produces by `Intertype::create()`.
 | —           | —            | `function`     | ❌ fails (use `create()` instead)           |
 | —           | —            | —              | ❌ fails                                    |
 
-> *In the above table
-> * `?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
->   or `nothing`
-> * `fv` is short for the value of the `template` property;
-> * `tv` is short for the value of the `template` property;
-> * `pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object literal
->   syntax that is not an instance of a class derived from `Object`
-> * `notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`*
+> *In the above table*
+> * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
+>   or `nothing` (`null` or `undefined`, including the property not being set)*
+> * *`fv` is short for the value of the `template` property;*
+> * *`tv` is short for the value of the `template` property;*
+> * *`pod` stands for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object literal
+>   syntax that is not an instance of a class derived from `Object`*
+> * *`notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`*
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
