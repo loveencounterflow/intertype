@@ -153,12 +153,12 @@ In case none of `create`, `fields` and `template` are set for a given type `T`'s
 
 | `create`    | `fields`      | `template`       | behavior of `Intertype::create T, P...`        |
 | :---------: | :----------:  | :------------:   | :----------------------                        |
-| —           | —             | —                | fails                                          |
+| —           | —             | —                | ❌ fails                                          |
 | `function`  | —             | —                | call `D.create P...`                           |
 | `function`  | —             | `something`      | call `D.create P...`                           |
 | `function`  | `something`   | —                | call `D.create P...`                           |
 | `function`  | `something`   | `something`      | call `D.create P...`                           |
-| —           | —             | `d: pod`         | create new `pod`, set fields as outlined below |
+| —           | —             | `d: pod`         | ❌ fails                                          |
 | —           | —             | `fn: function`   | use return value of call to `fn()`             |
 | —           | —             | `x: notapodorfn` | call `create()` method of type of `x`          |
 | —           | `fields: pod` | `d: pod`         | create new `pod`, set fields as outlined below |
