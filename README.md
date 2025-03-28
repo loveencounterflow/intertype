@@ -160,11 +160,12 @@ value of the declared type can be produces by `Intertype::create()`.
 | `notafunction` | `something?` | —              | ❌ fails (at compile time)               |
 | `function?`    | `notapod`    | —              | ❌ fails (at compile time)               |
 
-* In case `D.create` is not set (including set to `null` or `undefined`) and `fields` is set (to a POD),
-  look up fields in `template` one by one and either use the fields values as-is or, if the template field
-  holds a function, call that function; where `template` is missing fields, try to supply with the `create`
-  method according to that field's declared type. If `template` is not set, the effect is the same as
-  setting `template` to a POD without any properties:
+* In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD), walk over
+  the field declarations in `fields` and look up the corresponding values in `template` one by one; if the
+  template field holds a function, call that function, otherwise use the field value as-is. Functions can
+  only be set as return values from functions. Where `template` is missing a field, try to supply with the
+  `create` method according to that field's declared type.
+* If `template` is not set, the effect is the same as setting `template` to a POD without any properties:
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
 | :---------: | :----------: | :------------: | :----------------------                    |
@@ -189,7 +190,8 @@ value of the declared type can be produces by `Intertype::create()`.
 >   literal syntax that is not an instance of a class derived from `Object`*
 > * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`*
 > * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`*
-<!-- > * *`notapodorfn` is a value of a type other than `null`, `undefined`, a `function` or a `pod`* -->
+> * *runtime failures happen when trying to call `Intertype::create()`, but compile-time failures happen
+>   when trying to declare a `Typespace` with a type that satisfies one of the error confitions listed here*
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
