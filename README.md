@@ -170,9 +170,9 @@ value of the declared type can be produced by `Intertype::create()`.
 
 | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | :---------:    | :----------: | :------------: | :----------------------                 |
-| `function`     | `pod?`       | ⛔   | call `D.create P...`                    |
-| `notafunction` | ⛔ | ⛔   | ❌ `ERR_TYPEDECL`                        |
-| `function?`    | `notapod`    | ⛔   | ❌ `ERR_TYPEDECL`                        |
+| `function`     | `pod?`       | ⯀   | call `D.create P...`                    |
+| `notafunction` | ⯀ | ⯀   | ❌ `ERR_TYPEDECL`                        |
+| `function?`    | `notapod`    | ⯀   | ❌ `ERR_TYPEDECL`                        |
 
 * In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD), walk over
   the field declarations in `fields` and look up the corresponding values in `template` one by one; if the
