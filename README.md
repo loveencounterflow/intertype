@@ -151,13 +151,15 @@ value of the declared type can be produced by `Intertype::create()`.
 > *In the below tables*
 > * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
 >   or `nothing` (`null` or `undefined`, including the property not being set);*
-> * *`pod` and POD stand for 'Plain Old Dictionary (i.e. Object)', such as an object created with JS object
->   literal syntax that is not an instance of a class derived from `Object`;*
+> * *`pod` and 'POD' stand for 'Plain Old Dictionary (i.e. Object)', which is defined as an object whose
+>   prototype is either `Object` or `undefined`, the former being the value of a JS object literal, the
+>   latter being produced by `Object.create null`;*
 > * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`;*
 > * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`;*
-> * *runtime failures happen when trying to call `Intertype::create()`, but compile-time failures happen
->   when trying to declare a `Typespace` with a type that satisfies one of the error confitions listed
->   here.*
+> * *`ERR_TYPEDECL` indicates an error that will occur during the instantiation of a `Typespace` when a type
+>   with the listed condition is encountered;*
+> * *`ERR_CREATE` indicates an error that will occur when trying to call `Intertype::create()` with a type
+>   whose declaration satisfies the given condition.*
 
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
@@ -168,8 +170,8 @@ value of the declared type can be produced by `Intertype::create()`.
 | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | :---------:    | :----------: | :------------: | :----------------------                 |
 | `function`     | `pod?`       | `something?`   | call `D.create P...`                    |
-| `notafunction` | `something?` | —              | ❌ fails (at compile time)               |
-| `function?`    | `notapod`    | —              | ❌ fails (at compile time)               |
+| `notafunction` | `something?` | `something?`   | ❌ `ERR_TYPEDECL`                        |
+| `function?`    | `notapod`    | `something?`   | ❌ `ERR_TYPEDECL`                        |
 
 * In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD), walk over
   the field declarations in `fields` and look up the corresponding values in `template` one by one; if the
@@ -190,8 +192,8 @@ value of the declared type can be produced by `Intertype::create()`.
 
 | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | :---------: | :----------: | :------------: | :----------------------                 |
-| —           | —            | —              | ❌ fails (at run time)                   |
-| —           | —            | `something`    | ❌ fails (at compile time)               |
+| —           | —            | —              | ❌ `ERR_CREATE`                          |
+| —           | —            | `something`    | ❌ `ERR_TYPEDECL`                        |
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
@@ -268,6 +270,12 @@ value of the declared type can be produced by `Intertype::create()`.
 * **`[—]`** how to express multiple refinements as in `blank nonempty text` or `positive1 even integer`?
 
 * **`[—]`** how to express sum types as in `integer or integerliteral`?
+
+* **`[—]`** rename `Intertype::types_of()` -> `Intertype::all_types_of()` to distinguish it better from
+  `Intertype::type_of()`
+
+* **`[—]`** implement versions of `type_of()`, `all_types_of()` that return the actual type objects, not the
+  type names
 
 ---------------------------------------------------------
 
