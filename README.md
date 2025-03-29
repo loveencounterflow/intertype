@@ -12,6 +12,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Declaring `Typespace`s](#declaring-typespaces)
 - [InterType](#intertype-1)
   - [API](#api)
+  - [`Type` Objects](#type-objects)
   - [Value Creation](#value-creation)
     - [Template Copying Procedure](#template-copying-procedure)
   - [To Do](#to-do)
@@ -142,6 +143,13 @@ Types declarations may include a `create` and a `template` entry:
     object returned by `evaluate.person x` will always have `person` as its first key, and the one returned by
     `evaluate.person.address x` will always have `person.address` as its first key
 -->
+
+## `Type` Objects
+
+* `Type::isa()`
+* `Type::create()`
+* `Type::fields`
+* `Type::template`
 
 ## Value Creation
 
@@ -278,41 +286,4 @@ value of the declared type can be produced by `Intertype::create()`.
 * **`[—]`** implement versions of `type_of()`, `all_types_of()` that return the actual type objects, not the
   type names
 
----------------------------------------------------------
 
-```coffee
-declarations:
-  integer:
-    test: ( x ) -> Number.isInteger x # or `Number.isSafeInteger()`
-    refinements:
-      positive0:  ( x ) -> x >= +0
-      positive1:  ( x ) -> x >= +1
-      negative0:  ( x ) -> x <=  0
-      negative1:  ( x ) -> x <= -1
-      odd:        ( x ) -> x %% 2 isnt  0
-      even:       ( x ) -> x %% 2 is    0
-  list:
-    test: ( x ) -> Array.isArray x
-    refinements:
-      empty:      ( x ) -> x.length is  0
-      nonempty:   ( x ) -> x.length >   0
-    containment:
-      contains:   ( x, y ) -> y in x
-
-  map:
-    test: ( x ) -> x instanceof Map
-    refinements:
-      empty:      ( x ) -> x.size is  0
-      nonempty:   ( x ) -> x.size >   0
-    containment:
-      all:        ( x, f ) -> x.entries().every  ( e ) -> f e
-      any:        ( x, f ) -> x.entries().some   ( e ) -> f e
-      allkeys:    ( x, f ) -> x.keys().every     ( e ) -> f e
-      anykeys:    ( x, f ) -> x.keys().some      ( e ) -> f e
-      allvalues:  ( x, f ) -> x.values().every   ( e ) -> f e
-      anyvalues:  ( x, f ) -> x.values().some    ( e ) -> f e
-      contains:   ( x, y ) -> x.values().some    ( e ) -> e is y
-
-  quantity.q:     'float'
-  quantity.u:     'text_nonempty'
-```
