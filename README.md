@@ -159,7 +159,8 @@ value of the declared type can be produced by `Intertype::create()`.
 > * *`ERR_TYPEDECL` indicates an error that will occur during the instantiation of a `Typespace` when a type
 >   with the listed condition is encountered;*
 > * *`ERR_CREATE` indicates an error that will occur when trying to call `Intertype::create()` with a type
->   whose declaration satisfies the given condition.*
+>   whose declaration satisfies the given condition: the declaration is OK and the type is usable, but it's
+>   not allowed to use the library to create a new value of this type.*
 
 * In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P` that are
   present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be validated
@@ -169,9 +170,9 @@ value of the declared type can be produced by `Intertype::create()`.
 
 | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | :---------:    | :----------: | :------------: | :----------------------                 |
-| `function`     | `pod?`       | `something?`   | call `D.create P...`                    |
-| `notafunction` | `something?` | `something?`   | ❌ `ERR_TYPEDECL`                        |
-| `function?`    | `notapod`    | `something?`   | ❌ `ERR_TYPEDECL`                        |
+| `function`     | `pod?`       | ⛔   | call `D.create P...`                    |
+| `notafunction` | ⛔ | ⛔   | ❌ `ERR_TYPEDECL`                        |
+| `function?`    | `notapod`    | ⛔   | ❌ `ERR_TYPEDECL`                        |
 
 * In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD), walk over
   the field declarations in `fields` and look up the corresponding values in `template` one by one; if the
