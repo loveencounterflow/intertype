@@ -16,6 +16,7 @@ $isa =
   text:       ( x ) -> typeof x is 'string'
   function:   ( x ) -> ( Object::toString.call x ) is '[object Function]'
   # nan:                    ( x ) => Number.isNaN         x
+  pod:        ( x ) -> x? and x.constructor in [ Object, undefined, ]
   primitive:  ( x ) -> $primitive_types.includes $type_of x
 
 #-----------------------------------------------------------------------------------------------------------
@@ -95,17 +96,13 @@ class Intertype
   #---------------------------------------------------------------------------------------------------------
   types_of: ( typespace, x ) ->
     unless typespace instanceof Typespace
-      throw new Error "Ω___1 expected an instance of Typespace, got a #{$type_of x}"
+      throw new Error "Ω___3 expected an instance of Typespace, got a #{$type_of x}"
     return ( typename for typename, type of typespace when @isa type, x )
 
   #---------------------------------------------------------------------------------------------------------
   validate: ( type, x ) ->
     return x if @isa type, x
-    throw new Error "Ω___3 expected a #{type.$typename}, got a #{$type_of x}"
-
-  #---------------------------------------------------------------------------------------------------------
-  create: ( type, P... ) ->
-    throw new Error "Ω___4 not yet implemented"
+    throw new Error "Ω___4 expected a #{type.$typename}, got a #{$type_of x}"
 
   #---------------------------------------------------------------------------------------------------------
   evaluate: ( type, x ) ->
@@ -122,11 +119,19 @@ class Intertype
     return R
 
   #---------------------------------------------------------------------------------------------------------
-  copy: ( x ) ->
-
-  #---------------------------------------------------------------------------------------------------------
   equals: ( a, b ) ->
     throw new Error "Ω___5 not yet implemented"
+
+  #---------------------------------------------------------------------------------------------------------
+  create: ( type, P... ) ->
+    unless type instanceof Type
+      throw new Error "Ω___6 expected an instance of Type, got a #{$type_of type}"
+    return type.create.call type, P...
+
+  #---------------------------------------------------------------------------------------------------------
+  copy_template: ( type ) ->
+    return x if $isa.primitive x
+    return x.call
 
 
 #===========================================================================================================
@@ -136,7 +141,44 @@ class Type
   constructor: ( typespace, typename, declaration ) ->
     @$typename = typename # hide @, '$typename',  typename
     hide @, '$typespace', typespace
-    @_compile_fields typespace, typename, declaration if declaration.fields?
+    #.......................................................................................................
+    declaration = @_compile_declaration_fields  typespace, typename, declaration
+    declaration = @_compile_declaration_isa     typespace, typename, declaration
+    # declaration = @_compile_declaration_create  typespace, typename, declaration
+    #.......................................................................................................
+    for key, value of declaration
+      nameit typename, value if key is 'isa' # check that value is function?
+      hide @, key, value
+    #.......................................................................................................
+    ### TAINT perform validation of resulting shape here ###
+    #.......................................................................................................
+    return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_declaration_fields: ( typespace, typename, declaration ) ->
+    return declaration unless declaration.fields?
+    unless $isa.pod declaration.fields
+      throw new Error "Ω___7 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+    #.......................................................................................................
+    ### TAINT try to move this check to validation step ###
+    if declaration.isa?
+      throw new Error "Ω___8 must have exactly one of `isa` or `fields`, not both"
+    for field_name, field_declaration of declaration.fields
+      declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
+    #.......................................................................................................
+    declaration.isa = @_get_isa_method_for_fields_check typespace, typename, declaration
+    return declaration
+
+  #---------------------------------------------------------------------------------------------------------
+  _get_isa_method_for_fields_check: ( typespace, typename, declaration ) ->
+    return ( x, t ) ->
+      for field_name, field of @fields
+        return false unless x? and t.isa field, x[ field_name ]
+      return true
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_declaration_isa: ( typespace, typename, declaration ) ->
+    return declaration if declaration.isa?
     #.......................................................................................................
     switch true
       #.....................................................................................................
@@ -150,31 +192,17 @@ class Type
       when declaration instanceof Object  then null
       #.....................................................................................................
       else
-        throw new Error "Ω___6 expected a typename, a function or a type as declaration, got a #{$type_of declaration}"
-    #.......................................................................................................
-    ### TAINT this is defective w/out proper validation ###
-    for key, value of declaration
-      nameit typename, value if key is 'isa' # check that value is function?
-      hide @, key, value
-    return undefined
+        throw new Error "Ω___9 expected a typename, a function or a type as declaration, got a #{$type_of declaration}"
+    return declaration
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_fields: ( typespace, typename, declaration ) ->
-    #.......................................................................................................
-    ### TAINT try to move this check to validation step ###
-    if declaration.isa?
-      throw new Error "Ω___7 must have exactly one of `isa` or `fields`, not both"
-    for field_name, field_declaration of declaration.fields
-      declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
-    #.......................................................................................................
-    declaration.isa = @_get_default_isa_for_fields typespace, typename, declaration
-    return null
-
-  #---------------------------------------------------------------------------------------------------------
-  _get_default_isa_for_fields: ( typespace, typename, declaration ) -> ( x, t ) ->
-    for field_name, field of @fields
-      return false unless x? and t.isa field, x[ field_name ]
-    return true
+  _compile_declaration_create: ( typespace, typename, declaration ) ->
+    switch true
+      when ( ( not declaration.create? ) and ( not declaration.fields? ) )
+        if declaration.template?
+          throw new Error "Ω__10 MEH-create-1 unable to create value of type #{rpr typename}"
+        declaration.create = -> throw new Error "Ω__11 MEH-create-1 unable to create value of type #{rpr typename}"
+    return declaration
 
 
 #===========================================================================================================
