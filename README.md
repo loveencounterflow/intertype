@@ -148,7 +148,7 @@ Types declarations may include a `create` and a `template` entry:
 
 * `Type::isa()`
 * `Type::create()`
-* `Type::fields`
+* `Type::fields <pod?>`
 * `Type::template`
 
 ## Value Creation
