@@ -191,16 +191,15 @@ value of the declared type can be produced by `Intertype::create()`.
   object `D`, then `Intertype::create T, P...` will fail with an error; (**F**) also, it is not allowed to
   set `template` to anything except `null` or `undefined` when neither `create` and `fields` are set.
 
-|       | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
-| ---   | :---------:    | :----------: | :------------: | :----------------------                 |
-| **A** | `function`     | `pod?`       | `something?`   | call `D.create P...`                    |
-| **B** | `notafunction` | `something?` | `something?`   | ❌ `ERR_TYPEDECL`                        |
-| **B** | `function?`    | `notapod`    | `something?`   | ❌ `ERR_TYPEDECL`                        |
-
-|       | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
-| ---   | :---------: | :----------: | :------------: | :----------------------                    |
-| **C** | —           | `pod`        | `pod`          | create new object, set fields as per below |
-| **D** | —           | `pod`        | —              | use `create()` methods of field types      |
+|       | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
+| ---   | :---------:    | :----------: | :------------: | :----------------------                    |
+| **A** | `function`     | `pod?`       | `something?`   | call `D.create P...`                       |
+| **B** | `notafunction` | `something?` | `something?`   | ❌ `ERR_TYPEDECL`                           |
+| **B** | `function?`    | `notapod`    | `something?`   | ❌ `ERR_TYPEDECL`                           |
+|       | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
+| ---   | :---------:    | :----------: | :------------: | :----------------------                    |
+| **C** | —              | `pod`        | `pod`          | create new object, set fields as per below |
+| **D** | —              | `pod`        | —              | use `create()` methods of field types      |
 
 |       | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
 | ---   | :---------: | :----------: | :------------: | :----------------------                 |
