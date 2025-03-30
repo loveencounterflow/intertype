@@ -187,20 +187,22 @@ value of the declared type can be produced by `Intertype::create()`.
   will try to supply with the `create` method according to that field's declared type.
 * (**D**) If `template` is not set, the effect is the same as setting `template` to a POD without any
   properties.
-* (**E**) In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration
-  object `D`, then `Intertype::create T, P...` will fail with an error;
-* (**F**) also, it is not allowed to set `template` to anything except `null` or `undefined` when neither
-  `create` and `fields` are set.
+* If neither `create` nor `fields` are set:
+  * (**E**) if `template` is set to a `function`, call it and use the return value as-is; this is commonly
+    used to produce copies of e.g. lists or set a created value to a function or `undefined`;
+  * (**F**) in all other cases, use the value of `template` as is; if `template` is not set or set to
+    `undefined`, coerce to `null` to create the new value (which will commonly fail for all types that are
+    not nullable);
 
-|       | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
-| ---   | :---------:    | :----------: | :------------: | :----------------------                    |
-| **A** | `function`     | `pod?`       | /              | call `D.create P...`                       |
-| **B** | `notafunction` | /            | /              | ❌ `ERR_TYPEDECL`                           |
-| **B** | `function?`    | `notapod`    | /              | ❌ `ERR_TYPEDECL`                           |
-| **C** | —              | `pod`        | `pod`          | create new object, set fields as per below |
-| **D** | —              | `pod`        | —              | use `create()` methods of field types      |
-| **E** | —              | —            | —              | ❌ `ERR_CREATE`                             |
-| **F** | —              | —            | `something`    | ❌ `ERR_TYPEDECL`                           |
+|       | `create`       | `fields`     | `template`      | behavior of `Intertype::create T, P...`    |
+| ---   | :---------:    | :----------: | :------------:  | :----------------------                    |
+| **A** | `function`     | `pod?`       | /               | call `D.create P...`                       |
+| **B** | `notafunction` | /            | /               | ❌ `ERR_TYPEDECL`                           |
+| **B** | /              | `notapod`    | /               | ❌ `ERR_TYPEDECL`                           |
+| **C** | —              | `pod`        | `pod`           | create new object, set fields as per below |
+| **D** | —              | `pod`        | —               | use `create()` methods of field types      |
+| **E** | —              | —            | `function`      | use return value of call to `template()`   |
+| **F** | —              | —            | `notafunction?` | use template value as-is, coerce to `null` |
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
