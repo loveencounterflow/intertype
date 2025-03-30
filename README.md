@@ -155,7 +155,19 @@ Types declarations may include a `create` and a `template` entry:
 ## Value Creation
 
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
-value of the declared type can be produced by `Intertype::create()`.
+value of the declared type can be produced by `Intertype::create()`. This section discusses under what
+circumstances a type declaration leads to a `create()`able type.
+
+As long as the type declaration's shape does not cause a validation error, the type will have either a
+generated `Type::create()` method or use the `Type::create()` method as provided in the declaration; in any
+event, the value returned by a call to `Type::create()` will be `validate`d to ensure it satisfies the
+type's ISA method. The effect can be easily observed when not setting any of `create`, `fields` or
+`template`; in this case, the auto-generated method `Type::create()` accessed by `Intertype::create()` will
+look at `declaration.template` (which is copied to `Type::template`) and find its value to be `undefined`
+(which is what JavaScript returns for unset properties). According to the rules, `undefined` is coerced to
+`null`, therefore `null` is assumed to be the created new value for the type in question. This value,
+however, will still have to survive the implicit check using `Intertype::validate()` and fail unless the
+type's ISA method accepts `null`s.
 
 > *In the below tables*
 > * *an em-dash '—' indicates an unset property (which most of the time subsumes a property explicitly set to
@@ -176,7 +188,6 @@ value of the declared type can be produced by `Intertype::create()`.
 >   whose declaration satisfies the given condition: the declaration is OK and the type is usable, but it's
 >   not allowed to use the library to create a new value of this type.*-->
 
-* In any event, the resulting value will be `validate`d using the type's ISA method:
 
 
 * (**A**) In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P`
@@ -201,7 +212,7 @@ value of the declared type can be produced by `Intertype::create()`.
 
 |       | `create`       | `fields`     | `template`      | behavior of `Intertype::create T, P...`    |
 | ---   | :---------:    | :----------: | :------------:  | :----------------------                    |
-| **A** | `function`     | `pod?`       | /               | call `D.create P...`                       |
+| **A** | `function`     | `pod?`       | `something?`    | call `D.create P...`                       |
 | **B** | `notafunction` | /            | /               | ❌ `ERR_TYPEDECL`                           |
 | **C** | /              | `notapod`    | /               | ❌ `ERR_TYPEDECL`                           |
 | **D** | —              | `pod`        | `pod`           | create new object, set fields as per below |
@@ -209,11 +220,11 @@ value of the declared type can be produced by `Intertype::create()`.
 | **F** | —              | —            | `function`      | use return value of call to `template()`   |
 | **G** | —              | —            | `notafunction?` | use template value as-is, coerce to `null` |
 
-* As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
-  declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
-  by the enumerable key/value pairs of `fields`; where `template` is missing a field, it will be assumed
-  that the field's declared type can be used to create a value (which may fail). `template` should not have
-  an enumerable key that is not listed in `fields`.
+**Note** As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
+declaration, *not* the `template` property. The `template` property's fields will be examined as dictated by
+the enumerable key/value pairs of `fields`; where `template` is missing a field, it will be assumed that the
+field's declared type can be used to create a value (which may fail). `template` should not have an
+enumerable key that is not listed in `fields`.
 
 
 
