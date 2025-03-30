@@ -196,15 +196,10 @@ value of the declared type can be produced by `Intertype::create()`.
 | **A** | `function`     | `pod?`       | `something?`   | call `D.create P...`                       |
 | **B** | `notafunction` | `something?` | `something?`   | ❌ `ERR_TYPEDECL`                           |
 | **B** | `function?`    | `notapod`    | `something?`   | ❌ `ERR_TYPEDECL`                           |
-|       | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
-| ---   | :---------:    | :----------: | :------------: | :----------------------                    |
 | **C** | —              | `pod`        | `pod`          | create new object, set fields as per below |
 | **D** | —              | `pod`        | —              | use `create()` methods of field types      |
-
-|       | `create`    | `fields`     | `template`     | behavior of `Intertype::create T, P...` |
-| ---   | :---------: | :----------: | :------------: | :----------------------                 |
-| **E** | —           | —            | —              | ❌ `ERR_CREATE`                          |
-| **F** | —           | —            | `something`    | ❌ `ERR_TYPEDECL`                        |
+| **E** | —              | —            | —              | ❌ `ERR_CREATE`                             |
+| **F** | —              | —            | `something`    | ❌ `ERR_TYPEDECL`                           |
 
 * As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
   declaration, *not* the `template` property. The `template` property's fields will be examined as dictated
