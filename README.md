@@ -169,18 +169,18 @@ look at `declaration.template` (which is copied to `Type::template`) and find it
 however, will still have to survive the implicit check using `Intertype::validate()`—which will likely fail,
 unless the type's ISA method accepts `null`s.
 
-> *In the below tables*
+> *In the below table*
 > * *an em-dash '—' indicates an unset property (which most of the time subsumes a property explicitly set to
   `null` or `undefined`);*
 > * *a slash '/' indicates an irrelevant property whose value will not be considered if the listed
 >   conditions are satisfied;*
-> * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
->   or `nothing` (`null` or `undefined`, including the property not being set);*
-> * *`pod` and 'POD' stand for 'Plain Old Dictionary (i.e. Object)', which is defined as an object whose
+> * *`?` indicates an optional type, so `<something?>` is `<something>` (any value except `null` or
+>   `undefined`) or `<nothing>` (`null` or `undefined`, including the property not being set);*
+> * *`<pod>` and 'POD' stand for 'Plain Old Dictionary (i.e. Object)', which is defined as an object whose
 >   prototype is either `Object` or `undefined`, the former being the value of a JS object literal, the
 >   latter being produced by `Object.create null`;*
-> * *`notafunction` is a value of a type other than `null`, `undefined`, or a `function`;*
-> * *`notapod` is a value of a type other than `null`, `undefined`, or a `pod`;*
+> * *`<notafunction>` is a value of a type other than `null`, `undefined`, or a `<function>`;*
+> * *`<notapod>` is a value of a type other than `null`, `undefined`, or a `<pod>`;*
 > * *`ERR_TYPEDECL` indicates an error that will occur during the instantiation of a `Typespace` when a type
 >   with the listed condition is encountered;*
 
@@ -210,15 +210,15 @@ unless the type's ISA method accepts `null`s.
     `undefined`, coerce to `null` to create the new value (which will commonly fail for all types that are
     not nullable);
 
-|       | `create`       | `fields`     | `template`      | behavior of `Intertype::create T, P...`    |
-| ---   | :---------:    | :----------: | :------------:  | :----------------------                    |
-| **A** | `function`     | `pod?`       | `something?`    | call `D.create P...`                       |
-| **B** | `notafunction` | /            | /               | ❌ `ERR_TYPEDECL`                           |
-| **C** | /              | `notapod`    | /               | ❌ `ERR_TYPEDECL`                           |
-| **D** | —              | `pod`        | `pod`           | create new object, set fields as per below |
-| **E** | —              | `pod`        | —               | use `create()` methods of field types      |
-| **F** | —              | —            | `function`      | use return value of call to `template()`   |
-| **G** | —              | —            | `notafunction?` | use template value as-is, coerce to `null` |
+|       | `create`         | `fields`     | `template`        | behavior of `Intertype::create T, P...`    |
+| ---   | :---------:      | :----------: | :------------:    | :----------------------                    |
+| **A** | `<function>`     | `<pod?>`     | `<something?>`    | call `D.create P...`                       |
+| **B** | `<notafunction>` | /            | /                 | ❌ `ERR_TYPEDECL`                           |
+| **C** | /                | `<notapod>`  | /                 | ❌ `ERR_TYPEDECL`                           |
+| **D** | —                | `<pod>`      | `<pod>`           | create new object, set fields as per below |
+| **E** | —                | `<pod>`      | —                 | use `create()` methods of field types      |
+| **F** | —                | —            | `<function>`      | use return value of call to `template()`   |
+| **G** | —                | —            | `<notafunction>?` | use template value as-is, coerce to `null` |
 
 **Note** As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
 declaration, *not* the `template` property. The `template` property's fields will be examined as dictated by
