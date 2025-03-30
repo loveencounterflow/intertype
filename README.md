@@ -217,8 +217,8 @@ unless the type's ISA method accepts `null`s.
 | **A** | `<function>`     | `<pod?>`     | `<something?>`    | call `D.create P...`                       |
 | **B** | `<notafunction>` | /            | /                 | ❌ `ERR_TYPEDECL`                           |
 | **C** | /                | `<notapod>`  | /                 | ❌ `ERR_TYPEDECL`                           |
-| **D** | —                | `<pod>`      | `<pod>`           | create new object, set fields as per below |
-| **E** | —                | `<pod>`      | `<notapod?>`      | ❌ `ERR_TYPEDECL`                           |
+| **D** | —                | `<pod>`      | `<pod?>`          | create new object, set fields as per below |
+| **E** | —                | `<pod>`      | `<notapod>`       | ❌ `ERR_TYPEDECL`                           |
 | **F** | —                | `<pod>`      | —                 | use `create()` methods of field types      |
 | **G** | —                | —            | `<function>`      | use return value of call to `template()`   |
 | **H** | —                | —            | `<notafunction>?` | use value, coerce `undefined` to `null`    |
