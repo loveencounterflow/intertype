@@ -239,6 +239,8 @@ value of the declared type can be produced by `Intertype::create()`.
   defined as', followed by a *pair of parentheses* with typed, comma separated arguments, followed by an
   *arrow* to indicate a fucntion, as in `Intertype::evaluate: ( t <type>, x <any> ) ->`. In case the
   function discussed does not take any arguments, the *parentheses are omitted*, as in `Math.random: ->`.
+  The return type may be indicated *behind the arrow*, as in `List::indexOf: ( x <something> ) ->
+  <integer>`.
 
 ## To Do
 
