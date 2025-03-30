@@ -222,22 +222,23 @@ value of the declared type can be produced by `Intertype::create()`.
 
 ## Notation
 
-* **Types** are indicated in pointy brackets behind variable and property names, as in `fields <pod>`,
-  `count <cardinal>` .
-* **Nullable Types** get a question mark behind the type name, as in `fields <pod?>`.
-* **Class Properties** ar indicated with a dot between class and property name, as in
+* **Types** are indicated in *pointy brackets* behind variable and property names, as in `count <cardinal>`,
+  `name <text>`.
+* **Nullable Types** get a *question mark* behind the type name, as in `fields <pod?>`.
+* **Class Properties** ar indicated with *a dot* between class and property name, as in
   `Intertype.primitive_types <list>`.
-* **Instance Properties** are written with a double colon between class and property name:
-  `Intertype::evaluate()`, or a dot between instance and property name: `types.evaluate()`.
-* **Functions** are always written either without parentheses when they have one or more (comma-sparated)
-  arguments: `Intertype::evaluate t <type>, x <any>`, or with an empty pair of parentheses:
-  `Myclass::do_something()`, `x.do_something()`. The notation with empty parens is used to indicate both a
-  function being called without arguments and to refer to a function in general, irrespective of how a
-  correct set of arguments would have to look like.
-* **Function Signatures** start with the identifier of the function, followed by a colon to indicate 'is
-  defined as', followed by a pair of parentheses with typed, comma separated arguments, followed by an arrow
-  to indicate a fucntion, as in `Intertype::evaluate: ( t <type>, x <any> ) ->`. In case the function
-  discussed does not take any arguments, the parentheses are omitted, as in `Math.random: ->`.
+* **Instance Properties** are written with *a double colon* between class and property name:
+  `Intertype::evaluate()`, or *a dot* between instance and property name: `types.evaluate()`.
+* **Function Calls** are always written either *without parentheses* when they have one or more
+  (comma-sparated) arguments: `Intertype::evaluate t <type>, x <any>`, or with an *empty pair of
+  parentheses*: `Myclass::do_something()`, `x.do_something()`.
+* The notation with *empty parens*, `f()`, is used both to indicate a function being called without
+  arguments and to refer to a function in general, irrespective of how a correct set of arguments would have
+  to look like.
+* **Function Signatures** start with the *name* of the function, followed by a *colon* to indicate 'is
+  defined as', followed by a *pair of parentheses* with typed, comma separated arguments, followed by an
+  *arrow* to indicate a fucntion, as in `Intertype::evaluate: ( t <type>, x <any> ) ->`. In case the
+  function discussed does not take any arguments, the *parentheses are omitted*, as in `Math.random: ->`.
 
 ## To Do
 
