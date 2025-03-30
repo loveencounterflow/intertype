@@ -188,14 +188,15 @@ value of the declared type can be produced by `Intertype::create()`.
 * (**D**) If `template` is not set, the effect is the same as setting `template` to a POD without any
   properties.
 * (**E**) In case none of `create`, `fields` and `template` are set for a given type `T`'s declaration
-  object `D`, then `Intertype::create T, P...` will fail with an error; (**F**) also, it is not allowed to
-  set `template` to anything except `null` or `undefined` when neither `create` and `fields` are set.
+  object `D`, then `Intertype::create T, P...` will fail with an error;
+* (**F**) also, it is not allowed to set `template` to anything except `null` or `undefined` when neither
+  `create` and `fields` are set.
 
 |       | `create`       | `fields`     | `template`     | behavior of `Intertype::create T, P...`    |
 | ---   | :---------:    | :----------: | :------------: | :----------------------                    |
-| **A** | `function`     | `pod?`       | `something?`   | call `D.create P...`                       |
-| **B** | `notafunction` | `something?` | `something?`   | ❌ `ERR_TYPEDECL`                           |
-| **B** | `function?`    | `notapod`    | `something?`   | ❌ `ERR_TYPEDECL`                           |
+| **A** | `function`     | `pod?`       | /              | call `D.create P...`                       |
+| **B** | `notafunction` | /            | /              | ❌ `ERR_TYPEDECL`                           |
+| **B** | `function?`    | `notapod`    | /              | ❌ `ERR_TYPEDECL`                           |
 | **C** | —              | `pod`        | `pod`          | create new object, set fields as per below |
 | **D** | —              | `pod`        | —              | use `create()` methods of field types      |
 | **E** | —              | —            | —              | ❌ `ERR_CREATE`                             |
