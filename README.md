@@ -15,6 +15,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [`Type` Objects](#type-objects)
   - [Value Creation](#value-creation)
     - [Template Copying Procedure](#template-copying-procedure)
+  - [Notation](#notation)
   - [To Do](#to-do)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -217,6 +218,26 @@ value of the declared type can be produced by `Intertype::create()`.
 `Intertype::create()` will return either this value
 (if it is a primitive value, including `undefined` and `null`), call it and use its return value (if
 `declaration.template` is a synchronous function), or try to make a copy of it.
+
+
+## Notation
+
+* **Types** are indicated in pointy brackets behind variable and property names, as in `fields <pod>`,
+  `count <cardinal>` .
+* **Nullable Types** get a question mark behind the type name, as in `fields <pod?>`.
+* **Class Properties** ar indicated with a dot between class and property name, as in
+  `Intertype.primitive_types <list>`.
+* **Instance Properties** are written with a double colon between class and property name:
+  `Intertype::evaluate()`, or a dot between instance and property name: `types.evaluate()`.
+* **Functions** are always written either without parentheses when they have one or more (comma-sparated)
+  arguments: `Intertype::evaluate t <type>, x <any>`, or with an empty pair of parentheses:
+  `Intertype::evaluate()`. The latter notation is used to indicate both a function being called without
+  arguments and to refer to a function in general, irrespective of how a correct set of arguments would have
+  to look like.
+* **Function Signatures** start with the identifier of the function, followed by a colon to indicate 'is
+  defined as', followed by a pair of parentheses with typed, comma separated arguments, followed by an arrow
+  to indicate a fucntion, as in `Intertype::evaluate: ( t <type>, x <any> ) ->`. In case the function
+  discussed does not take any arguments, the parentheses are omitted, as in `Math.random: ->`.
 
 ## To Do
 
