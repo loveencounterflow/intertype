@@ -158,6 +158,10 @@ In a type declaration, three properties—`create`, `fields` and `template`—de
 value of the declared type can be produced by `Intertype::create()`.
 
 > *In the below tables*
+> * *an em-dash '—' indicates an unset property (which most of the time subsumes a property explicitly set to
+  `null` or `undefined`);*
+> * *a slash '/' indicates an irrelevant property whose value will not be considered if the listed
+>   conditions are satisfied;*
 > * *`?` indicates an optional type, so `something?` is `something` (any value except `null` or `undefined`)
 >   or `nothing` (`null` or `undefined`, including the property not being set);*
 > * *`pod` and 'POD' stand for 'Plain Old Dictionary (i.e. Object)', which is defined as an object whose
