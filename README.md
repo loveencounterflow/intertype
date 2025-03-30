@@ -166,8 +166,8 @@ type's ISA method. The effect can be easily observed when not setting any of `cr
 look at `declaration.template` (which is copied to `Type::template`) and find its value to be `undefined`
 (which is what JavaScript returns for unset properties). According to the rules, `undefined` is coerced to
 `null`, therefore `null` is assumed to be the created new value for the type in question. This value,
-however, will still have to survive the implicit check using `Intertype::validate()` and fail unless the
-type's ISA method accepts `null`s.
+however, will still have to survive the implicit check using `Intertype::validate()`—which will likely fail,
+unless the type's ISA method accepts `null`s.
 
 > *In the below tables*
 > * *an em-dash '—' indicates an unset property (which most of the time subsumes a property explicitly set to
