@@ -119,7 +119,7 @@ Types declarations may include a `create` and a `template` entry:
     re-implement all the work that is expected of `parse 'quantityliteral', x`, or if the latter had to
     repeat all the lifting done by the former
 
-* `Intertype::evaluate: ( t: type, x: any ) ->`: returns a flat object whose keys are typenames and whose values
+* `Intertype::evaluate: ( t <type>, x <any> ) ->`: returns a flat object whose keys are typenames and whose values
   are either `true` or `false` depending on whether `x` satisfied the corresponding ISA method or not
 
 <!--
