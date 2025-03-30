@@ -231,9 +231,9 @@ value of the declared type can be produced by `Intertype::create()`.
   `Intertype::evaluate()`, or a dot between instance and property name: `types.evaluate()`.
 * **Functions** are always written either without parentheses when they have one or more (comma-sparated)
   arguments: `Intertype::evaluate t <type>, x <any>`, or with an empty pair of parentheses:
-  `Intertype::evaluate()`. The latter notation is used to indicate both a function being called without
-  arguments and to refer to a function in general, irrespective of how a correct set of arguments would have
-  to look like.
+  `Myclass::do_something()`, `x.do_something()`. The notation with empty parens is used to indicate both a
+  function being called without arguments and to refer to a function in general, irrespective of how a
+  correct set of arguments would have to look like.
 * **Function Signatures** start with the identifier of the function, followed by a colon to indicate 'is
   defined as', followed by a pair of parentheses with typed, comma separated arguments, followed by an arrow
   to indicate a fucntion, as in `Intertype::evaluate: ( t <type>, x <any> ) ->`. In case the function
