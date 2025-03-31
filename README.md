@@ -13,7 +13,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [InterType](#intertype-1)
   - [API](#api)
   - [`Type` Objects](#type-objects)
-  - [The Declaration Object](#the-declaration-object)
+  - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Notation](#notation)
   - [To Do](#to-do)
@@ -154,7 +154,7 @@ Types declarations may include a `create` and a `template` entry:
 * `Type::fields <pod?>`
 * `Type::template`
 
-## The Declaration Object
+## Type Declaration Values
 
 
 |       | type of declaration                | behavior                                                 |
