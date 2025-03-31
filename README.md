@@ -263,18 +263,12 @@ enumerable key that is not listed in `fields`.
 
 * **`[—]`** use API call rather than property access to retrieve memoized data
   * <del>**`[—]`** using `WeakMap` sounds right, but as so often, the use case leans heavily on primitive
-    values (esp. strings), so using a `Map` promises to be much simpler</del>
-  * <del>**`[—]`** if the need should arise, can later use a custom class to replace the plain `Map` to
+    values (esp. strings), so using a `Map` promises to be much simpler /// **`[—]`** if the need should arise, can later use a custom class to replace the plain `Map` to
     limit the number of cached values (this will likely involve storing a redundant list of keys so
     order-of-insertion can be traced w/o the need to compute and inspect `Map::keys()`—that would be OK if
-    we were to drop the first entry but involves more work to find the most recent entry)</del>
-  * <del>**`[—]`** with API call, might want to have to pass in `x`, test for identity in caching map; thus
-    more than a single entry may be cached and repetitions that are far apart can still be served</del>
-  * <del>**`[—]`** toggle to switch off caching altogether (on instantiation)?</del>
-  * <del>**`[—]`** API call to clear caches?</del>
-  * <del>**`[—]`** would be nice to have caching switch as declarative class property like type
-    declarations</del>
-  * <del>**`[—]`** should refuse to cache results of testing against mutable values</del>
+    we were to drop the first entry but involves more work to find the most recent entry) /// **`[—]`** with API call, might want to have to pass in `x`, test for identity in caching map; thus
+    more than a single entry may be cached and repetitions that are far apart can still be served /// **`[—]`** toggle to switch off caching altogether (on instantiation)? /// **`[—]`** API call to clear caches? /// **`[—]`** would be nice to have caching switch as declarative class property like type
+    declarations /// **`[—]`** should refuse to cache results of testing against mutable values</del>
   * **`[—]`** on closer inspection, caching acc. to the above turns out to be a snakes' nest, therefore: use
     API to cache explicitly in ordinary or custom (for size restriction) `Map` instance—the user is
     responsible for ensuring that cached entries stay relevant
