@@ -4,6 +4,7 @@
 #===========================================================================================================
 GUY                       = require 'guy'
 { debug
+  info
   warn }                  = GUY.trm.get_loggers 'demo-execa'
 { rpr }                   = GUY.trm
 { hide }                  = GUY.props
@@ -158,11 +159,11 @@ class Type
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
     return declaration unless declaration.fields?
     unless $isa.pod declaration.fields
-      throw new Error "Ω___7 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+      throw new Error "Ω___9 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     ### TAINT try to move this check to validation step ###
     if declaration.isa?
-      throw new Error "Ω___8 must have exactly one of `isa` or `fields`, not both"
+      throw new Error "Ω__10 must have exactly one of `isa` or `fields`, not both"
     for field_name, field_declaration of declaration.fields
       declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
     #.......................................................................................................
@@ -192,7 +193,7 @@ class Type
       when declaration instanceof Object  then null
       #.....................................................................................................
       else
-        throw new Error "Ω___9 expected a typename, a function or a type as declaration, got a #{$type_of declaration}"
+        throw new Error "Ω__11 expected a typename, a function or a type as declaration, got a #{$type_of declaration}"
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
@@ -200,8 +201,8 @@ class Type
     switch true
       when ( ( not declaration.create? ) and ( not declaration.fields? ) )
         if declaration.template?
-          throw new Error "Ω__10 MEH-create-1 unable to create value of type #{rpr typename}"
-        declaration.create = -> throw new Error "Ω__11 MEH-create-1 unable to create value of type #{rpr typename}"
+          throw new Error "Ω__12 MEH-create-1 unable to create value of type #{rpr typename}"
+        declaration.create = -> throw new Error "Ω__13 MEH-create-1 unable to create value of type #{rpr typename}"
     return declaration
 
 
