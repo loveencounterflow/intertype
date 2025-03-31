@@ -196,27 +196,6 @@ look at `declaration.template` (which is copied to `Type::template`) and find it
 however, will still have to survive the implicit check using `Intertype::validate()`—which will likely fail,
 unless the type's ISA method accepts `null`s.
 
-> *In the below table*
-> * *an em-dash '—' indicates an unset property (which most of the time subsumes a property explicitly set to
-  `null` or `undefined`);*
-> * *a slash '/' indicates an irrelevant property whose value will not be considered if the listed
->   conditions are satisfied;*
-> * *`?` indicates an optional type, so `<something?>` is `<something>` (any value except `null` or
->   `undefined`) or `<nothing>` (`null` or `undefined`, including the property not being set);*
-> * *`<pod>` and 'POD' stand for 'Plain Old Dictionary (i.e. Object)', which is defined as an object whose
->   prototype is either `Object` or `undefined`, the former being the value of a JS object literal, the
->   latter being produced by `Object.create null`;*
-> * *`<notafunction>` is a value of a type other than `null`, `undefined`, or a `<function>`;*
-> * *`<notapod>` is a value of a type other than `null`, `undefined`, or a `<pod>`;*
-> * *`ERR_TYPEDECL` indicates an error that will occur during the instantiation of a `Typespace` when a type
->   with the listed condition is encountered;*
-
-<!-- > * *`ERR_CREATE` indicates an error that will occur when trying to call `Intertype::create()` with a type
->   whose declaration satisfies the given condition: the declaration is OK and the type is usable, but it's
->   not allowed to use the library to create a new value of this type.*-->
-
-
-
 * (**A**) In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P`
   that are present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be
   validated using `Intertype::validate T, z`. The declaration's `create()` method is free to use
@@ -280,6 +259,26 @@ enumerable key that is not listed in `fields`.
   *arrow* to indicate a fucntion, as in `Intertype::evaluate: ( t <type>, x <any> ) ->`. In case the
   function discussed does not take any arguments, the *parentheses are omitted*, as in `Math.random: ->`.
   The return type may be indicated *behind the arrow*, as in `List::indexOf: ( x <anything> ) -> <integer>`.
+
+* **In the tables**
+  * an em-dash '—' indicates an unset property (which most of the time subsumes a property explicitly set to
+    `null` or `undefined`);
+  * a slash '/' indicates an irrelevant property whose value will not be considered if the listed conditions
+    are satisfied;
+  * `?` indicates an optional type, so `<something?>` is `<something>` (any value except `null` or
+    `undefined`) or `<nothing>` (`null` or `undefined`, including the property not being set);
+  * `<pod>` and 'POD' stand for 'Plain Old Dictionary (i.e. Object)', which is defined as an object whose
+    prototype is either `Object` or `undefined`, the former being the value of a JS object literal, the
+    latter being produced by `Object.create null`;
+  * `<notafunction>` is a value of a type other than `null`, `undefined`, or a `<function>`;
+  * `<notapod>` is a value of a type other than `null`, `undefined`, or a `<pod>`;
+  * `ERR_TYPEDECL` indicates an error that will occur during the instantiation of a `Typespace` when a type
+    with the listed condition is encountered;
+
+<!-- > * *`ERR_CREATE` indicates an error that will occur when trying to call `Intertype::create()` with a type
+>   whose declaration satisfies the given condition: the declaration is OK and the type is usable, but it's
+>   not allowed to use the library to create a new value of this type.*-->
+
 
 ## To Do
 
