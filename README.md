@@ -13,8 +13,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [InterType](#intertype-1)
   - [API](#api)
   - [`Type` Objects](#type-objects)
+  - [The Declaration Object](#the-declaration-object)
   - [Value Creation](#value-creation)
-    - [Template Copying Procedure](#template-copying-procedure)
   - [Notation](#notation)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -154,6 +154,17 @@ Types declarations may include a `create` and a `template` entry:
 * `Type::fields <pod?>`
 * `Type::template`
 
+## The Declaration Object
+
+
+|       | `declaration`                      | behavior                                           |
+| ---   | :---------:                        | :----------:                                       |
+| **A** | `dcl <function>`                   | `dcl()` becomes `Type::isa()`                      |
+| **B** | `dcl <nonempty_text>`              | `dcl` interpreted as type name (in same typespace) |
+| **C** | `dcl <pod>`                        | check properties as oulined below                  |
+| **D** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                   |
+
+
 ## Value Creation
 
 In a type declaration, three properties—`create`, `fields` and `template`—determine whether and how a new
@@ -233,11 +244,6 @@ enumerable key that is not listed in `fields`.
 
 
 
-### Template Copying Procedure
-
-`Intertype::create()` will return either this value
-(if it is a primitive value, including `undefined` and `null`), call it and use its return value (if
-`declaration.template` is a synchronous function), or try to make a copy of it.
 
 
 ## Notation
