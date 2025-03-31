@@ -161,9 +161,23 @@ Types declarations may include a `create` and a `template` entry:
 | ---   | :---------:                        | :----------                                              |
 | **A** | `<function>`                       | declaration becomes `Type::isa()`                        |
 | **B** | `<nonempty_text>`                  | declaration interpreted as type name (in same typespace) |
-| **C** | `<pod>`                            | check properties of declaration as oulined below         |
-| **D** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                         |
+| **C** | `<type>`                           | make type an alias of other type                         |
+| **D** | `<pod>`                            | check properties of declaration as oulined below         |
+| **E** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                         |
 
+* (**A**) If the declaration is a function, make that function the ISA method of the new type; all other
+  declaration values take on their default values.
+* (**B**) If the declaration is a non-empty string, try to interpret it as the name of another type in the
+  same typespace as the type being declared and use that types ISA method and other settings; this
+  effectively makes the new type an alias of an existing one. *Note* As such the ability to define aliases
+  is not very helpful, but it tuns out to be handy when declaring field types of objects.
+* (**C**) Using a type object (from another typespace) has the same effect as using a type name (from the
+  same typespace); again, this is handy to declare that e.g. field `quantity` of type `ingredient` should be
+  a `float` according to an existing declaration.
+* (**D**) Use a POD to declare types while keeping control over all declaration settings such as `create`,
+  `fields` and `template` (for which see below).
+* (**E**) A declaration that is not a function, a non-empty text, a type or a POD will cause a type
+  declaration error.
 
 ## Value Creation
 
