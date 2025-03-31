@@ -176,8 +176,8 @@ Types declarations may include a `create` and a `template` entry:
   a `float` according to an existing declaration.
 * (**D**) Use a POD to declare types while keeping control over all declaration settings such as `create`,
   `fields` and `template` (for which see below).
-* (**E**) A declaration that is not a function, a non-empty text, a type or a POD will cause a type
-  declaration error.
+* (**E**) A declaration that is not a function, a non-empty text, an InterType `<Type>` instance or a POD
+  will cause a type declaration error.
 
 ## Value Creation
 
