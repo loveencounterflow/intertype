@@ -17,6 +17,8 @@ A JavaScript type checker with helpers to implement own types and do object shap
     - [Template Copying Procedure](#template-copying-procedure)
   - [Notation](#notation)
   - [To Do](#to-do)
+  - [Is Done](#is-done)
+  - [Don't](#dont)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -261,20 +263,9 @@ enumerable key that is not listed in `fields`.
 
 ## To Do
 
-* <del> **`[—]`** use API call rather than property access to retrieve memoized data /// **`[—]`** using
-  `WeakMap` sounds right, but as so often, the use case leans heavily on primitive values (esp. strings), so
-  using a `Map` promises to be much simpler /// **`[—]`** if the need should arise, can later use a custom
-  class to replace the plain `Map` to limit the number of cached values (this will likely involve storing a
-  redundant list of keys so order-of-insertion can be traced w/o the need to compute and inspect
-  `Map::keys()`—that would be OK if we were to drop the first entry but involves more work to find the most
-  recent entry) /// **`[—]`** with API call, might want to have to pass in `x`, test for identity in caching
-  map; thus more than a single entry may be cached and repetitions that are far apart can still be served
-  /// **`[—]`** toggle to switch off caching altogether (on instantiation)? /// **`[—]`** API call to clear
-  caches? /// **`[—]`** would be nice to have caching switch as declarative class property like type
-  declarations /// **`[—]`** should refuse to cache results of testing against mutable values</del>
-* **`[—]`** on closer inspection, caching acc. to the above turns out to be a snakes' nest, therefore: use
-  API to cache explicitly in ordinary or custom (for size restriction) `Map` instance—the user is
-  responsible for ensuring that cached entries stay relevant
+* **`[—]`** on closer inspection, caching turns out to be a snakes' nest, therefore: use API to cache
+  explicitly in ordinary or custom (for size restriction) `Map` instance—the user is responsible for
+  ensuring that cached entries stay relevant
   * **`[—]`** API is just API of `Map`:
     * `Intertype::memo.set: ( k, v ) ->`
     * `Intertype::memo.get: ( k ) ->`
@@ -288,6 +279,31 @@ enumerable key that is not listed in `fields`.
     * **`[—]`** **retrieved** automatically whenever `isa()`, `validate()` or `parse()` is called
     * important to separate the two concerns so users can automatically benefit from cached parsing and
       still decide whether to memoize a given result of `parse x` or not
+
+* **`[—]`** how to express sum types as in `integer or integerliteral`?
+
+* **`[—]`** rename `Intertype::types_of()` -> `Intertype::all_types_of()` to distinguish it better from
+  `Intertype::type_of()`
+
+* **`[—]`** implement versions of `type_of()`, `all_types_of()` that return the actual type objects, not the
+  type names
+
+
+## Is Done
+
+## Don't
+
+* <del> **`[—]`** use API call rather than property access to retrieve memoized data /// **`[—]`** using
+  `WeakMap` sounds right, but as so often, the use case leans heavily on primitive values (esp. strings), so
+  using a `Map` promises to be much simpler /// **`[—]`** if the need should arise, can later use a custom
+  class to replace the plain `Map` to limit the number of cached values (this will likely involve storing a
+  redundant list of keys so order-of-insertion can be traced w/o the need to compute and inspect
+  `Map::keys()`—that would be OK if we were to drop the first entry but involves more work to find the most
+  recent entry) /// **`[—]`** with API call, might want to have to pass in `x`, test for identity in caching
+  map; thus more than a single entry may be cached and repetitions that are far apart can still be served
+  /// **`[—]`** toggle to switch off caching altogether (on instantiation)? /// **`[—]`** API call to clear
+  caches? /// **`[—]`** would be nice to have caching switch as declarative class property like type
+  declarations /// **`[—]`** should refuse to cache results of testing against mutable values</del>
 
 * <del> **`[—]`** would it be better to favor `list.empty` to express that empty lists are a subset of all
   lists? /// **`[—]`** or favor `list_empty` to simplify parsing (e.g. in `[ 'nonempty_list', 'of',
@@ -312,13 +328,5 @@ enumerable key that is not listed in `fields`.
   declare (and thereby name) a type (say, `intlist`) that is a `list.of.integer` and then call
   `Intertype::isa 'intlist', x` /// **`[—]`** how to express multiple refinements as in `blank nonempty
   text` or `positive1 even integer`?</del>
-
-* **`[—]`** how to express sum types as in `integer or integerliteral`?
-
-* **`[—]`** rename `Intertype::types_of()` -> `Intertype::all_types_of()` to distinguish it better from
-  `Intertype::type_of()`
-
-* **`[—]`** implement versions of `type_of()`, `all_types_of()` that return the actual type objects, not the
-  type names
 
 
