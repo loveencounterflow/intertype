@@ -157,13 +157,13 @@ Types declarations may include a `create` and a `template` entry:
 ## Type Declaration Values
 
 
-|       | type of declaration                | behavior                                                 |
-| ---   | :---------:                        | :----------                                              |
-| **A** | `<function>`                       | declaration becomes `Type::isa()`                        |
-| **B** | `<nonempty_text>`                  | declaration interpreted as type name (in same typespace) |
-| **C** | `<type>`                           | make type an alias of other type                         |
-| **D** | `<pod>`                            | check properties of declaration as oulined below         |
-| **E** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                         |
+|       | type of declaration                | behavior                                         |
+| ---   | :---------:                        | :----------                                      |
+| **A** | `<function>`                       | declaration becomes `Type::isa()`                |
+| **B** | `<nonempty_text>`                  | make this type an alias of referred type         |
+| **C** | `<type>`                           | make this type an alias of referred type         |
+| **D** | `<pod>`                            | check properties of declaration as oulined below |
+| **E** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                 |
 
 * (**A**) If the declaration is a function, make that function the ISA method of the new type; all other
   declaration values take on their default values.
