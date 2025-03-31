@@ -157,26 +157,26 @@ Types declarations may include a `create` and a `template` entry:
 ## Type Declaration Values
 
 
-|       | type of declaration                | behavior                                         |
-| ---   | :---------:                        | :----------                                      |
-| **A** | `<function>`                       | declaration becomes `Type::isa()`                |
-| **B** | `<nonempty_text>`                  | make this type an alias of referred type         |
-| **C** | `<type>`                           | make this type an alias of referred type         |
-| **D** | `<pod>`                            | check properties of declaration as oulined below |
-| **E** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                 |
+|        | type of declaration                | behavior                                         |
+| ---    | :---------:                        | :----------                                      |
+| **dA** | `<function>`                       | declaration becomes `Type::isa()`                |
+| **dB** | `<nonempty_text>`                  | make this type an alias of referred type         |
+| **dC** | `<type>`                           | make this type an alias of referred type         |
+| **dD** | `<pod>`                            | check properties of declaration as oulined below |
+| **dE** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                 |
 
-* (**A**) If the declaration is a function, make that function the ISA method of the new type; all other
+* (**dA**) If the declaration is a function, make that function the ISA method of the new type; all other
   declaration values take on their default values.
-* (**B**) If the declaration is a non-empty string, try to interpret it as the name of another type in the
+* (**dB**) If the declaration is a non-empty string, try to interpret it as the name of another type in the
   same typespace as the type being declared and use that types ISA method and other settings; this
   effectively makes the new type an alias of an existing one. *Note* As such the ability to define aliases
   is not very helpful, but it tuns out to be handy when declaring field types of objects.
-* (**C**) Using a type object (from another typespace) has the same effect as using a type name (from the
+* (**dC**) Using a type object (from another typespace) has the same effect as using a type name (from the
   same typespace); again, this is handy to declare that e.g. field `quantity` of type `ingredient` should be
   a `float` according to an existing declaration.
-* (**D**) Use a POD to declare types while keeping control over all declaration settings such as `create`,
+* (**dD**) Use a POD to declare types while keeping control over all declaration settings such as `create`,
   `fields` and `template` (for which see below).
-* (**E**) A declaration that is not a function, a non-empty text, an InterType `<Type>` instance or a POD
+* (**dE**) A declaration that is not a function, a non-empty text, an InterType `<Type>` instance or a POD
   will cause a type declaration error.
 
 ## Value Creation
@@ -196,38 +196,38 @@ look at `declaration.template` (which is copied to `Type::template`) and find it
 however, will still have to survive the implicit check using `Intertype::validate()`—which will likely fail,
 unless the type's ISA method accepts `null`s.
 
-* (**A**) In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P`
+|        | `create`         | `fields`     | `template`        | behavior of `Intertype::create T, P...`    |
+| ---    | :---------:      | :----------: | :------------:    | :----------------------                    |
+| **cA** | `<function>`     | `<pod?>`     | `<something?>`    | call `D.create P...`                       |
+| **cB** | `<notafunction>` | /            | /                 | ❌ `ERR_TYPEDECL`                           |
+| **cC** | /                | `<notapod>`  | /                 | ❌ `ERR_TYPEDECL`                           |
+| **cD** | —                | `<pod>`      | `<pod?>`          | create new object, set fields as per below |
+| **cE** | —                | `<pod>`      | `<notapod>`       | ❌ `ERR_TYPEDECL`                           |
+| **cF** | —                | `<pod>`      | —                 | use `create()` methods of field types      |
+| **cG** | —                | —            | `<function>`      | use return value of call to `template()`   |
+| **cH** | —                | —            | `<notafunction>?` | use value, coerce `undefined` to `null`    |
+
+* (**cA**) In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P`
   that are present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be
   validated using `Intertype::validate T, z`. The declaration's `create()` method is free to use
   `declaration.fields` and `declaration.template` as it sees fit.
-* (**B**) Note that setting `create` to anything but a `function` and/or (**C**) setting `fields` to
+* (**cB**) Note that setting `create` to anything but a `function` and/or (**C**) setting `fields` to
   anything but a `pod` will both result in compile-time errors:
-* (**D**) In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD),
+* (**cD**) In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD),
   walk over the field declarations in `fields` and look up the corresponding values in `template` one by
   one; if the template field holds a function, call that function, otherwise use the field value as-is.
   Functions can only be set as return values from functions. Where `template` is missing a field,
   `Intertype::create()` will try to supply with the `create` method according to that field's declared type.
-* (**E**) A compile-time error will be thrown if `fields` is set and `template` is set to any value except
+* (**cE**) A compile-time error will be thrown if `fields` is set and `template` is set to any value except
   `null`, `undefined` or a POD.
-* (**F**) If `template` is not set, the effect is the same as setting `template` to a POD without any
+* (**cF**) If `template` is not set, the effect is the same as setting `template` to a POD without any
   properties.
 * If neither `create` nor `fields` are set:
-  * (**G**) if `template` is set to a function, call it and use the return value as-is; this is commonly
+  * (**cG**) if `template` is set to a function, call it and use the return value as-is; this is commonly
     used to produce copies of e.g. lists or set a created value to a function or `undefined`;
-  * (**H**) in all other cases, use the value of `template` as is; if `template` is not set or set to
+  * (**cH**) in all other cases, use the value of `template` as is; if `template` is not set or set to
     `undefined`, coerce to `null` to create the new value (which will commonly fail for all types that are
-    not nullable);
-
-|       | `create`         | `fields`     | `template`        | behavior of `Intertype::create T, P...`    |
-| ---   | :---------:      | :----------: | :------------:    | :----------------------                    |
-| **A** | `<function>`     | `<pod?>`     | `<something?>`    | call `D.create P...`                       |
-| **B** | `<notafunction>` | /            | /                 | ❌ `ERR_TYPEDECL`                           |
-| **C** | /                | `<notapod>`  | /                 | ❌ `ERR_TYPEDECL`                           |
-| **D** | —                | `<pod>`      | `<pod?>`          | create new object, set fields as per below |
-| **E** | —                | `<pod>`      | `<notapod>`       | ❌ `ERR_TYPEDECL`                           |
-| **F** | —                | `<pod>`      | —                 | use `create()` methods of field types      |
-| **G** | —                | —            | `<function>`      | use return value of call to `template()`   |
-| **H** | —                | —            | `<notafunction>?` | use value, coerce `undefined` to `null`    |
+    not nullable).
 
 **Note** As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
 declaration, *not* the `template` property. The `template` property's fields will be examined as dictated by
