@@ -261,17 +261,20 @@ enumerable key that is not listed in `fields`.
 
 ## To Do
 
-* **`[—]`** use API call rather than property access to retrieve memoized data
-  * <del>**`[—]`** using `WeakMap` sounds right, but as so often, the use case leans heavily on primitive
-    values (esp. strings), so using a `Map` promises to be much simpler /// **`[—]`** if the need should arise, can later use a custom class to replace the plain `Map` to
-    limit the number of cached values (this will likely involve storing a redundant list of keys so
-    order-of-insertion can be traced w/o the need to compute and inspect `Map::keys()`—that would be OK if
-    we were to drop the first entry but involves more work to find the most recent entry) /// **`[—]`** with API call, might want to have to pass in `x`, test for identity in caching map; thus
-    more than a single entry may be cached and repetitions that are far apart can still be served /// **`[—]`** toggle to switch off caching altogether (on instantiation)? /// **`[—]`** API call to clear caches? /// **`[—]`** would be nice to have caching switch as declarative class property like type
-    declarations /// **`[—]`** should refuse to cache results of testing against mutable values</del>
-  * **`[—]`** on closer inspection, caching acc. to the above turns out to be a snakes' nest, therefore: use
-    API to cache explicitly in ordinary or custom (for size restriction) `Map` instance—the user is
-    responsible for ensuring that cached entries stay relevant
+* <del> **`[—]`** use API call rather than property access to retrieve memoized data /// **`[—]`** using
+  `WeakMap` sounds right, but as so often, the use case leans heavily on primitive values (esp. strings), so
+  using a `Map` promises to be much simpler /// **`[—]`** if the need should arise, can later use a custom
+  class to replace the plain `Map` to limit the number of cached values (this will likely involve storing a
+  redundant list of keys so order-of-insertion can be traced w/o the need to compute and inspect
+  `Map::keys()`—that would be OK if we were to drop the first entry but involves more work to find the most
+  recent entry) /// **`[—]`** with API call, might want to have to pass in `x`, test for identity in caching
+  map; thus more than a single entry may be cached and repetitions that are far apart can still be served
+  /// **`[—]`** toggle to switch off caching altogether (on instantiation)? /// **`[—]`** API call to clear
+  caches? /// **`[—]`** would be nice to have caching switch as declarative class property like type
+  declarations /// **`[—]`** should refuse to cache results of testing against mutable values</del>
+* **`[—]`** on closer inspection, caching acc. to the above turns out to be a snakes' nest, therefore: use
+  API to cache explicitly in ordinary or custom (for size restriction) `Map` instance—the user is
+  responsible for ensuring that cached entries stay relevant
   * **`[—]`** API is just API of `Map`:
     * `Intertype::memo.set: ( k, v ) ->`
     * `Intertype::memo.get: ( k ) ->`
@@ -286,32 +289,29 @@ enumerable key that is not listed in `fields`.
     * important to separate the two concerns so users can automatically benefit from cached parsing and
       still decide whether to memoize a given result of `parse x` or not
 
-* **`[—]`** would it be better to favor `list.empty` to express that empty lists are a subset of all lists?
-  * **`[—]`** or favor `list_empty` to simplify parsing (e.g. in `[ 'nonempty_list', 'of', 'integer', ]` or
-    `[ 'list_nonempty', 'of', 'integer', ]`, typenames then would occupy constant positions `0` and `2` with
-    `of` in position `1`)
-  * other relevant typenames include `integer_positive`, `text_blank`, `text_blank_ascii`, `text_nonempty`,
-    `fraction_proper`
+* <del> **`[—]`** would it be better to favor `list.empty` to express that empty lists are a subset of all
+  lists? /// **`[—]`** or favor `list_empty` to simplify parsing (e.g. in `[ 'nonempty_list', 'of',
+  'integer', ]` or `[ 'list_nonempty', 'of', 'integer', ]`, typenames then would occupy constant positions
+  `0` and `2` with `of` in position `1`) /// other relevant typenames include `integer_positive`,
+  `text_blank`, `text_blank_ascii`, `text_nonempty`, `fraction_proper` </del>
 
-* **`[—]`** does it make sense to use formal prefixes to two `Intertype` instances?
-  * that could look like `Intertype::isa 'foo.quantity', x` where `foo` is a namespace for type names;
-    for simplicity's sake, only allow (or demand? as in `Intertype::isa 'std.integer', x`) single
-    prefix
-  * Maybe simpler and better to just say `types = { foo: ( new Foo_types() ), bar: ( new Bar_types() ), };
-    types.foo.validate 'quux', x`, not clear where merging an advantage *except* where repetition of base
-    types (`integer` in `types.foo` being identical to `integer` in `types.bar`) and their redundant
-    prefixes is to be avoided
+* <del> **`[—]`** does it make sense to use formal prefixes to two `Intertype` instances? /// that could
+  look like `Intertype::isa 'foo.quantity', x` where `foo` is a namespace for type names; for simplicity's
+  sake, only allow (or demand? as in `Intertype::isa 'std.integer', x`) single prefix /// Maybe simpler and
+  better to just say `types = { foo: ( new Foo_types() ), bar: ( new Bar_types() ), }; types.foo.validate
+  'quux', x`, not clear where merging an advantage *except* where repetition of base types (`integer` in
+  `types.foo` being identical to `integer` in `types.bar`) and their redundant prefixes is to be avoided
+  </del>
 
-* **`[—]`** the fancy API should merge type specifiers and method names (or should it?), as in
-  `Intertype::isa 'std.integer', x` becoming `Intertype_fancy::isa.std.integer x`
+* <del> **`[—]`** the fancy API should merge type specifiers and method names (or should it?), as in
+  `Intertype::isa 'std.integer', x` becoming `Intertype_fancy::isa.std.integer x`</del>
 
-* **`[—]`** how to express concatenation in a generic way as in `list of ( nonempty list of integer )`?
-  * **`[—]`** one idea is to restrict usage to declared, named types, i.e. one can never call
-    \*`Intertype::isa 'list.of.integer', x` (using whatever syntax we settle on), one can only
-    declare (and thereby name) a type (say, `intlist`) that is a `list.of.integer` and then call
-    `Intertype::isa 'intlist', x`
-
-* **`[—]`** how to express multiple refinements as in `blank nonempty text` or `positive1 even integer`?
+* <del> **`[—]`** how to express concatenation in a generic way as in `list of ( nonempty list of integer
+  )`? /// **`[—]`** one idea is to restrict usage to declared, named types, i.e. one can never call
+  \*`Intertype::isa 'list.of.integer', x` (using whatever syntax we settle on), one can only
+  declare (and thereby name) a type (say, `intlist`) that is a `list.of.integer` and then call
+  `Intertype::isa 'intlist', x` /// **`[—]`** how to express multiple refinements as in `blank nonempty
+  text` or `positive1 even integer`?</del>
 
 * **`[—]`** how to express sum types as in `integer or integerliteral`?
 
