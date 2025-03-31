@@ -157,12 +157,12 @@ Types declarations may include a `create` and a `template` entry:
 ## The Declaration Object
 
 
-|       | `declaration`                      | behavior                                           |
-| ---   | :---------:                        | :----------:                                       |
-| **A** | `dcl <function>`                   | `dcl()` becomes `Type::isa()`                      |
-| **B** | `dcl <nonempty_text>`              | `dcl` interpreted as type name (in same typespace) |
-| **C** | `dcl <pod>`                        | check properties as oulined below                  |
-| **D** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                   |
+|       | type of declaration                | behavior                                                 |
+| ---   | :---------:                        | :----------                                              |
+| **A** | `<function>`                       | declaration becomes `Type::isa()`                        |
+| **B** | `<nonempty_text>`                  | declaration interpreted as type name (in same typespace) |
+| **C** | `<pod>`                            | check properties of declaration as oulined below         |
+| **D** | (anything except one of the above) | ❌ `ERR_TYPEDECL`                                         |
 
 
 ## Value Creation
