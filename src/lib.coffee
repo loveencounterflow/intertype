@@ -39,6 +39,7 @@ $type_of = ( x ) ->
   return 'boolean'      if ( x is true ) or ( x is false )
   return 'nan'          if Number.isNaN     x
   return 'float'        if Number.isFinite  x
+  # return 'pod'          if $isa.pod x
   #.........................................................................................................
   switch jstypeof = typeof x
     when 'string'                       then return 'text'
