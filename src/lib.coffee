@@ -159,11 +159,11 @@ class Type
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
     return declaration unless declaration.fields?
     unless $isa.pod declaration.fields
-      throw new Error "Ω___9 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+      throw new Error "Ω__11 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     ### TAINT try to move this check to validation step ###
     if declaration.isa?
-      throw new Error "Ω__10 must have exactly one of `isa` or `fields`, not both"
+      throw new Error "Ω__12 must have exactly one of `isa` or `fields`, not both"
     for field_name, field_declaration of declaration.fields
       declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
     #.......................................................................................................
@@ -201,8 +201,8 @@ class Type
     switch true
       when ( ( not declaration.create? ) and ( not declaration.fields? ) )
         if declaration.template?
-          throw new Error "Ω__12 MEH-create-1 unable to create value of type #{rpr typename}"
-        declaration.create = -> throw new Error "Ω__13 MEH-create-1 unable to create value of type #{rpr typename}"
+          throw new Error "Ω__13 MEH-create-1 unable to create value of type #{rpr typename}"
+        declaration.create = -> throw new Error "Ω__14 MEH-create-1 unable to create value of type #{rpr typename}"
     return declaration
 
 
