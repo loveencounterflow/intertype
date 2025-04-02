@@ -221,4 +221,4 @@ class Typespace
 # if module is require.main then await do =>
 do =>
   types = new Intertype()
-  module.exports = { Intertype, Type, Typespace, types, }
+  module.exports = { Intertype, Type, Typespace, types,  $isa, $type_of, }
