@@ -14,11 +14,16 @@ GUY                       = require 'guy'
 
 #===========================================================================================================
 $isa =
-  text:       ( x ) -> typeof x is 'string'
-  function:   ( x ) -> ( Object::toString.call x ) is '[object Function]'
+  text:             ( x ) -> ( typeof x is 'string' )
+  nonempty_text:    ( x ) -> ( typeof x is 'string' ) and ( x.length > 0 )
+  function:         ( x ) -> ( Object::toString.call x ) is '[object Function]'
+  pod:              ( x ) -> x? and x.constructor in [ Object, undefined, ]
+  primitive:        ( x ) -> $primitive_types.includes $type_of x
+  object:           ( x ) -> x? and x instanceof Object
+  type:             ( x ) -> x instanceof Type
+  typespace:        ( x ) -> x instanceof Typespace
+  intertype:        ( x ) -> x instanceof Intertype
   # nan:                    ( x ) => Number.isNaN         x
-  pod:        ( x ) -> x? and x.constructor in [ Object, undefined, ]
-  primitive:  ( x ) -> $primitive_types.includes $type_of x
 
 #-----------------------------------------------------------------------------------------------------------
 $primitive_types = Object.freeze [
