@@ -162,23 +162,22 @@ class Type
 
   #---------------------------------------------------------------------------------------------------------
   _cast_declaration: ( typespace, typename, declaration ) ->
-    # debug 'Ω___7', { typename, declaration, }
+    debug 'Ω___7', ( typename.padEnd 20 ), rpr declaration
+    unless $isa.pod declaration
+      declaration = do ( isa = declaration ) -> { isa, }
     switch true
-      when $isa.pod declaration
-        ### TAINT incorrect, pending implementation ###
-        if $isa.function declaration.isa
-          # throw new Error "Ω___9 expected declaration.isa to be a function, a nonempty_text or a type, got a #{$type_of declaration}"
-          nameit typename, declaration.isa
-      when $isa.type declaration
+      when $isa.type declaration.isa
+        declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
+      when $isa.nonempty_text declaration.isa
+        # declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa @$typespace[ typeref ], x
+        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
+      when $isa.function declaration.isa
         null
-      when $isa.function declaration
-        declaration = { isa: declaration, }
-        nameit typename, declaration.isa
-      when $isa.nonempty_text declaration
-        declaration = do ( typeref = declaration ) => { isa: ( ( x, t ) -> t.isa @$typespace[ typeref ], x ), }
-        nameit typename, declaration.isa
+      when not declaration.isa?
+        declaration.isa = ( x, t ) -> $isa.pod x ### TAINT should we be using `std.pod` here instead? ###
       else
-        throw new Error "Ω__10 expected declaration to be a POD, a function, a nonempty_text or a type, got a #{$type_of declaration}"
+        throw new Error "Ω___8 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+    nameit typename, declaration.isa
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
@@ -188,8 +187,8 @@ class Type
       throw new Error "Ω___9 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     ### TAINT try to move this check to validation step ###
-    if declaration.isa?
-      throw new Error "Ω__12 must have exactly one of `isa` or `fields`, not both"
+    # if declaration.isa?
+    #   throw new Error "Ω__10 must have exactly one of `isa` or `fields`, not both"
     for field_name, field_declaration of declaration.fields
       declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
     #.......................................................................................................
