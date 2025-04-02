@@ -149,17 +149,37 @@ class Type
     @$typename = typename # hide @, '$typename',  typename
     hide @, '$typespace', typespace
     #.......................................................................................................
+    declaration = @_cast_declaration            typespace, typename, declaration
     declaration = @_compile_declaration_fields  typespace, typename, declaration
-    declaration = @_compile_declaration_isa     typespace, typename, declaration
     # declaration = @_compile_declaration_create  typespace, typename, declaration
     #.......................................................................................................
     for key, value of declaration
-      nameit typename, value if key is 'isa' # check that value is function?
       hide @, key, value
     #.......................................................................................................
     ### TAINT perform validation of resulting shape here ###
     #.......................................................................................................
     return undefined
+
+  #---------------------------------------------------------------------------------------------------------
+  _cast_declaration: ( typespace, typename, declaration ) ->
+    # debug 'Ω___7', { typename, declaration, }
+    switch true
+      when $isa.pod declaration
+        ### TAINT incorrect, pending implementation ###
+        if $isa.function declaration.isa
+          # throw new Error "Ω___9 expected declaration.isa to be a function, a nonempty_text or a type, got a #{$type_of declaration}"
+          nameit typename, declaration.isa
+      when $isa.type declaration
+        null
+      when $isa.function declaration
+        declaration = { isa: declaration, }
+        nameit typename, declaration.isa
+      when $isa.nonempty_text declaration
+        declaration = do ( typeref = declaration ) => { isa: ( ( x, t ) -> t.isa @$typespace[ typeref ], x ), }
+        nameit typename, declaration.isa
+      else
+        throw new Error "Ω__10 expected declaration to be a POD, a function, a nonempty_text or a type, got a #{$type_of declaration}"
+    return declaration
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
@@ -182,25 +202,6 @@ class Type
       for field_name, field of @fields
         return false unless x? and t.isa field, x[ field_name ]
       return true
-
-  #---------------------------------------------------------------------------------------------------------
-  _compile_declaration_isa: ( typespace, typename, declaration ) ->
-    return declaration if declaration.isa?
-    #.......................................................................................................
-    switch true
-      #.....................................................................................................
-      when $isa.text declaration
-        declaration = do ( typeref = declaration ) => { isa: ( ( x, t ) -> t.isa @$typespace[ typeref ], x ), }
-      #.....................................................................................................
-      when $isa.function declaration
-        declaration = { isa: declaration, }
-      #.....................................................................................................
-      when declaration instanceof Type    then null
-      when declaration instanceof Object  then null
-      #.....................................................................................................
-      else
-        throw new Error "Ω__11 expected a typename, a function or a type as declaration, got a #{$type_of declaration}"
-    return declaration
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_create: ( typespace, typename, declaration ) ->
