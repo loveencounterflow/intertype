@@ -225,7 +225,9 @@ class Type
       throw new Error "Ω__14 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     for field_name, field_declaration of declaration.fields
-      declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
+      field_typename = "#{typename}_$#{field_name}"
+      declaration.fields[ field_name ] = \
+        typespace[ field_typename ] = new Type typespace, field_typename, field_declaration
     #.......................................................................................................
     declaration.isa = @_get_fields_check typespace, typename, declaration
     return declaration
