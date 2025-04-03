@@ -244,8 +244,8 @@ class Type
     switch true
       when ( ( not declaration.create? ) and ( not declaration.fields? ) )
         if declaration.template?
-          throw new Error "Ω__16 MEH-create-1 unable to create value of type #{rpr typename}"
-        declaration.create = -> throw new Error "Ω__17 MEH-create-1 unable to create value of type #{rpr typename}"
+          throw new Error "Ω__15 MEH-create-1 unable to create value of type #{rpr typename}"
+        declaration.create = -> throw new Error "Ω__16 MEH-create-1 unable to create value of type #{rpr typename}"
     return declaration
 
 
