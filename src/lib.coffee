@@ -148,10 +148,10 @@ class Type
   constructor: ( typespace, typename, declaration ) ->
     @$typename = typename # hide @, '$typename',  typename
     hide @, '$typespace', typespace
-    debug 'Ω___7', typename, rpr declaration
+    # debug 'Ω___7', typename, rpr declaration
     #.......................................................................................................
     declaration = @_declaration_as_pod          typespace, typename, declaration
-    debug 'Ω___8', typename, rpr declaration
+    # debug 'Ω___8', typename, rpr declaration
     @_declaration_isa_as_function typespace, typename, declaration
     @_compile_declaration_fields  typespace, typename, declaration
     # @_compile_declaration_create  typespace, typename, declaration
@@ -174,7 +174,7 @@ class Type
     if declaration.fields? then @_compile_isa_with_fields     typespace, typename, declaration
     else                        @_compile_isa_without_fields  typespace, typename, declaration
     unless $isa.function declaration.isa ### TEMP ###
-      debug 'Ω__10', declaration
+      # debug 'Ω__10', declaration
       throw new Error "Ω__11 MEH"
     nameit typename, declaration.isa
     return declaration
