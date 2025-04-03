@@ -184,14 +184,18 @@ class Type
     return null if $isa.function declaration.isa
     check_fields = @_get_fields_check typespace, typename, declaration
     switch true
+      #.....................................................................................................
       when $isa.type declaration.isa
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) ->
           ( t.isa type, x ) and ( check_fields.call @, x, t )
+      #.....................................................................................................
       when $isa.nonempty_text declaration.isa
         declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
           ( t.isa typespace[ typeref ], x ) and ( check_fields.call @, x, t )
+      #.....................................................................................................
       when not declaration.isa?
         declaration.isa = check_fields
+      #.....................................................................................................
       else
         throw new Error "Ω__12 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return declaration
@@ -200,12 +204,16 @@ class Type
   _compile_isa_without_fields: ( typespace, typename, declaration ) ->
     return null if $isa.function declaration.isa
     switch true
+      #.....................................................................................................
       when $isa.type declaration.isa
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
+      #.....................................................................................................
       when $isa.nonempty_text declaration.isa
         declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
+      #.....................................................................................................
       when not declaration.isa?
         declaration.isa = ( x, t ) -> $isa.pod x
+      #.....................................................................................................
       else
         throw new Error "Ω__13 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return null
