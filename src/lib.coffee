@@ -224,9 +224,6 @@ class Type
     unless $isa.pod declaration.fields
       throw new Error "Ω__14 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
-    ### TAINT try to move this check to validation step ###
-    # if declaration.isa?
-    #   throw new Error "Ω__15 must have exactly one of `isa` or `fields`, not both"
     for field_name, field_declaration of declaration.fields
       declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
     #.......................................................................................................
