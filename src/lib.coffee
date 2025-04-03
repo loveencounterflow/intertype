@@ -171,30 +171,30 @@ class Type
 
   #---------------------------------------------------------------------------------------------------------
   _declaration_isa_as_function: ( typespace, typename, declaration ) ->
-    @_compile_isa_without_fields typespace, typename, declaration
-    # if declaration.fields? then @_compile_isa_with_fields     typespace, typename, declaration
-    # else                        @_compile_isa_without_fields  typespace, typename, declaration
+    if declaration.fields? then @_compile_isa_with_fields     typespace, typename, declaration
+    else                        @_compile_isa_without_fields  typespace, typename, declaration
     unless $isa.function declaration.isa ### TEMP ###
       debug 'Ω__10', declaration
       throw new Error "Ω__11 MEH"
     nameit typename, declaration.isa
     return declaration
 
-  # #---------------------------------------------------------------------------------------------------------
-  # _compile_isa_with_fields: ( typespace, typename, declaration ) ->
-    # return null if $isa.function declaration.isa
-  #   switch true
-  #     when $isa.type declaration.isa
-  #       declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
-  #     when $isa.nonempty_text declaration.isa
-  #       # declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa @$typespace[ typeref ], x
-  #       declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
-  #     when not declaration.isa?
-  #         declaration.isa = @_get_isa_method_for_fields_check typespace, typename, declaration
-  #     else
-  #       throw new Error "Ω__12 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
-  #   nameit typename, declaration.isa
-  #   return declaration
+  #---------------------------------------------------------------------------------------------------------
+  _compile_isa_with_fields: ( typespace, typename, declaration ) ->
+    return null if $isa.function declaration.isa
+    check_fields = @_get_fields_check typespace, typename, declaration
+    switch true
+      when $isa.type declaration.isa
+        declaration.isa = do ( type = declaration.isa ) => ( x, t ) ->
+          ( t.isa type, x ) and ( check_fields.call @, x, t )
+      when $isa.nonempty_text declaration.isa
+        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
+          ( t.isa typespace[ typeref ], x ) and ( check_fields.call @, x, t )
+      when not declaration.isa?
+        declaration.isa = check_fields
+      else
+        throw new Error "Ω__12 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+    return declaration
 
   #---------------------------------------------------------------------------------------------------------
   _compile_isa_without_fields: ( typespace, typename, declaration ) ->
@@ -203,9 +203,8 @@ class Type
       when $isa.type declaration.isa
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
       when $isa.nonempty_text declaration.isa
-        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa @$typespace[ typeref ], x
+        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
       when not declaration.isa?
-        ### TAINT should we be using `std.pod` here instead? ###
         declaration.isa = ( x, t ) -> $isa.pod x
       else
         throw new Error "Ω__13 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
@@ -223,14 +222,14 @@ class Type
     for field_name, field_declaration of declaration.fields
       declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
     #.......................................................................................................
-    declaration.isa = @_get_isa_method_for_fields_check typespace, typename, declaration
+    declaration.isa = @_get_fields_check typespace, typename, declaration
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
-  _get_isa_method_for_fields_check: ( typespace, typename, declaration ) ->
+  _get_fields_check: ( typespace, typename, declaration ) ->
     return ( x, t ) ->
-      for field_name, field of @fields
-        return false unless x? and t.isa field, x[ field_name ]
+      for field_name, field_type of @fields
+        return false unless x? and t.isa field_type, x[ field_name ]
       return true
 
   #---------------------------------------------------------------------------------------------------------
