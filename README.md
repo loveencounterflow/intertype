@@ -307,6 +307,10 @@ enumerable key that is not listed in `fields`.
 * **`[—]`** implement versions of `type_of()`, `all_types_of()` that return the actual type objects, not the
   type names
 
+* **`[—]`** either make standard typespace (`std`)
+  * **`(0)`** use declarations used in the internal `$isa` object, or
+  * **`(0)`** use `std` in `lib` module (and avoid regression?)
+
 
 ## Is Done
 
