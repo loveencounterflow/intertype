@@ -148,11 +148,13 @@ class Type
   constructor: ( typespace, typename, declaration ) ->
     @$typename = typename # hide @, '$typename',  typename
     hide @, '$typespace', typespace
+    debug 'Ω___7', typename, rpr declaration
     #.......................................................................................................
-    declaration = @_cast_declaration            typespace, typename, declaration
-    declaration = @_compile_isa                 typespace, typename, declaration
-    declaration = @_compile_declaration_fields  typespace, typename, declaration
-    # declaration = @_compile_declaration_create  typespace, typename, declaration
+    declaration = @_declaration_as_pod          typespace, typename, declaration
+    debug 'Ω___8', typename, rpr declaration
+    @_declaration_isa_as_function typespace, typename, declaration
+    @_compile_declaration_fields  typespace, typename, declaration
+    # @_compile_declaration_create  typespace, typename, declaration
     #.......................................................................................................
     for key, value of declaration
       hide @, key, value
@@ -162,38 +164,62 @@ class Type
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
-  _cast_declaration: ( typespace, typename, declaration ) ->
-    # debug 'Ω___7', ( typename.padEnd 20 ), rpr declaration
-    unless $isa.pod declaration
-      declaration = do ( isa = declaration ) -> { isa, }
+  _declaration_as_pod: ( typespace, typename, declaration ) ->
+    # debug 'Ω___9', ( typename.padEnd 20 ), rpr declaration
+    return ( do ( isa = declaration ) -> { isa, } ) unless $isa.pod declaration
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_isa: ( typespace, typename, declaration ) ->
+  _declaration_isa_as_function: ( typespace, typename, declaration ) ->
+    @_compile_isa_without_fields typespace, typename, declaration
+    # if declaration.fields? then @_compile_isa_with_fields     typespace, typename, declaration
+    # else                        @_compile_isa_without_fields  typespace, typename, declaration
+    unless $isa.function declaration.isa ### TEMP ###
+      debug 'Ω__10', declaration
+      throw new Error "Ω__11 MEH"
+    nameit typename, declaration.isa
+    return declaration
+
+  # #---------------------------------------------------------------------------------------------------------
+  # _compile_isa_with_fields: ( typespace, typename, declaration ) ->
+    # return null if $isa.function declaration.isa
+  #   switch true
+  #     when $isa.type declaration.isa
+  #       declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
+  #     when $isa.nonempty_text declaration.isa
+  #       # declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa @$typespace[ typeref ], x
+  #       declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
+  #     when not declaration.isa?
+  #         declaration.isa = @_get_isa_method_for_fields_check typespace, typename, declaration
+  #     else
+  #       throw new Error "Ω__12 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+  #   nameit typename, declaration.isa
+  #   return declaration
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_isa_without_fields: ( typespace, typename, declaration ) ->
+    return null if $isa.function declaration.isa
     switch true
       when $isa.type declaration.isa
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
       when $isa.nonempty_text declaration.isa
-        # declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa @$typespace[ typeref ], x
-        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
-      when $isa.function declaration.isa
-        null
+        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa @$typespace[ typeref ], x
       when not declaration.isa?
-        declaration.isa = ( x, t ) -> $isa.pod x ### TAINT should we be using `std.pod` here instead? ###
+        ### TAINT should we be using `std.pod` here instead? ###
+        declaration.isa = ( x, t ) -> $isa.pod x
       else
-        throw new Error "Ω___8 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
-    nameit typename, declaration.isa
-    return declaration
+        throw new Error "Ω__13 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+    return null
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
     return declaration unless declaration.fields?
     unless $isa.pod declaration.fields
-      throw new Error "Ω___9 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+      throw new Error "Ω__14 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     ### TAINT try to move this check to validation step ###
     # if declaration.isa?
-    #   throw new Error "Ω__10 must have exactly one of `isa` or `fields`, not both"
+    #   throw new Error "Ω__15 must have exactly one of `isa` or `fields`, not both"
     for field_name, field_declaration of declaration.fields
       declaration.fields[ field_name ] = new Type typespace, field_name, field_declaration
     #.......................................................................................................
@@ -212,8 +238,8 @@ class Type
     switch true
       when ( ( not declaration.create? ) and ( not declaration.fields? ) )
         if declaration.template?
-          throw new Error "Ω__11 MEH-create-1 unable to create value of type #{rpr typename}"
-        declaration.create = -> throw new Error "Ω__12 MEH-create-1 unable to create value of type #{rpr typename}"
+          throw new Error "Ω__16 MEH-create-1 unable to create value of type #{rpr typename}"
+        declaration.create = -> throw new Error "Ω__17 MEH-create-1 unable to create value of type #{rpr typename}"
     return declaration
 
 
