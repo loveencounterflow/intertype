@@ -90,7 +90,7 @@ class Intertype
       throw new Error "Ω___2 expected `true` or `false`, got a #{$type_of R}"
     #.......................................................................................................
     if @_recording
-      stack = @_stack.join '.'
+      stack = @_stack.join '/'
       @_stack.pop()
       Object.assign entry, { type: type.$typename, stack, value: x, verdict: R, }
     #.......................................................................................................
