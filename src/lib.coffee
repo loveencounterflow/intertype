@@ -150,6 +150,7 @@ class Type
     hide @, '$typespace', typespace
     #.......................................................................................................
     declaration = @_cast_declaration            typespace, typename, declaration
+    declaration = @_compile_isa                 typespace, typename, declaration
     declaration = @_compile_declaration_fields  typespace, typename, declaration
     # declaration = @_compile_declaration_create  typespace, typename, declaration
     #.......................................................................................................
@@ -162,9 +163,13 @@ class Type
 
   #---------------------------------------------------------------------------------------------------------
   _cast_declaration: ( typespace, typename, declaration ) ->
-    debug 'Ω___7', ( typename.padEnd 20 ), rpr declaration
+    # debug 'Ω___7', ( typename.padEnd 20 ), rpr declaration
     unless $isa.pod declaration
       declaration = do ( isa = declaration ) -> { isa, }
+    return declaration
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_isa: ( typespace, typename, declaration ) ->
     switch true
       when $isa.type declaration.isa
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
