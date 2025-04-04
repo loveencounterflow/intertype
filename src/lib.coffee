@@ -191,7 +191,9 @@ class Type
       #.....................................................................................................
       when $isa.nonempty_text declaration.isa
         declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
-          ( t.isa typespace[ typeref ], x ) and ( check_fields.call @, x, t )
+          unless $isa.type ( type = typespace[ typeref ] )
+            throw new Error "Ω__12 expected typeref #{rpr typeref} to give a type, got a #{$type_of declaration.isa}"
+          ( t.isa type, x ) and ( check_fields.call @, x, t )
       #.....................................................................................................
       when not declaration.isa?
         declaration.isa = check_fields
@@ -209,7 +211,10 @@ class Type
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) -> t.isa type, x
       #.....................................................................................................
       when $isa.nonempty_text declaration.isa
-        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) -> t.isa typespace[ typeref ], x
+        declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
+          unless $isa.type ( type = typespace[ typeref ] )
+            throw new Error "Ω__14 expected typeref #{rpr typeref} to give a type, got a #{$type_of declaration.isa}"
+          t.isa type, x
       #.....................................................................................................
       when not declaration.isa?
         declaration.isa = ( x, t ) -> $isa.pod x
