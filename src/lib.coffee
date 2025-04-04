@@ -52,9 +52,6 @@ $type_of = ( x ) ->
   #   when '[object Function]'            then return 'function'
   #   when '[object AsyncFunction]'       then return 'asyncfunction'
   #   when '[object GeneratorFunction]'   then return 'generatorfunction'
-  #.........................................................................................................
-  # return millertype[ 8 ... millertype.length - 1 ].toLowerCase()
-  # return 'something'
 
 
 #===========================================================================================================
@@ -135,10 +132,10 @@ class Intertype
       throw new Error "Ω___6 expected an instance of Type, got a #{$type_of type}"
     return type.create.call type, P...
 
-  #---------------------------------------------------------------------------------------------------------
-  copy_template: ( type ) ->
-    return x if $isa.primitive x
-    return x.call
+  # #---------------------------------------------------------------------------------------------------------
+  # copy_template: ( type ) ->
+  #   return x if $isa.primitive x
+  #   return x.call
 
 
 #===========================================================================================================
@@ -146,17 +143,16 @@ class Type
 
   #---------------------------------------------------------------------------------------------------------
   constructor: ( typespace, typename, declaration ) ->
-    @$typename = typename # hide @, '$typename',  typename
+    @$typename = typename
     hide @, '$typespace', typespace
-    # debug 'Ω___7', typename, rpr declaration
     #.......................................................................................................
     declaration = @_declaration_as_pod          typespace, typename, declaration
-    # debug 'Ω___8', typename, rpr declaration
     @_declaration_isa_as_function typespace, typename, declaration
     @_compile_declaration_fields  typespace, typename, declaration
     # @_compile_declaration_create  typespace, typename, declaration
     #.......................................................................................................
     for key, value of declaration
+      ### TAINT check for overrides ###
       hide @, key, value
     #.......................................................................................................
     ### TAINT perform validation of resulting shape here ###
@@ -165,7 +161,6 @@ class Type
 
   #---------------------------------------------------------------------------------------------------------
   _declaration_as_pod: ( typespace, typename, declaration ) ->
-    # debug 'Ω___9', ( typename.padEnd 20 ), rpr declaration
     return ( do ( isa = declaration ) -> { isa, } ) unless $isa.pod declaration
     return declaration
 
@@ -173,9 +168,6 @@ class Type
   _declaration_isa_as_function: ( typespace, typename, declaration ) ->
     if declaration.fields? then @_compile_isa_with_fields     typespace, typename, declaration
     else                        @_compile_isa_without_fields  typespace, typename, declaration
-    unless $isa.function declaration.isa ### TEMP ###
-      # debug 'Ω__10', declaration
-      throw new Error "Ω__11 MEH"
     nameit typename, declaration.isa
     return declaration
 
@@ -260,6 +252,7 @@ class Typespace
   #---------------------------------------------------------------------------------------------------------
   constructor: ( typespace_cfg ) ->
     for typename, declaration of typespace_cfg
+      ### TAINT check for overrides ###
       declaration   = new Type @, typename, declaration unless declaration instanceof Type
       @[ typename ] = declaration
     return undefined
