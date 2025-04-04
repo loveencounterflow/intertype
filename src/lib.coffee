@@ -130,7 +130,7 @@ class Intertype
   create: ( type, P... ) ->
     unless type instanceof Type
       throw new Error "Ω___6 expected an instance of Type, got a #{$type_of type}"
-    return type.create.call type, P...
+    return type.create.call type, P..., @
 
   # #---------------------------------------------------------------------------------------------------------
   # copy_template: ( type ) ->
@@ -149,7 +149,7 @@ class Type
     declaration = @_declaration_as_pod  typespace, typename, declaration
     @_declaration_isa_as_function       typespace, typename, declaration
     @_compile_declaration_fields        typespace, typename, declaration
-    # @_compile_declaration_create  typespace, typename, declaration
+    @_compile_declaration_create        typespace, typename, declaration
     #.......................................................................................................
     for key, value of declaration
       ### TAINT check for overrides ###
@@ -183,14 +183,14 @@ class Type
       when $isa.nonempty_text declaration.isa
         declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
           unless $isa.type ( type = typespace[ typeref ] )
-            throw new Error "Ω__12 expected typeref #{rpr typeref} to give a type, got a #{$type_of declaration.isa}"
+            throw new Error "Ω___7 expected typeref #{rpr typeref} to give a type, got a #{$type_of declaration.isa}"
           ( t.isa type, x ) and ( check_fields.call @, x, t )
       #.....................................................................................................
       when not declaration.isa?
         declaration.isa = check_fields
       #.....................................................................................................
       else
-        throw new Error "Ω__13 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+        throw new Error "Ω___8 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
@@ -204,21 +204,21 @@ class Type
       when $isa.nonempty_text declaration.isa
         declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
           unless $isa.type ( type = typespace[ typeref ] )
-            throw new Error "Ω__14 expected typeref #{rpr typeref} to give a type, got a #{$type_of declaration.isa}"
+            throw new Error "Ω___9 expected typeref #{rpr typeref} to give a type, got a #{$type_of declaration.isa}"
           t.isa type, x
       #.....................................................................................................
       when not declaration.isa?
         declaration.isa = ( x, t ) -> $isa.pod x
       #.....................................................................................................
       else
-        throw new Error "Ω__15 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+        throw new Error "Ω__10 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return null
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
     return declaration unless declaration.fields?
     unless $isa.pod declaration.fields
-      throw new Error "Ω__16 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+      throw new Error "Ω__11 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     for field_name, field_declaration of declaration.fields
       field_typename = "#{typename}_$#{field_name}"
@@ -237,12 +237,72 @@ class Type
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_create: ( typespace, typename, declaration ) ->
-    switch true
-      when ( ( not declaration.create? ) and ( not declaration.fields? ) )
-        if declaration.template?
-          throw new Error "Ω__17 MEH-create-1 unable to create value of type #{rpr typename}"
-        declaration.create = -> throw new Error "Ω__18 MEH-create-1 unable to create value of type #{rpr typename}"
-    return declaration
+    has_fields      = declaration.fields?
+    fields_isa_pod  = $isa.pod declaration.fields
+    debug 'Ω__12', 'CREATE', typename if typename is 'int_no_create'
+    #.......................................................................................................
+    ### condition cC ###
+    if has_fields and not fields_isa_pod
+      throw new Error "Ω__13 (see condition cC in README)"
+    debug 'Ω__14', 'CREATE', typename if typename is 'int_no_create'
+    #.......................................................................................................
+    if declaration.create?
+      debug 'Ω__15', 'CREATE', typename if typename is 'int_no_create'
+      ### condition cB ###
+      unless $isa.function declaration.create
+        throw new Error "Ω__16 (see condition cB in README)"
+      ### condition cA: use user-defined `create()` method, nothing to do here: ###
+      return null
+    #.......................................................................................................
+    unless has_fields
+      debug 'Ω__17', 'CREATE', typename if typename is 'int_no_create'
+      ### condition cI ###
+      unless declaration.template?
+        declaration.create = ( P..., t ) ->
+          throw new Error "Ω__18 type #{rpr typename} does not support value creation (condition cI)"
+        return null
+      ### condition cG ###
+      if $isa.function declaration.template
+        declaration.create = do ( create = declaration.template ) => ( P..., t ) -> create.call @, P..., t
+        return null
+      ### condition cH ###
+      declaration.create = do ( seed_value = declaration.template ) => ( P..., t ) ->
+        unless P.length is 0
+          throw new Error "Ω__18 create method for condition cH does not accept arguments, got #{P.length}"
+        return seed_value
+      return null
+    #.......................................................................................................
+    debug 'Ω__19', 'CREATE', typename if typename is 'int_no_create'
+    template_isa_pod = $isa.pod declaration.template
+    if declaration.template?
+      debug 'Ω__20', 'CREATE', typename if typename is 'int_no_create'
+      ### condition cE ###
+      unless template_isa_pod
+        throw new Error "Ω__21 (see condition cE in README)"
+      ### condition cD ###
+      # do ( fields = declaration.fields, template = declaration.template ) =>
+      declaration.create = ( P..., t ) ->
+        unless P.length is 0
+          throw new Error "Ω__22 create method for condition cD does not accept arguments, got #{P.length}"
+        R = {}
+        for field_name, type of @fields
+          ### condition cDa ###
+          if ( seed = @template[ field_name ] )?
+            R[ field_name ] = if ( $isa.function seed ) then ( seed.call @, P..., t ) else seed
+          else
+            R[ field_name ] = t.create type
+        return R
+      return null
+    #.......................................................................................................
+    ### condition cF ###
+    debug 'Ω__23', 'CREATE', typename if typename is 'int_no_create'
+    declaration.create = ( P..., t ) ->
+      unless P.length is 0
+        throw new Error "Ω__24 create method for condition cF does not accept arguments, got #{P.length}"
+      R               = {}
+      R[ field_name ] = t.create type for field_name, type of @fields
+      return R
+    return null
 
 
 #===========================================================================================================
