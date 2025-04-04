@@ -146,9 +146,9 @@ class Type
     @$typename = typename
     hide @, '$typespace', typespace
     #.......................................................................................................
-    declaration = @_declaration_as_pod          typespace, typename, declaration
-    @_declaration_isa_as_function typespace, typename, declaration
-    @_compile_declaration_fields  typespace, typename, declaration
+    declaration = @_declaration_as_pod  typespace, typename, declaration
+    @_declaration_isa_as_function       typespace, typename, declaration
+    @_compile_declaration_fields        typespace, typename, declaration
     # @_compile_declaration_create  typespace, typename, declaration
     #.......................................................................................................
     for key, value of declaration
@@ -156,7 +156,6 @@ class Type
       hide @, key, value
     #.......................................................................................................
     ### TAINT perform validation of resulting shape here ###
-    #.......................................................................................................
     return undefined
 
   #---------------------------------------------------------------------------------------------------------
