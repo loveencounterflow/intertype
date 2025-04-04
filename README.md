@@ -311,6 +311,10 @@ enumerable key that is not listed in `fields`.
   * **`(0)`** use declarations used in the internal `$isa` object, or
   * **`(0)`** use `std` in `lib` module (and avoid regression?)
 
+* **`[—]`** use property builders like `hide()` to freeze properties and prevent value changes
+
+* **`[—]`** check for property overrides in `constructor()` methods
+  * **`[—]`** use `$typename`, `$typespace` w/out `$`?
 
 ## Is Done
 
