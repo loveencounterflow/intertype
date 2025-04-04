@@ -197,7 +197,7 @@ class Type
         declaration.isa = check_fields
       #.....................................................................................................
       else
-        throw new Error "Ω__12 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+        throw new Error "Ω__13 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
@@ -215,14 +215,14 @@ class Type
         declaration.isa = ( x, t ) -> $isa.pod x
       #.....................................................................................................
       else
-        throw new Error "Ω__13 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+        throw new Error "Ω__15 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return null
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
     return declaration unless declaration.fields?
     unless $isa.pod declaration.fields
-      throw new Error "Ω__14 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+      throw new Error "Ω__16 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     for field_name, field_declaration of declaration.fields
       field_typename = "#{typename}_$#{field_name}"
@@ -244,8 +244,8 @@ class Type
     switch true
       when ( ( not declaration.create? ) and ( not declaration.fields? ) )
         if declaration.template?
-          throw new Error "Ω__15 MEH-create-1 unable to create value of type #{rpr typename}"
-        declaration.create = -> throw new Error "Ω__16 MEH-create-1 unable to create value of type #{rpr typename}"
+          throw new Error "Ω__17 MEH-create-1 unable to create value of type #{rpr typename}"
+        declaration.create = -> throw new Error "Ω__18 MEH-create-1 unable to create value of type #{rpr typename}"
     return declaration
 
 
