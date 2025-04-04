@@ -201,11 +201,12 @@ unless the type's ISA method accepts `null`s.
 | **cA** | `<function>`     | `<pod?>`     | `<something?>`    | call `D.create P...`                       |
 | **cB** | `<notafunction>` | /            | /                 | ❌ `ERR_TYPEDECL`                           |
 | **cC** | /                | `<notapod>`  | /                 | ❌ `ERR_TYPEDECL`                           |
-| **cD** | —                | `<pod>`      | `<pod?>`          | create new object, set fields as per below |
+| **cD** | —                | `<pod>`      | `<pod>`           | create new object, set fields as per below |
 | **cE** | —                | `<pod>`      | `<notapod>`       | ❌ `ERR_TYPEDECL`                           |
 | **cF** | —                | `<pod>`      | —                 | use `create()` methods of field types      |
 | **cG** | —                | —            | `<function>`      | use return value of call to `template()`   |
 | **cH** | —                | —            | `<notafunction>?` | use value, coerce `undefined` to `null`    |
+| **cI** | —                | —            | —                 | ❌ `ERR_NOCREATE`                           |
 
 * (**cA**) In case `D.create` is a synchronous function, it will be called with the extraneous arguments `P`
   that are present in the call to `z = Intertype::create T, P...`, if any; its return value `z` will be
@@ -216,7 +217,7 @@ unless the type's ISA method accepts `null`s.
 * (**cD**) In case `D.create` is not set (or set to `null` or `undefined`) and `fields` is set (to a POD),
   walk over the field declarations in `fields` and look up the corresponding values in `template` one by
   one; if the template field holds a function, call that function, otherwise use the field value as-is.
-  Functions can only be set as return values from functions. Where `template` is missing a field,
+  Functions can only be set as return values from functions. **cDa** Where `template` is missing a field,
   `Intertype::create()` will try to supply with the `create` method according to that field's declared type.
 * (**cE**) A compile-time error will be thrown if `fields` is set and `template` is set to any value except
   `null`, `undefined` or a POD.
@@ -274,10 +275,8 @@ enumerable key that is not listed in `fields`.
   * `<notapod>` is a value of a type other than `null`, `undefined`, or a `<pod>`;
   * `ERR_TYPEDECL` indicates an error that will occur during the instantiation of a `Typespace` when a type
     with the listed condition is encountered;
-
-<!-- > * *`ERR_CREATE` indicates an error that will occur when trying to call `Intertype::create()` with a type
->   whose declaration satisfies the given condition: the declaration is OK and the type is usable, but it's
->   not allowed to use the library to create a new value of this type.*-->
+  * `ERR_NOCREATE` indicates an error that will be thrown when calling `Intertype::create t` with a type
+    that has not been configured to allow value creation.
 
 
 ## To Do
