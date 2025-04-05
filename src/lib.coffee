@@ -239,15 +239,12 @@ class Type
   _compile_declaration_create: ( typespace, typename, declaration ) ->
     has_fields      = declaration.fields?
     fields_isa_pod  = $isa.pod declaration.fields
-    debug 'Ω__12', 'CREATE', typename if typename is 'int_no_create'
     #.......................................................................................................
     ### condition cC ###
     if has_fields and not fields_isa_pod
       throw new Error "Ω__13 (see condition cC in README)"
-    debug 'Ω__14', 'CREATE', typename if typename is 'int_no_create'
     #.......................................................................................................
     if declaration.create?
-      debug 'Ω__15', 'CREATE', typename if typename is 'int_no_create'
       ### condition cB ###
       unless $isa.function declaration.create
         throw new Error "Ω__16 (see condition cB in README)"
@@ -255,7 +252,6 @@ class Type
       return null
     #.......................................................................................................
     unless has_fields
-      debug 'Ω__17', 'CREATE', typename if typename is 'int_no_create'
       ### condition cI ###
       unless declaration.template?
         declaration.create = ( P, t ) ->
@@ -272,10 +268,8 @@ class Type
         return seed_value
       return null
     #.......................................................................................................
-    debug 'Ω__19', 'CREATE', typename if typename is 'int_no_create'
     template_isa_pod = $isa.pod declaration.template
     if declaration.template?
-      debug 'Ω__20', 'CREATE', typename if typename is 'int_no_create'
       ### condition cE ###
       unless template_isa_pod
         throw new Error "Ω__21 (see condition cE in README)"
@@ -295,7 +289,6 @@ class Type
       return null
     #.......................................................................................................
     ### condition cF ###
-    debug 'Ω__23', 'CREATE', typename if typename is 'int_no_create'
     declaration.create = ( P, t ) ->
       unless P.length is 0
         throw new Error "Ω__18 create method for #{typename} does not accept arguments, got #{P.length} (see condition cF in README)"
