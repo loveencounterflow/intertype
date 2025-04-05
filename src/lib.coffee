@@ -259,7 +259,7 @@ class Type
       ### condition cI ###
       unless declaration.template?
         declaration.create = ( P..., t ) ->
-          throw new Error "Ω__18 type #{rpr typename} does not support value creation (condition cI)"
+          throw new Error "Ω__14 type #{rpr typename} does not support value creation (see condition cI in README)"
         return null
       ### condition cG ###
       if $isa.function declaration.template
@@ -268,7 +268,7 @@ class Type
       ### condition cH ###
       declaration.create = do ( seed_value = declaration.template ) => ( P..., t ) ->
         unless P.length is 0
-          throw new Error "Ω__18 create method for condition cH does not accept arguments, got #{P.length}"
+          throw new Error "Ω__15 create method for #{typename} does not accept arguments, got #{P.length} (see condition cH in README)"
         return seed_value
       return null
     #.......................................................................................................
@@ -283,7 +283,7 @@ class Type
       # do ( fields = declaration.fields, template = declaration.template ) =>
       declaration.create = ( P..., t ) ->
         unless P.length is 0
-          throw new Error "Ω__22 create method for condition cD does not accept arguments, got #{P.length}"
+          throw new Error "Ω__17 create method for #{typename} does not accept arguments, got #{P.length} (see condition cD in README)"
         R = {}
         for field_name, type of @fields
           ### condition cDa ###
@@ -298,7 +298,7 @@ class Type
     debug 'Ω__23', 'CREATE', typename if typename is 'int_no_create'
     declaration.create = ( P..., t ) ->
       unless P.length is 0
-        throw new Error "Ω__24 create method for condition cF does not accept arguments, got #{P.length}"
+        throw new Error "Ω__18 create method for #{typename} does not accept arguments, got #{P.length} (see condition cF in README)"
       R               = {}
       R[ field_name ] = t.create type for field_name, type of @fields
       return R
