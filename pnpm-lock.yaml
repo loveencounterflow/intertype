@@ -11,6 +11,9 @@ importers:
       guy:
         specifier: ^14.1.0
         version: 14.1.0
+      letsfreezethat:
+        specifier: ^3.1.0
+        version: 3.1.0
       webguy:
         specifier: ^5.2.1
         version: 5.2.1
@@ -28,6 +31,9 @@ packages:
 
   intertype@7.6.3:
     resolution: {integrity: sha512-77FmgaqGydWBc5OIde+geMj4+dGZ1i5UIFXM4C9QHiEIBjh+Gojycsb7XtRYYLNhNJepa+jotHXfAGPngHatzw==}
+
+  letsfreezethat@3.1.0:
+    resolution: {integrity: sha512-jJ1nvvQi6unW0WifjNPMIb64Byom0EXzSKWFYA++EpyjK3qv1J2pqeSoEJ61tGJoNG0GoNjPoeLYhxW16riZaA==}
 
   multimix@5.0.0:
     resolution: {integrity: sha512-N9cdGSDDD7kxOV7R6e4iZqsHTZ4F4iiSDWqMcVqx4gEH6HBtRXav39Gj3fgT1YqvBcwPCQuf0Oa5R2cDaLWK8A==}
@@ -50,6 +56,8 @@ snapshots:
   intertype@7.6.3:
     dependencies:
       multimix: 5.0.0
+
+  letsfreezethat@3.1.0: {}
 
   multimix@5.0.0: {}
 
