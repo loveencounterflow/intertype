@@ -242,12 +242,12 @@ class Type
     #.......................................................................................................
     ### condition cC ###
     if has_fields and not fields_isa_pod
-      throw new Error "Ω__13 (see condition cC in README)"
+      throw new Error "Ω__12 (see condition cC in README)"
     #.......................................................................................................
     if declaration.create?
       ### condition cB ###
       unless $isa.function declaration.create
-        throw new Error "Ω__16 (see condition cB in README)"
+        throw new Error "Ω__13 (see condition cB in README)"
       ### condition cA: use user-defined `create()` method, nothing to do here: ###
       return null
     #.......................................................................................................
@@ -272,7 +272,7 @@ class Type
     if declaration.template?
       ### condition cE ###
       unless template_isa_pod
-        throw new Error "Ω__21 (see condition cE in README)"
+        throw new Error "Ω__16 (see condition cE in README)"
       ### condition cD ###
       # do ( fields = declaration.fields, template = declaration.template ) =>
       declaration.create = ( P, t ) ->
