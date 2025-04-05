@@ -315,6 +315,28 @@ enumerable key that is not listed in `fields`.
 * **`[—]`** check for property overrides in `constructor()` methods
   * **`[—]`** use `$typename`, `$typespace` w/out `$`?
 
+* **`[—]`** docs: "`create()` methods are called in the context of the type with a list of the arguments
+  as first and the respective `Intertype` instance as second argument; may destructure in the signature for
+  convenience as in `create: ( [ a, b, ], t ) ->`"
+
+* **`[—]`** implement 'deep `assign`', a version of `Object.assign()` that applies `assign()` to nested
+  objects
+
+<!--
+keys = ( Object.getOwnPropertyNames d ).concat Object.getOwnPropertySymbols d
+for key in keys
+  descriptor = Object.getOwnPropertyDescriptor d, key
+  continue unless descriptor.enumerable
+  if $isa.primitive descriptor.value
+    R[ key ] = value
+    continue
+-->
+
+* **`[—]`** allow to produce verbs of `Intertype` to be constructed from `Intertype` instance, typespaces;
+  optionally explicit typespace prefixes; returned object `d` allows to write `d.isa.integer()` (or
+  `d.isa.std.integer()` with explicit typespaces)
+
+
 ## Is Done
 
 ## Don't
