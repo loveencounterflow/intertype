@@ -130,7 +130,7 @@ class Intertype
   create: ( type, P... ) ->
     unless type instanceof Type
       throw new Error "Ω___6 expected an instance of Type, got a #{$type_of type}"
-    return type.create.call type, P..., @
+    return type.create.call type, P, @
 
   # #---------------------------------------------------------------------------------------------------------
   # copy_template: ( type ) ->
@@ -258,15 +258,15 @@ class Type
       debug 'Ω__17', 'CREATE', typename if typename is 'int_no_create'
       ### condition cI ###
       unless declaration.template?
-        declaration.create = ( P..., t ) ->
+        declaration.create = ( P, t ) ->
           throw new Error "Ω__14 type #{rpr typename} does not support value creation (see condition cI in README)"
         return null
       ### condition cG ###
       if $isa.function declaration.template
-        declaration.create = do ( create = declaration.template ) => ( P..., t ) -> create.call @, P..., t
+        declaration.create = do ( create = declaration.template ) => ( P, t ) -> create.call @, P, t
         return null
       ### condition cH ###
-      declaration.create = do ( seed_value = declaration.template ) => ( P..., t ) ->
+      declaration.create = do ( seed_value = declaration.template ) => ( P, t ) ->
         unless P.length is 0
           throw new Error "Ω__15 create method for #{typename} does not accept arguments, got #{P.length} (see condition cH in README)"
         return seed_value
@@ -281,7 +281,7 @@ class Type
         throw new Error "Ω__21 (see condition cE in README)"
       ### condition cD ###
       # do ( fields = declaration.fields, template = declaration.template ) =>
-      declaration.create = ( P..., t ) ->
+      declaration.create = ( P, t ) ->
         unless P.length is 0
           throw new Error "Ω__17 create method for #{typename} does not accept arguments, got #{P.length} (see condition cD in README)"
         R = {}
@@ -296,7 +296,7 @@ class Type
     #.......................................................................................................
     ### condition cF ###
     debug 'Ω__23', 'CREATE', typename if typename is 'int_no_create'
-    declaration.create = ( P..., t ) ->
+    declaration.create = ( P, t ) ->
       unless P.length is 0
         throw new Error "Ω__18 create method for #{typename} does not accept arguments, got #{P.length} (see condition cF in README)"
       R               = {}
