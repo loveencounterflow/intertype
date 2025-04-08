@@ -191,7 +191,7 @@ class Type
         declaration.isa = check_fields
       #.....................................................................................................
       else
-        throw new Error "Ω___8 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+        throw new Error "Ω___9 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
@@ -212,14 +212,14 @@ class Type
         declaration.isa = ( x, t ) -> $isa.pod x
       #.....................................................................................................
       else
-        throw new Error "Ω__10 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
+        throw new Error "Ω__12 expected `declaration.isa` to be a function, a type or a typeref, got a #{$type_of declaration.isa}"
     return null
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_fields: ( typespace, typename, declaration ) ->
     return declaration unless declaration.fields?
     unless $isa.pod declaration.fields
-      throw new Error "Ω__11 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
+      throw new Error "Ω__13 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     for field_name, field_declaration of declaration.fields
       field_typename = "#{typename}_$#{field_name}"
@@ -243,12 +243,12 @@ class Type
     #.......................................................................................................
     ### condition cC ###
     if has_fields and not fields_isa_pod
-      throw new Error "Ω__12 (see condition cC in README)"
+      throw new Error "Ω__14 (see condition cC in README)"
     #.......................................................................................................
     if declaration.create?
       ### condition cB ###
       unless $isa.function declaration.create
-        throw new Error "Ω__13 (see condition cB in README)"
+        throw new Error "Ω__15 (see condition cB in README)"
       ### condition cA: use user-defined `create()` method, nothing to do here: ###
       return null
     #.......................................................................................................
@@ -256,7 +256,7 @@ class Type
       ### condition cI ###
       unless declaration.template?
         declaration.create = ( P, t ) ->
-          throw new Error "Ω__14 type #{rpr typename} does not support value creation (see condition cI in README)"
+          throw new Error "Ω__16 type #{rpr typename} does not support value creation (see condition cI in README)"
         return null
       ### condition cG ###
       if $isa.function declaration.template
@@ -265,7 +265,7 @@ class Type
       ### condition cH ###
       declaration.create = do ( seed_value = declaration.template ) => ( P, t ) ->
         unless P.length is 0
-          throw new Error "Ω__15 create method for #{typename} does not accept arguments, got #{P.length} (see condition cH in README)"
+          throw new Error "Ω__17 create method for #{typename} does not accept arguments, got #{P.length} (see condition cH in README)"
         return seed_value
       return null
     #.......................................................................................................
@@ -273,12 +273,12 @@ class Type
     if declaration.template?
       ### condition cE ###
       unless template_isa_pod
-        throw new Error "Ω__16 (see condition cE in README)"
+        throw new Error "Ω__18 (see condition cE in README)"
       ### condition cD ###
       # do ( fields = declaration.fields, template = declaration.template ) =>
       declaration.create = ( P, t ) ->
         unless P.length is 0
-          throw new Error "Ω__17 create method for #{typename} does not accept arguments, got #{P.length} (see condition cD in README)"
+          throw new Error "Ω__19 create method for #{typename} does not accept arguments, got #{P.length} (see condition cD in README)"
         R = {}
         for field_name, type of @fields
           ### condition cDa ###
@@ -292,7 +292,7 @@ class Type
     ### condition cF ###
     declaration.create = ( P, t ) ->
       unless P.length is 0
-        throw new Error "Ω__18 create method for #{typename} does not accept arguments, got #{P.length} (see condition cF in README)"
+        throw new Error "Ω__20 create method for #{typename} does not accept arguments, got #{P.length} (see condition cF in README)"
       R               = {}
       R[ field_name ] = t.create type for field_name, type of @fields
       return R
