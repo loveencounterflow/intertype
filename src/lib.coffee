@@ -180,6 +180,7 @@ class Type
         declaration.isa = do ( type = declaration.isa ) => ( x, t ) ->
           ( t.isa type, x ) and ( check_fields.call @, x, t )
       #.....................................................................................................
+      ### (see condition dB in README) ###
       when $isa.nonempty_text declaration.isa
         declaration.isa = do ( typeref = declaration.isa ) => ( x, t ) ->
           unless $isa.type ( type = typespace[ typeref ] )
