@@ -149,6 +149,53 @@ Types declarations may include a `create` and a `template` entry:
 
 ## `Type` Objects
 
+Properties of instances of class `Type` fall into two categories, *user properties* and *system properties*.
+Because users are free to name and define their properties, the names of system properties are prefixed with
+a dollar sign `$` to prevent namespace collisions.
+
+> **Note** There is still the danger of colliding with any of these properties: `constructor`,
+> `__defineGetter__`, `__defineSetter__`, `hasOwnProperty`, `__lookupGetter__`, `__lookupSetter__`,
+> `isPrototypeOf`, `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`, `toLocaleString`. Users
+> should therefore avoid **\***&nbsp;the name `constructor`, **\***&nbsp;names that start with two
+> underscores, and **\***&nbsp;`camelCased` names and prefer `snake_cased` names **\*** **\*** to be on the
+> safe side.
+
+-----------------------
+
+> [!NOTE]
+> Highlights information that users should take into account, even when skimming.
+
+> [!TIP]
+> Optional information to help a user be more successful.
+
+> [!IMPORTANT]
+> Crucial information necessary for users to succeed.
+
+> [!WARNING]
+> Critical content demanding immediate user attention due to potential risks.
+
+> [!CAUTION]
+> Negative potential consequences of an action.
+
+------------------
+
+[!NOTE]
+Highlights information that users should take into account, even when skimming.
+
+[!TIP]
+Optional information to help a user be more successful.
+
+[!IMPORTANT]
+Crucial information necessary for users to succeed.
+
+[!WARNING]
+Critical content demanding immediate user attention due to potential risks.
+
+[!CAUTION]
+Negative potential consequences of an action.
+
+-----------------
+
 * `Type::isa()`
 * `Type::create()`
 * `Type::fields <pod?>`
