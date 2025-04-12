@@ -311,6 +311,20 @@ class Typespace
     return undefined
 
 
+# #===========================================================================================================
+# class Typespace extends Type
+
+#   #---------------------------------------------------------------------------------------------------------
+#   constructor: ( declarations ) ->
+#     ### TAINT use proper validation, `create()` ###
+#     unless $isa.pod declarations
+#       throw new Error "Ω__19 expected a plain object, got a #{$type_of declarations}"
+#     if declarations.$isa? or ( declarations.$isa isnt '$variant' )
+#       throw new Error "Ω__20 expected declarations.$isa to be unset or set to '$variant', got `{ declarations.$isa: #{rpr declarations.$isa}, }`"
+#     super { declarations..., $isa: '$variant', }
+#     return undefined
+
+
 #===========================================================================================================
 # if module is require.main then await do =>
 do =>
