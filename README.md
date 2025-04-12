@@ -157,13 +157,9 @@ a dollar sign `$` to prevent namespace collisions.
 >
 > There is still the danger of colliding with any of these properties: `constructor`, `__defineGetter__`,
 > `__defineSetter__`, `hasOwnProperty`, `__lookupGetter__`, `__lookupSetter__`, `isPrototypeOf`,
-> `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`, `toLocaleString`.
-
-> [!TIP]
->
-> Users should therefore avoid **\***&nbsp;the name `constructor`, **\***&nbsp;names that start with two
-> underscores, and **\***&nbsp;`camelCased` names and prefer `snake_cased` names **\*** **\*** to be on the
-> safe side.
+> `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`, `toLocaleString`. Users should therefore
+> **(1)**&nbsp;avoid the name `constructor`, **(2)**&nbsp;avoid names that start with two underscores, and
+> **(3)**&nbsp;avoid `camelCased` names and prefer `snake_cased` names instead to be on the safe side.
 
 
 
