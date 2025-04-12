@@ -153,13 +153,17 @@ Properties of instances of class `Type` fall into two categories, *user properti
 Because users are free to name and define their properties, the names of system properties are prefixed with
 a dollar sign `$` to prevent namespace collisions.
 
-> [!NOTE] There is still the danger of colliding with any of these properties: `constructor`,
-> `__defineGetter__`, `__defineSetter__`, `hasOwnProperty`, `__lookupGetter__`, `__lookupSetter__`,
-> `isPrototypeOf`, `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`, `toLocaleString`.
+> [!NOTE]
+>
+> There is still the danger of colliding with any of these properties: `constructor`, `__defineGetter__`,
+> `__defineSetter__`, `hasOwnProperty`, `__lookupGetter__`, `__lookupSetter__`, `isPrototypeOf`,
+> `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`, `toLocaleString`.
 
-> [!TIP] Users should therefore avoid **\***&nbsp;the name `constructor`, **\***&nbsp;names that start with
-> two underscores, and **\***&nbsp;`camelCased` names and prefer `snake_cased` names **\*** **\*** to be on
-> the safe side.
+> [!TIP]
+>
+> Users should therefore avoid **\***&nbsp;the name `constructor`, **\***&nbsp;names that start with two
+> underscores, and **\***&nbsp;`camelCased` names and prefer `snake_cased` names **\*** **\*** to be on the
+> safe side.
 
 
 
