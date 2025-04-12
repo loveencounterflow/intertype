@@ -336,6 +336,32 @@ for key in keys
   optionally explicit typespace prefixes; returned object `d` allows to write `d.isa.integer()` (or
   `d.isa.std.integer()` with explicit typespaces)
 
+* **`[—]`** kinds of types (types of types):
+  * **terminal** or **independent types** don't refer to (and thus depend on) any other types; ex. `list`
+    may be defined as `( x ) -> Array.isArray x`. Distinguish 'terminal' from 'primitive' types.
+  * **non-terminal** or **dependent types** do refer to (and thus depend on) one or more other types; ex.
+    `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( ( Math.floor x ) is x )` (although
+    we actually defined it as an independent type `( x ) -> Number.isInteger x`)
+  * **refinement types** as in `odd: ( x, t ) -> ( t.isa std.integer x ) and ( x %% 2 isnt 0 )`
+  * **enumeration types** as in `freeze: ( x ) -> x in [ false, 'deep', 'shallow', ]`
+  * [**sum** or **variant types** (a.k.a. *tagged unions*, *choice types*
+    &c)](https://en.wikipedia.org/wiki/Tagged_union)
+  * [**product**](https://en.wikipedia.org/wiki/Product_type) or [**record
+    types**](https://en.wikipedia.org/wiki/Record_(computer_science))
+
+* **`[—]`** Unify types and typespaces; a typespace is like a variant type with named alternatives
+  * **`[—]`** how to distinguish a declaration for a variant type from a declaration for a record type?
+    * **`[—]`** maybe a record type should simply have a mandatory `$isa` property (most of the time set to
+      `$object` or `$pod`) while variant types must have no `$isa` property or an explicit `$type: null`?
+    * **`[—]`** Could also / additionally use `$isa: '$variant'` and `$isa: '$record'` as special `$isa`
+      values
+
+* **`[—]`** Can we model `optional` as a typespace (a variant type) and produce it automatically from an
+  * **`[—]`** maybe better as an 'operator' / [higher-order function](https://youtu.be/srQt1NAHYC0?t=3089)
+    as in `t: ( x, t ) -> t.isa ( optional std.integer ) x`
+  * **`[—]`** ✅ maybe better as a property of `types.isa()`, `types.validate()` &c as in `t: ( x, t ) ->
+    t.isa.optional std.integer, x`
+
 
 ## Is Done
 
