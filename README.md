@@ -17,11 +17,11 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Kinds of Types](#kinds-of-types)
-    - [`$kind: '$independent'`](#kind-independent)
-    - [`$kind: '$dependent'`](#kind-dependent)
-    - [`$kind: '$enumeration'`](#kind-enumeration)
-    - [`$kind: '$variant'`](#kind-variant)
-    - [`$kind: '$record'`](#kind-record)
+    - [Independent Types](#independent-types)
+    - [Dependent Types](#dependent-types)
+    - [Enumeration Types](#enumeration-types)
+    - [Variant Types](#variant-types)
+    - [Record Types](#record-types)
     - [Implicit Values of `$kind`](#implicit-values-of-kind)
   - [XXXXXXXXXXXXXXXXXXXXXXXXXX](#xxxxxxxxxxxxxxxxxxxxxxxxxx)
     - [Notes](#notes)
@@ -276,114 +276,124 @@ Declaration property `$kind` may take on one of the following values; the leadin
 names of kinds are there to indicate that these are not user-definable names but elements of a controlled
 vocabulary:
 
-### `$kind: '$independent'`
+### Independent Types
 
-*Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
-  other types; ex. `list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is
-  purely informational and has no effect on the behavior of InterType methods.
+* Declaration setting: `$kind: '$independent'`
 
-  **Note** 'terminal' types are an entirely different concept from ['primitive'
-  types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive
-  (primitive value, primitive data type) is data that is not an object and has no methods or properties".
+*Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any other types; ex.
+`list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is purely
+informational and has no effect on the behavior of InterType methods.
 
-### `$kind: '$dependent'`
+**Note** 'terminal' types are an entirely different concept from ['primitive'
+types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive (primitive
+value, primitive data type) is data that is not an object and has no methods or properties".
 
-A *non-terminal* or *dependent type* type is a type whose declaration refers to another
-  type and thus depends on that other type. For example, `integer` may be declared as a dependent type: `(
-  x, t ) -> ( t.isa std.float x ) and ( ( Math.floor x ) is x )` (depending on `std.float`) or as an
-  independent type: `( x ) -> Number.isInteger x`.—Use of the value `'$dependent'` is purely informational
-  and has no effect on the behavior of InterType methods.
+### Dependent Types
 
-### `$kind: '$enumeration'`
+* Declaration setting: `$kind: '$dependent'`
 
-*Enumeration types* are types that are declared as a finite number of constant values,
-  e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a
-  given enumeration type, the
-  [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
-  method will be used, meaning that it probably makes little sense to include anything but JS primitive
-  values (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings
-  and public `Symbol`s) in the enumeration.
+A *non-terminal* or *dependent type* type is a type whose declaration refers to another type and thus
+depends on that other type. For example, `integer` may be declared as a dependent type: `( x, t ) -> ( t.isa
+std.float x ) and ( ( Math.floor x ) is x )` (depending on `std.float`) or as an independent type: `( x ) ->
+Number.isInteger x`.—Use of the value `'$dependent'` is purely informational and has no effect on the
+behavior of InterType methods.
 
-### `$kind: '$variant'`
+### Enumeration Types
 
-*Variant types* are types whose declaration contain one or more user properties (called
-  'alternatives' in this context in contradistinction to the 'fields' of a `$record`) that each declare a
-  domain (a set of values); a value satisfies the given variant type when it satisfies any one of the named
-  alternatives. In this example:
+* Declaration setting: `$kind: '$enumeration'`
 
-  ```coffee
-  ts = new Typespace
-    integer:      ( x ) -> Number.isInteger x
-    text:         ( x ) -> ( typeof x ) is 'string'
-    digits:       ( x ) -> ( @isa @typespace.text, x ) and ( /^[-+]?[0-9]+$/.test x )
-    integer_or_literal:
-      $kind:      '$variant'
-      numerical:  'integer'
-      digital:    'digits'
-  ```
+*Enumeration types* are types that are declared as a finite number of constant values, e.g.
+`freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a given
+enumeration type, the
+[`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
+method will be used, meaning that it probably makes little sense to include anything but JS primitive values
+(`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and
+public `Symbol`s) in the enumeration.
 
-  we declare a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
-  `ts.integer` (integer numbers) or `ts.digits` (strings that consist only of ASCII digits and an optionally
-  prefixed sign), so `-45` and `'876'` would both satisfy `integer_or_literal`, but `Infinity` or `'7%'`
-  would not.
+### Variant Types
 
-  A variant's alternatives will be tested in the [order as declared](#ordering-of-properties-of-js-objects);
-  as soon the ISA method of any alternative returns `true`, testing will stop and the ISA method of the
-  variant returns `true` as well. Only when each alternative's ISA method has returned `false` will the
-  variant's ISA method return `false`.
+* Declaration setting: `$kind: '$variant'`
 
-  Alternatives of a variant type are types themselves (and potentially variant types themselves), so it's
-  always possible to test alternatives individually, as in `t.isa ts.integer_or_literal.digital '123'`. This
-  is why all `Typespace`s are `$variant`s and all `$variant`s are, functionally, typespaces. In fact,
-  instances of `Typespace` are implemented as `Type`s that have their `$kind` set to `'$variant'` so you
-  don't have to. If you wanted to you could totally `t.isa ts, x` to see whether `x` conforms to any of the
-  types defined in typespace `ts` (that would return `true` for all integers) but it's clear that that is
-  not the *intended* use of a typespace (IOW the distinction between variants and typespaces is intentional,
-  not extentional).
+*Variant types* are types whose declaration contain one or more user properties (called 'alternatives' in
+this context in contradistinction to the 'fields' of a `$record`) that each declare a domain (a set of
+values); a value satisfies the given variant type when it satisfies any one of the named alternatives. In
+this example:
 
-### `$kind: '$record'`
+```coffee
+ts = new Typespace
+  integer:      ( x ) -> Number.isInteger x
+  text:         ( x ) -> ( typeof x ) is 'string'
+  digits:       ( x ) -> ( @isa @typespace.text, x ) and ( /^[-+]?[0-9]+$/.test x )
+  integer_or_literal:
+    $kind:      '$variant'
+    numerical:  'integer'
+    digital:    'digits'
+```
+
+we declare a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
+`ts.integer` (integer numbers) or `ts.digits` (strings that consist only of ASCII digits and an optionally
+prefixed sign), so `-45` and `'876'` would both satisfy `integer_or_literal`, but `Infinity` or `'7%'` would
+not.
+
+A variant's alternatives will be tested in the [order as declared](#ordering-of-properties-of-js-objects);
+as soon the ISA method of any alternative returns `true`, testing will stop and the ISA method of the
+variant returns `true` as well. Only when each alternative's ISA method has returned `false` will the
+variant's ISA method return `false`.
+
+Alternatives of a variant type are types themselves (and potentially variant types themselves), so it's
+always possible to test alternatives individually, as in `t.isa ts.integer_or_literal.digital '123'`. This
+is why all `Typespace`s are `$variant`s and all `$variant`s are, functionally, typespaces. In fact,
+instances of `Typespace` are implemented as `Type`s that have their `$kind` set to `'$variant'` so you don't
+have to. If you wanted to you could totally `t.isa ts, x` to see whether `x` conforms to any of the types
+defined in typespace `ts` (that would return `true` for all integers) but it's clear that that is not the
+*intended* use of a typespace (IOW the distinction between variants and typespaces is intentional, not
+extentional).
+
+### Record Types
+
+* Declaration setting: `$kind: '$record'`
 
 A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
-  type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
-  least) the properties that are indicated in its declaration, with each of its listed properties (called
-  'fields' in this context) satisfying the namesake declaration.
+type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at least)
+the properties that are indicated in its declaration, with each of its listed properties (called 'fields' in
+this context) satisfying the namesake declaration.
 
-  As with variants, fields will be tested in the [order as declared](#ordering-of-properties-of-js-objects),
-  but other than that, there are two important distinctions to variants: First, the record type's members'
-  ISA methods will be called with the tested value's *field values*, not the tested value itself. Second,
-  the record type's ISA method will return `true` only when each member ISA method has returned `true`, and
-  testing will stop and return `false` as soon as the first non-conformant field has been encountered, if
-  any.
+As with variants, fields will be tested in the [order as declared](#ordering-of-properties-of-js-objects),
+but other than that, there are two important distinctions to variants: First, the record type's members' ISA
+methods will be called with the tested value's *field values*, not the tested value itself. Second, the
+record type's ISA method will return `true` only when each member ISA method has returned `true`, and
+testing will stop and return `false` as soon as the first non-conformant field has been encountered, if any.
 
-  Furthermore, in case the declaration doesn't specify an explicit value for `$isa`, that property will
-  implicitly be configured to test whether the respective value can have properties at all. When the record
-  type's explicit or implicit ISA method has returned `true` for a given type `t` and value `x`, testing
-  will then proceed to retrieve the user properties of the the type's declaration that spell out each
-  field's name and the field's ISA method; the field name is then used to retrieve the value's field value
-  as `field_value = x[ field_name ]`; this `field_value` is then passed into the field's `$isa` function.
+Furthermore, in case the declaration doesn't specify an explicit value for `$isa`, that property will
+implicitly be configured to test whether the respective value can have properties at all. When the record
+type's explicit or implicit ISA method has returned `true` for a given type `t` and value `x`, testing will
+then proceed to retrieve the user properties of the the type's declaration that spell out each field's name
+and the field's ISA method; the field name is then used to retrieve the value's field value as `field_value
+= x[ field_name ]`; this `field_value` is then passed into the field's `$isa` function.
 
-  For example, to declare a `temperature` datatype, one could stipulate:
+For example, to declare a `temperature` datatype, one could stipulate:
 
-  ```coffee
-  ts = new Typespace
-    float:              ( x ) -> Number.isFinite x
-    temperature_unit:   [ '°C', 'C', '°F', 'F', 'K', ]
-    temperature:
-      $kind:              '$record'
-      value:              'float'
-      unit:               'temperature_unit'
-  ```
+```coffee
+ts = new Typespace
+  float:              ( x ) -> Number.isFinite x
+  temperature_unit:   [ '°C', 'C', '°F', 'F', 'K', ]
+  temperature:
+    $kind:              '$record'
+    quantity:           'float'
+    unit:               'temperature_unit'
+```
 
-  If one used this declaration to test whether a given object `x` has the shape of a `ts.temperature` as in
-  `is_temperature = t.isa ts.temperature, { value: 22, unit: '°C', }`, the following procedure will be
-  followed:
+If one used this declaration to test whether a given object `x` has the shape of a `ts.temperature` as in
+`is_temperature = t.isa ts.temperature, { quantity: 22, unit: '°C', }`, the following procedure will be
+followed:
 
-  * First, the implicit `temparature.$isa()` method is called to ensure that `x` allows for properties at
-    all; in the simplest case, that would be `x?`, excluding `null` and `undefined`.
-  * Then, we call `temparature.value.$isa x.value`, which returns `true` for `22`, so we need to proceed.
-  * Next, we call `temparature.unit.$isa x.unit`, which also returns `true` for `°C`.
-  * Since all three tests were succesful, we now return `true` indicating that `x` conforms with
-    `ts.temperature`.
+* First, the implicit `temparature.$isa()` method is called to ensure that `x` allows for properties at all;
+  in the simplest case, that would be `x?`, excluding `null` and `undefined`.
+* Then, we call `temparature.quantity.$isa x.quantity`, which returns `true` for `22`, so we need to
+  proceed.
+* Next, we call `temparature.unit.$isa x.unit`, which also returns `true` for `°C`.
+* Since all three tests were successful, we now return `true` indicating that `x` conforms with
+  `ts.temperature`.
 
 ### Implicit Values of `$kind`
 
