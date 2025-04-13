@@ -562,8 +562,14 @@ for key in keys
 * **`[—]`** ISA methods should be called with `this` / `@` set to a special context object that allows,
   among other things, to access the type's typespace, the present type object, and—important for field
   declarations—the full value of the tested value. The context object could be implemented using managed
-  properties by way of a `Proxy`. **It should be possible to set the `Intertype` instance used for the
-  present call and remove the `t` function argument that way.**
+  properties by way of a `Proxy`.
+  * **It should be possible to set the `Intertype` instance used for the present call and remove the `t`
+    function argument that way.**
+  * The new context object should also provide a way that allows ISA methods to check whether they got
+    called individually or because the containing `$record` is being type checked; in the temparature
+    example, that would mean that inside of `ts.temperature.quantity.$isa()` we would know whether
+    `@value.unit` was already tested (yes in the case that `t.isa ts.temperature, x` was called, uncertain
+    if `t.isa ts.temperature,quantity, x` was called).
 
   Example (in fact sort of questionable as per
   [Wikipedia](https://en.wikipedia.org/wiki/Negative_temperature)):
@@ -575,7 +581,7 @@ for key in keys
     temperature:
       $kind:              '$record'
       unit:               'temperature_unit'
-      value:              ( x ) ->
+      quantity:           ( x ) ->
                             return false unless ( @isa @typespace.float, x )
                             return true  unless @value.unit is 'K'
                             return false unless x >= 0
