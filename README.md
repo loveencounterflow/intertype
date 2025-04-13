@@ -17,6 +17,11 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Kinds of Types](#kinds-of-types)
+    - [`$kind: '$independent'`](#kind-independent)
+    - [`$kind: '$dependent'`](#kind-dependent)
+    - [`$kind: '$enumeration'`](#kind-enumeration)
+    - [`$kind: '$variant'`](#kind-variant)
+    - [`$kind: '$record'`](#kind-record)
     - [Implicit Values of `$kind`](#implicit-values-of-kind)
   - [XXXXXXXXXXXXXXXXXXXXXXXXXX](#xxxxxxxxxxxxxxxxxxxxxxxxxx)
     - [Notes](#notes)
@@ -271,7 +276,9 @@ Declaration property `$kind` may take on one of the following values; the leadin
 names of kinds are there to indicate that these are not user-definable names but elements of a controlled
 vocabulary:
 
-* **'$independent'**: *Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
+### `$kind: '$independent'`
+
+*Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
   other types; ex. `list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is
   purely informational and has no effect on the behavior of InterType methods.
 
@@ -279,13 +286,17 @@ vocabulary:
   types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive
   (primitive value, primitive data type) is data that is not an object and has no methods or properties".
 
-* **'$dependent'**: A *non-terminal* or *dependent type* type is a type whose declaration refers to another
+### `$kind: '$dependent'`
+
+A *non-terminal* or *dependent type* type is a type whose declaration refers to another
   type and thus depends on that other type. For example, `integer` may be declared as a dependent type: `(
   x, t ) -> ( t.isa std.float x ) and ( ( Math.floor x ) is x )` (depending on `std.float`) or as an
   independent type: `( x ) -> Number.isInteger x`.—Use of the value `'$dependent'` is purely informational
   and has no effect on the behavior of InterType methods.
 
-* **'$enumeration'**: *Enumeration types* are types that are declared as a finite number of constant values,
+### `$kind: '$enumeration'`
+
+*Enumeration types* are types that are declared as a finite number of constant values,
   e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a
   given enumeration type, the
   [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
@@ -293,7 +304,9 @@ vocabulary:
   values (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings
   and public `Symbol`s) in the enumeration.
 
-* **'$variant'**: *Variant types* are types whose declaration contain one or more user properties (called
+### `$kind: '$variant'`
+
+*Variant types* are types whose declaration contain one or more user properties (called
   'alternatives' in this context in contradistinction to the 'fields' of a `$record`) that each declare a
   domain (a set of values); a value satisfies the given variant type when it satisfies any one of the named
   alternatives. In this example:
@@ -328,7 +341,9 @@ vocabulary:
   not the *intended* use of a typespace (IOW the distinction between variants and typespaces is intentional,
   not extentional).
 
-* **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
+### `$kind: '$record'`
+
+A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
   least) the properties that are indicated in its declaration, with each of its listed properties (called
   'fields' in this context) satisfying the namesake declaration.
