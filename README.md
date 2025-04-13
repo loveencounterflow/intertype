@@ -359,7 +359,7 @@ extentional).
 A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
 type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at least)
 the properties that are indicated in its declaration, with each of its listed properties (called 'fields' in
-this context) satisfying the namesake declaration.
+this context) satisfying their namesake declaration.
 
 As with variants, fields will be tested in the [order as declared](#ordering-of-properties-of-js-objects),
 but other than that, there are two important distinctions to variants: First, the record type's members' ISA
@@ -367,12 +367,12 @@ methods will be called with the tested value's *field values*, not the tested va
 record type's ISA method will return `true` only when each member ISA method has returned `true`, and
 testing will stop and return `false` as soon as the first non-conformant field has been encountered, if any.
 
-Furthermore, in case the declaration doesn't specify an explicit value for `$isa`, that property will
-implicitly be configured to test whether the respective value can have properties at all. When the record
-type's explicit or implicit ISA method has returned `true` for a given type `t` and value `x`, testing will
-then proceed to retrieve the user properties of the the type's declaration that spell out each field's name
-and the field's ISA method; the field name is then used to retrieve the value's field value as `field_value
-= x[ field_name ]`; this `field_value` is then passed into the field's `$isa` function.
+Furthermore, in case a record type's declaration doesn't set `$isa` explicitly, an implicit check will be
+performed to test whether the tested value is an object. When the record type's explicit or implicit ISA
+method has returned `true` for a given type `t` and value `x`, testing will then proceed to retrieve the
+user properties of the the type's declaration that spell out each field's name and the field's ISA method;
+the field name is then used to retrieve the value's field value as `field_value = x[ field_name ]`; this
+`field_value` is then passed into the field's `$isa` function.
 
 For example, to declare a `temperature` datatype, one could stipulate:
 
