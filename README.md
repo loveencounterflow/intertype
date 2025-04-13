@@ -16,6 +16,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Properties of Type Declarations and `Type` Objects](#properties-of-type-declarations-and-type-objects)
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
+  - [Terminology](#terminology)
   - [Notation](#notation)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -262,6 +263,19 @@ enumerable key that is not listed in `fields`.
 
 
 
+## Terminology
+
+<dl>
+  <dt>Beast of Bodmin</dt>
+  <dd>A large feline inhabiting Bodmin Moor.</dd>
+
+  <dt>Morgawr</dt>
+  <dd>A sea serpent.</dd>
+
+  <dt>Owlman</dt>
+  <dd>A giant owl-like creature.</dd>
+</dl>
+
 ## Notation
 
 * **Types** are indicated in *pointy brackets* behind variable and property names, as in `count <cardinal>`,
@@ -367,16 +381,19 @@ for key in keys
       one or more other types; ex. `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( (
       Math.floor x ) is x )` (although we actually defined it as an independent type `( x ) ->
       Number.isInteger x`)
-    * **'$enumeration'**: **enumeration types** are types that are declared as a finite number of constant
+    * **'$enumeration'**: *enumeration types* are types that are declared as a finite number of constant
       (primitive) values, e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a
       given value `x` is of a given enumeration type, the
       [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
       method will be used, meaning that it makes probably little sense to include anything but JS primitive
       values (`null`, `undefined`, `true`, `false`, numbers (including `BigInt`s) Strings and public
       `Symbol`s) in the enumeration.
-    * **'$variant'**: [**sum** or **variant types** (a.k.a. *tagged unions*, *choice types*
-      &c)](https://en.wikipedia.org/wiki/Tagged_union)
-    * **'$record'**: [**product**](https://en.wikipedia.org/wiki/Product_type) or [**record
+    * **'$variant'**: [*sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
+      &c)](https://en.wikipedia.org/wiki/Tagged_union) are types whose domain
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+    * **'$record'**: [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
       types**](https://en.wikipedia.org/wiki/Record_(computer_science))
   * The leading dollar signs `$...` in the names of kinds are there to indicate that these are not
     user-definable names but elements of an internal, controlled vocabulary.
@@ -399,7 +416,7 @@ for key in keys
     ts = new Typespace
       list:
         $isa:       ( x ) -> Array.isArray x
-        $variant:   true
+        $kind:      '$variant'
         empty:      ( x, t ) -> ( t.isa @list x ) and ( x.length is   0 )
         nonempty:   ( x, t ) -> ( t.isa @list x ) and ( x.length isnt 0 )
     #..............................................................................
