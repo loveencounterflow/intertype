@@ -268,8 +268,8 @@ enumerable key that is not listed in `fields`.
 ## Kinds of Types
 
 Declaration property `$kind` may take on one of the following values; the leading dollar signs `$...` in the
-names of kinds are there to indicate that these are not user-definable names but elements of an internal,
-controlled vocabulary:
+names of kinds are there to indicate that these are not user-definable names but elements of a controlled
+vocabulary:
 
 * **'$independent'**: *Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
   other types; ex. `list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is
@@ -311,14 +311,24 @@ controlled vocabulary:
       digits:     'digits'
   ```
 
-  declares a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
-  `ts.integer` or `ts.digits` or both, so `-45` and `'876'` would both satisfy `integer_or_literal`, but
-  `Infinity` or `'7%'` would not.
+  we declare a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
+  `ts.integer` (integer numbers) or `ts.digits` (strings that consist only of ASCII digits and an optionally
+  prefixed sign), so `-45` and `'876'` would both satisfy `integer_or_literal`, but `Infinity` or `'7%'`
+  would not.
 
   A variant's alternatives will be tested in the [order as declared](#ordering-of-properties-of-js-objects);
   as soon the ISA method of any alternative returns `true`, testing will stop and the ISA method of the
   variant returns `true` as well. Only when each alternative's ISA method has returned `false` will the
   variant's ISA method return `false`.
+
+  Alternatives of a variant type are types themselves (and potentially variant types themselves), so it's
+  always possible to test alternatives individually, as in `t.isa ts.integer_or_literal.digits '123'`. This
+  is why all `Typespace`s are `$variant`s and all `$variant`s are, functionally, typespaces. In fact,
+  instances of `Typespace` are implemented as `Type`s that have their `$kind` set to `'$variant'` so you
+  don't have to. If you wanted to you could totally `t.isa ts, x` to see whether `x` conforms to any of the
+  types defined in typespace `ts` (that would return `true` for all integers and all strings and never
+  bother to test for `digits` or `integer_or_literal`) but it's clear that that is not the *intended* use of
+  a typespace (IOW the distinction between variants and typespaces is intentional, not extentional).
 
 * **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
