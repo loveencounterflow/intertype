@@ -265,15 +265,11 @@ enumerable key that is not listed in `fields`.
 
 ## Terminology
 
-<dl>
+* **kind**: The type of a type; in InterType, the domain of kind (the set of allowed values of declaration
+  property `$kind`) is given by the list `[ '$independent', '$refinement', '$enumeration', '$variant', ]`.
 
-<dt>kind</dt> <dd>The type of a type; in InterType, the domain of kinds is given by the list `[
-'$independent', '$refinement', '$enumeration', '$variant', ]`</dd>
+* **domain**: The domain of a type `t` is the set of values for which the ISA method returns `true`.
 
-<dt>domain</dt> <dd>The domain of a type `t` is the set of values for which the ISA method returns
-`true`.</dd>
-
-</dl>
 
 ## Notation
 
