@@ -324,24 +324,28 @@ vocabulary:
   is why all `Typespace`s are `$variant`s and all `$variant`s are, functionally, typespaces. In fact,
   instances of `Typespace` are implemented as `Type`s that have their `$kind` set to `'$variant'` so you
   don't have to. If you wanted to you could totally `t.isa ts, x` to see whether `x` conforms to any of the
-  types defined in typespace `ts` (that would return `true` for all integers and all strings and never
-  bother to test for `digits` or `integer_or_literal`) but it's clear that that is not the *intended* use of
-  a typespace (IOW the distinction between variants and typespaces is intentional, not extentional).
+  types defined in typespace `ts` (that would return `true` for all integers) but it's clear that that is
+  not the *intended* use of a typespace (IOW the distinction between variants and typespaces is intentional,
+  not extentional).
 
 * **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
   least) the properties that are indicated in its declaration, with each of its listed properties (called
   'fields' in this context) satisfying the namesake declaration.
 
-  As with variants, fields will be tested in the [order as declared](#ordering-of-properties-of-js-objects);
-  but unlike variants, the record type's ISA method will return `true` only when each field's ISA method has
-  returned `true`; testing will stop and return `false` as soon as the first non-conformant field has been
-  encountered, if any.
+  As with variants, fields will be tested in the [order as declared](#ordering-of-properties-of-js-objects),
+  but other than that, there are two important distinctions to variants: First, the record type's members'
+  ISA methods will be called with the tested value's *field values*, not the tested value itself. Second,
+  the record type's ISA method will return `true` only when each member ISA method has returned `true`, and
+  testing will stop and return `false` as soon as the first non-conformant field has been encountered, if
+  any.
 
   Furthermore, in case the declaration doesn't specify an explicit value for `$isa`, that property will
-  implicitly be configured to test whether the respective value can have properties at all. When the
-  explicit or implicit `$isa` function has returned `true`, testing will then proceed to retrieve each
-  field's name and value and field ISA method
+  implicitly be configured to test whether the respective value can have properties at all. When the record
+  type's explicit or implicit ISA method has returned `true` for a given type `t` and value `x`, testing
+  will then proceed to retrieve the user properties of the the type's declaration that spell out each
+  field's name and the field's ISA method; the field name is then used to retrieve the value's field value
+  as `field_value = x[ field_name ]`; this `field_value` is then passed into the field's `$isa` function.
 
   For example, to declare a `temperature` datatype, one could stipulate:
 
@@ -354,6 +358,17 @@ vocabulary:
       value:              'float'
       unit:               'temperature_unit'
   ```
+
+  If one used this declaration to test whether a given object `x` has the shape of a `ts.temperature` as in
+  `is_temperature = t.isa ts.temperature, { value: 22, unit: '°C', }`, the following procedure will be
+  followed:
+
+  * First, the implicit `temparature.$isa()` method is called to ensure that `x` allows for properties at
+    all; in the simplest case, that would be `x?`, excluding `null` and `undefined`.
+  * Then, we call `temparature.value.$isa x.value`, which returns `true` for `22`, so we need to proceed.
+  * Next, we call `temparature.unit.$isa x.unit`, which also returns `true` for `°C`.
+  * Since all three tests were succesful, we now return `true` indicating that `x` conforms with
+    `ts.temperature`.
 
 ### Implicit Values of `$kind`
 
