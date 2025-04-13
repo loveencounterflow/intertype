@@ -13,6 +13,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
 - [InterType](#intertype-1)
   - [API](#api)
   - [`Type` Objects](#type-objects)
+  - [Properties of Type Declarations and `Type` Objects](#properties-of-type-declarations-and-type-objects)
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Notation](#notation)
@@ -155,19 +156,25 @@ a dollar sign `$` to prevent namespace collisions.
 
 > [!NOTE]
 >
-> There is still the danger of colliding with any of these properties: `constructor`, `__defineGetter__`,
-> `__defineSetter__`, `hasOwnProperty`, `__lookupGetter__`, `__lookupSetter__`, `isPrototypeOf`,
-> `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`, `toLocaleString`. Users should therefore
-> **(1)**&nbsp;avoid the name `constructor`, **(2)**&nbsp;avoid names that start with two underscores, and
-> **(3)**&nbsp;avoid `camelCased` names and prefer `snake_cased` names instead to be on the safe side.
+> There is still the danger of a user-given name to collide with one of the built-in properties of JS
+> `Object`s: `constructor`, `__defineGetter__`, `__defineSetter__`, `hasOwnProperty`, `__lookupGetter__`,
+> `__lookupSetter__`, `isPrototypeOf`, `propertyIsEnumerable`, `toString`, `valueOf`, `__proto__`,
+> `toLocaleString`. Users should therefore **(1)**&nbsp;avoid the name `constructor`, **(2)**&nbsp;avoid
+> names that start with two underscores, and **(3)**&nbsp;avoid `camelCased` names and prefer `snake_cased`
+> names instead to be on the safe side.
+
+## Properties of Type Declarations and `Type` Objects
+
+To obtain a type object `t`, create an instance of class `Type` by passing in a declaration: `t = new Type
+declaration`. Type `t` will then have the following properties:
+
+* `Type::$isa()`: used to test whether a given value is of type `t`;
+* `Type::$create()`: used to create a new value of type `t`;
+* `Type::$parse()`: used to parse a textual representation (a literal) to obtain a new value of type `t`;
+* `Type::$template`: used to define a default when creating new values of type `t`.
 
 
 
-
-* `Type::isa()`
-* `Type::create()`
-* `Type::fields <pod?>`
-* `Type::template`
 
 ## Type Declaration Values
 
@@ -351,31 +358,69 @@ for key in keys
   optionally explicit typespace prefixes; returned object `d` allows to write `d.isa.integer()` (or
   `d.isa.std.integer()` with explicit typespaces)
 
-* **`[—]`** kinds of types (types of types):
-  * **terminal** or **independent types** don't refer to (and thus depend on) any other types; ex. `list`
-    may be defined as `( x ) -> Array.isArray x`. Distinguish 'terminal' from 'primitive' types.
-  * **non-terminal** or **dependent types** do refer to (and thus depend on) one or more other types; ex.
-    `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( ( Math.floor x ) is x )` (although
-    we actually defined it as an independent type `( x ) -> Number.isInteger x`)
-  * **refinement types** as in `odd: ( x, t ) -> ( t.isa std.integer x ) and ( x %% 2 isnt 0 )`
-  * **enumeration types** as in `freeze: ( x ) -> x in [ false, 'deep', 'shallow', ]`
-  * [**sum** or **variant types** (a.k.a. *tagged unions*, *choice types*
-    &c)](https://en.wikipedia.org/wiki/Tagged_union)
-  * [**product**](https://en.wikipedia.org/wiki/Product_type) or [**record
-    types**](https://en.wikipedia.org/wiki/Record_(computer_science))
+* **`[—]`** **kinds of types** (i.e. types of types):
+  * declaration property `$kind` may take on one of the following values:
+    * **'$independent'**: *terminal* or *independent types* don't refer to (and thus depend on) any other
+      types; ex. `list` may be defined as `( x ) -> Array.isArray x`. Distinguish 'terminal' from
+      'primitive' types.
+    * **'$refinement'**: *refinement*, *non-terminal* or *dependent types* do refer to (and thus depend on)
+      one or more other types; ex. `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( (
+      Math.floor x ) is x )` (although we actually defined it as an independent type `( x ) ->
+      Number.isInteger x`)
+    * **'$enumeration'**: **enumeration types** are types that are declared as a finite number of constant
+      (primitive) values, e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a
+      given value `x` is of a given enumeration type, the
+      [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
+      method will be used, meaning that it makes probably little sense to include anything but JS primitive
+      values (`null`, `undefined`, `true`, `false`, numbers (including `BigInt`s) Strings and public
+      `Symbol`s) in the enumeration.
+    * **'$variant'**: [**sum** or **variant types** (a.k.a. *tagged unions*, *choice types*
+      &c)](https://en.wikipedia.org/wiki/Tagged_union)
+    * **'$record'**: [**product**](https://en.wikipedia.org/wiki/Product_type) or [**record
+      types**](https://en.wikipedia.org/wiki/Record_(computer_science))
+  * The leading dollar signs `$...` in the names of kinds are there to indicate that these are not
+    user-definable names but elements of an internal, controlled vocabulary.
+  * Use of property `$kind` is optional *except* for variant types where it is mandatory; in a declaration
+    with no `$kind` property but at least one property that is *not* prefixed with a dollar sign `$`,
+    `$kind` will be assumed to be `$record` instead.
+  * If declaration property `$isa` is a list, it will be assumed that `$kind` is `$enumeration`. Conversely,
+    it is an error to set `$kind` to anything but the string `'$enumeration'` if `$isa` is a list, and if
+    `$kind` is set to `'$enumeration'`, then `$isa` must be a list. (Later implementations may accept
+    iterables other than JS `Array`s.)
+  * Using `'$independent'` and `'$refinement'` is purely of informative value at this point.
 
-* **`[—]`** Unify types and typespaces; a typespace is like a variant type with named alternatives
-  * **`[—]`** how to distinguish a declaration for a variant type from a declaration for a record type?
-    * **`[—]`** maybe a record type should simply have a mandatory `$isa` property (most of the time set to
-      `$object` or `$pod`) while variant types must have no `$isa` property or an explicit `$type: null`?
-    * **`[—]`** Could also / additionally use `$isa: '$variant'` and `$isa: '$record'` as special `$isa`
-      values
+* **`[—]`** Unify types and typespaces: a typespace is just a variant type; its user-space keys identify
+  the types in that typespace
+  * variant types (including typespaces) are indicated by `$kind: '$variant'`;
+  * can model stuff like 'empty list' as
+
+    ```coffee
+    #..............................................................................
+    ts = new Typespace
+      list:
+        $isa:       ( x ) -> Array.isArray x
+        $variant:   true
+        empty:      ( x, t ) -> ( t.isa @list x ) and ( x.length is   0 )
+        nonempty:   ( x, t ) -> ( t.isa @list x ) and ( x.length isnt 0 )
+    #..............................................................................
+    log t.isa ts.list,        []             # true
+    log t.isa ts.list,        [ 3, 5, 7, ]   # true
+    log t.isa ts.list.empty,  []             # true
+    #..............................................................................
+    log t.isa ts.list,        null           # false
+    log t.isa ts.list.empty,  null           # false
+    log t.isa ts.list.empty,  [ 3, 5, 7, ]   # false
+    ```
 
 * **`[—]`** Can we model `optional` as a typespace (a variant type) and produce it automatically from an
   * **`[—]`** maybe better as an 'operator' / [higher-order function](https://youtu.be/srQt1NAHYC0?t=3089)
     as in `t: ( x, t ) -> t.isa ( optional std.integer ) x`
   * **`[—]`** ✅ maybe better as a property of `types.isa()`, `types.validate()` &c as in `t: ( x, t ) ->
     t.isa.optional std.integer, x`
+
+* **`[—]`** public symbols (produced by `Symbol.for()`) and `BigInt`s (`123456789012345678901234567890n`)
+  are probably missing from the list of primitive types
+
 
 
 ## Is Done
