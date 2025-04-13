@@ -266,22 +266,26 @@ enumerable key that is not listed in `fields`.
 Declaration property `$kind` may take on one of the following values:
 
 * **'$independent'**: *terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
-  other types; ex. `list` may be defined as `( x ) -> Array.isArray x`. (**Note** 'terminal' types are an
-  entirely different concept from ['primitive'
-  types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive).)
+  other types; ex. `list` may be defined as `( x ) -> Array.isArray x`. — Use of the value `'$independent'`
+  is purely informational and has no effect on the behavior of InterType methods.
 
-* **'$refinement'**: *refinement*, *non-terminal* or *dependent types* do refer to (and thus depend on)
-  one or more other types; ex. `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( (
-  Math.floor x ) is x )` (although we actually defined it as an independent type `( x ) ->
-  Number.isInteger x`)
+  **Note** 'terminal' types are an entirely different concept from ['primitive'
+  types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive
+  (primitive value, primitive data type) is data that is not an object and has no methods or properties".
 
-* **'$enumeration'**: *enumeration types* are types that are declared as a finite number of constant
-  (primitive) values, e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a
-  given value `x` is of a given enumeration type, the
+* **'$refinement'**: A *refinement*, *non-terminal* or *dependent types* type is a type whose domain is a
+  proper subset of another type, for example `integer` may be defined as `( x, t ) -> ( t.isa std.float x )
+  and ( ( Math.floor x ) is x )` or as `( x ) -> Number.isInteger x`. In either case, the set of JS numbers
+  that satisfy `integer` is a proper subset of the numbers (implemented as `std.float`). — Use of the value
+  `'$refinement'` is purely informational and has no effect on the behavior of InterType methods.
+
+* **'$enumeration'**: *enumeration types* are types that are declared as a finite number of constant values,
+  e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a
+  given enumeration type, the
   [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
   method will be used, meaning that it makes probably little sense to include anything but JS primitive
-  values (`null`, `undefined`, `true`, `false`, numbers (including `BigInt`s) Strings and public
-  `Symbol`s) in the enumeration.
+  values (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings
+  and public `Symbol`s) in the enumeration.
 
 * **'$variant'**: [*sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
   &c)](https://en.wikipedia.org/wiki/Tagged_union) are types whose domain is the union of the domains of two
