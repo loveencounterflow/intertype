@@ -16,6 +16,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Properties of Type Declarations and `Type` Objects](#properties-of-type-declarations-and-type-objects)
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
+  - [Kinds of Types](#kinds-of-types)
   - [Terminology](#terminology)
   - [Notation](#notation)
   - [To Do](#to-do)
@@ -260,7 +261,83 @@ field's declared type can be used to create a value (which may fail). `template`
 enumerable key that is not listed in `fields`.
 
 
+## Kinds of Types
 
+Declaration property `$kind` may take on one of the following values:
+
+* **'$independent'**: *terminal* or *independent types* don't refer to (and thus depend on) any other
+  types; ex. `list` may be defined as `( x ) -> Array.isArray x`. Distinguish 'terminal' from
+  'primitive' types.
+
+* **'$refinement'**: *refinement*, *non-terminal* or *dependent types* do refer to (and thus depend on)
+  one or more other types; ex. `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( (
+  Math.floor x ) is x )` (although we actually defined it as an independent type `( x ) ->
+  Number.isInteger x`)
+
+* **'$enumeration'**: *enumeration types* are types that are declared as a finite number of constant
+  (primitive) values, e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a
+  given value `x` is of a given enumeration type, the
+  [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
+  method will be used, meaning that it makes probably little sense to include anything but JS primitive
+  values (`null`, `undefined`, `true`, `false`, numbers (including `BigInt`s) Strings and public
+  `Symbol`s) in the enumeration.
+
+* **'$variant'**: [*sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
+  &c)](https://en.wikipedia.org/wiki/Tagged_union) are types whose domain is the union of the domains of two
+  or more other types, for example:
+
+  ```coffee
+  ts = new Typespace
+    int_or_text:
+      $kind:      '$variant'
+      integer:    std.integer
+      digits:     std.digits
+  ```
+
+  declares a variant type `int_or_text` whose domain comprises all values that satisfy `std.integer` or
+  `std.digits` or both, so `-45` and `'876'` would (presumably) both satisfy `int_or_text`.
+
+* **'$record'**: [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
+  types**](https://en.wikipedia.org/wiki/Record_(computer_science))
+
+The leading dollar signs `$...` in the names of kinds are there to indicate that these are not
+user-definable names but elements of an internal, controlled vocabulary.
+
+Use of property `$kind` is optional *except* for variant types where it is mandatory; in a declaration with
+no `$kind` property but at least one property that is *not* prefixed with a dollar sign `$`, `$kind` will be
+assumed to be `$record` instead.
+
+If declaration property `$isa` is a list, it will be assumed that `$kind` is `$enumeration`. Conversely, it
+is an error to set `$kind` to anything but the string `'$enumeration'` if `$isa` is a list, and if `$kind`
+is set to `'$enumeration'`, then `$isa` must be a list. (Later implementations may accept iterables other
+than JS `Array`s.)
+
+Using `'$independent'` and `'$refinement'` is purely of informative value at this point.
+
+A typespace is just a variant type; its user-space keys identify
+the types in that typespace.
+
+Can model 'adjectives' like 'empty list' as
+
+```coffee
+#..............................................................................
+ts = new Typespace
+  list:
+    $isa:       ( x ) -> Array.isArray x
+    $kind:      '$variant'
+    empty:      ( x, t ) -> ( t.isa @list x ) and ( x.length is   0 )
+    nonempty:   ( x, t ) -> ( t.isa @list x ) and ( x.length isnt 0 )
+#..............................................................................
+log t.isa ts.list,        []             # true
+log t.isa ts.list.empty,  []             # true
+log t.isa ts.list,        [ 3, 5, 7, ]   # true
+#..............................................................................
+log t.isa ts.list,        null           # false
+log t.isa ts.list.empty,  null           # false
+log t.isa ts.list.empty,  [ 3, 5, 7, ]   # false
+```
+
+It is not possible to use the above model for declaring adjectives on `$record`s.
 
 
 ## Terminology
@@ -366,63 +443,6 @@ for key in keys
 * **`[—]`** allow to produce verbs of `Intertype` to be constructed from `Intertype` instance, typespaces;
   optionally explicit typespace prefixes; returned object `d` allows to write `d.isa.integer()` (or
   `d.isa.std.integer()` with explicit typespaces)
-
-* **`[—]`** **kinds of types** (i.e. types of types):
-  * declaration property `$kind` may take on one of the following values:
-    * **'$independent'**: *terminal* or *independent types* don't refer to (and thus depend on) any other
-      types; ex. `list` may be defined as `( x ) -> Array.isArray x`. Distinguish 'terminal' from
-      'primitive' types.
-    * **'$refinement'**: *refinement*, *non-terminal* or *dependent types* do refer to (and thus depend on)
-      one or more other types; ex. `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( (
-      Math.floor x ) is x )` (although we actually defined it as an independent type `( x ) ->
-      Number.isInteger x`)
-    * **'$enumeration'**: *enumeration types* are types that are declared as a finite number of constant
-      (primitive) values, e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a
-      given value `x` is of a given enumeration type, the
-      [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
-      method will be used, meaning that it makes probably little sense to include anything but JS primitive
-      values (`null`, `undefined`, `true`, `false`, numbers (including `BigInt`s) Strings and public
-      `Symbol`s) in the enumeration.
-    * **'$variant'**: [*sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
-      &c)](https://en.wikipedia.org/wiki/Tagged_union) are types whose domain
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    * **'$record'**: [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
-      types**](https://en.wikipedia.org/wiki/Record_(computer_science))
-  * The leading dollar signs `$...` in the names of kinds are there to indicate that these are not
-    user-definable names but elements of an internal, controlled vocabulary.
-  * Use of property `$kind` is optional *except* for variant types where it is mandatory; in a declaration
-    with no `$kind` property but at least one property that is *not* prefixed with a dollar sign `$`,
-    `$kind` will be assumed to be `$record` instead.
-  * If declaration property `$isa` is a list, it will be assumed that `$kind` is `$enumeration`. Conversely,
-    it is an error to set `$kind` to anything but the string `'$enumeration'` if `$isa` is a list, and if
-    `$kind` is set to `'$enumeration'`, then `$isa` must be a list. (Later implementations may accept
-    iterables other than JS `Array`s.)
-  * Using `'$independent'` and `'$refinement'` is purely of informative value at this point.
-
-* **`[—]`** Unify types and typespaces: a typespace is just a variant type; its user-space keys identify
-  the types in that typespace
-  * variant types (including typespaces) are indicated by `$kind: '$variant'`;
-  * can model stuff like 'empty list' as
-
-    ```coffee
-    #..............................................................................
-    ts = new Typespace
-      list:
-        $isa:       ( x ) -> Array.isArray x
-        $kind:      '$variant'
-        empty:      ( x, t ) -> ( t.isa @list x ) and ( x.length is   0 )
-        nonempty:   ( x, t ) -> ( t.isa @list x ) and ( x.length isnt 0 )
-    #..............................................................................
-    log t.isa ts.list,        []             # true
-    log t.isa ts.list,        [ 3, 5, 7, ]   # true
-    log t.isa ts.list.empty,  []             # true
-    #..............................................................................
-    log t.isa ts.list,        null           # false
-    log t.isa ts.list.empty,  null           # false
-    log t.isa ts.list.empty,  [ 3, 5, 7, ]   # false
-    ```
 
 * **`[—]`** Can we model `optional` as a typespace (a variant type) and produce it automatically from an
   * **`[—]`** maybe better as an 'operator' / [higher-order function](https://youtu.be/srQt1NAHYC0?t=3089)
