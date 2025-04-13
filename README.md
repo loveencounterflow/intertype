@@ -27,6 +27,9 @@ A JavaScript type checker with helpers to implement own types and do object shap
     - [Notes](#notes)
       - [Ordering of Properties of JS Objects](#ordering-of-properties-of-js-objects)
     - [Terminology](#terminology)
+      - [Kind](#kind)
+      - [Domain](#domain)
+      - [Primitive Types](#primitive-types)
     - [Notation](#notation)
   - [To Do](#to-do)
   - [Is Done](#is-done)
@@ -281,8 +284,10 @@ vocabulary:
 * Declaration setting: `$kind: '$independent'`
 
 *Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any other types; ex.
-`list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is purely
-informational and has no effect on the behavior of InterType methods.
+`list` may be defined as `( x ) -> Array.isArray x`.
+
+**Note** Use of the value `'$independent'` is purely informational and has no effect on the behavior of
+InterType methods.
 
 **Note** 'terminal' types are an entirely different concept from ['primitive'
 types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive (primitive
@@ -295,8 +300,10 @@ value, primitive data type) is data that is not an object and has no methods or 
 A *non-terminal* or *dependent type* type is a type whose declaration refers to another type and thus
 depends on that other type. For example, `integer` may be declared as a dependent type: `( x, t ) -> ( t.isa
 std.float x ) and ( ( Math.floor x ) is x )` (depending on `std.float`) or as an independent type: `( x ) ->
-Number.isInteger x`.—Use of the value `'$dependent'` is purely informational and has no effect on the
-behavior of InterType methods.
+Number.isInteger x`.
+
+**Note** Use of the value `'$dependent'` is purely informational and has no effect on the behavior of
+InterType methods.
 
 ### Enumeration Types
 
@@ -306,7 +313,7 @@ behavior of InterType methods.
 `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a given
 enumeration type, the
 [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
-method will be used, meaning that it probably makes little sense to include anything but JS primitive values
+method will be used, meaning that it probably makes little sense to include anything but JS [primitive values]()
 (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and
 public `Symbol`s) in the enumeration.
 
@@ -450,19 +457,26 @@ It is not possible to use the above model for declaring adjectives on `$record`s
 
 ### Terminology
 
-* **kind**: The type of a type; in InterType, the domain of kind (the set of allowed values of declaration
-  property `$kind`) is given by the list `[ '$independent', '$dependent', '$enumeration', '$variant', ]`.
+#### Kind
 
-* **domain**: The domain of a type `t` is the set of values for which the ISA method returns `true`.
+The **kind** of a type is the type of a type; in InterType, the domain of kind (the set of allowed values of
+declaration property `$kind`) is given by the list `[ '$independent', '$dependent', '$enumeration',
+'$variant', ]`.
 
-* **primitive types**: Some values in JavaScript—`null` and `undefined`, to be precise—are 'hostile' to
-  properties—when you try to `null.prop = 9`, you'll reap an exception. Other values are 'indifferent' to
-  properties—these are `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and
-  `Symbol`s which will fail silently (even in JS `strict` mode) when you try to define a property on them.
-  These two groups together share the property that they are compared by value, not by identity, which is
-  why `d = [ 7, 8, ]; d.indexOf 8` returns `1` while `d = [ 7, {}, ]; d.indexOf {}` does *not* return `1`.
-  The set of primitive values, then, is the set of values that is **(1)** not open for (user-defined)
-  properties, and, **(2)** at the same time, can be meaningfully compared by value.
+#### Domain
+
+The **domain** of a type `t` is the set of values for which the ISA method returns `true`.
+
+#### Primitive Types
+
+Some values in JavaScript—`null` and `undefined`, to be precise—are 'hostile' to properties—when you try to
+`null.prop = 9`, you'll reap an exception. Other values are 'indifferent' to properties—these are `true`,
+`false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and `Symbol`s which will fail silently
+(even in JS `strict` mode) when you try to define a property on them. These two groups together share the
+property that they are compared by value, not by identity, which is why `d = [ 7, 8, ]; d.indexOf 8` returns
+`1` while `d = [ 7, {}, ]; d.indexOf {}` does *not* return `1`. The set of primitive values, then, is the
+set of values that is **(1)** not open for (user-defined) properties, and, **(2)** at the same time, can be
+meaningfully compared by value.
 
 ### Notation
 
