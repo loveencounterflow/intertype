@@ -289,10 +289,6 @@ vocabulary:
 **Note** Use of the value `'$independent'` is purely informational and has no effect on the behavior of
 InterType methods.
 
-**Note** 'terminal' types are an entirely different concept from ['primitive'
-types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive (primitive
-value, primitive data type) is data that is not an object and has no methods or properties".
-
 ### Dependent Types
 
 * Declaration setting: `$kind: '$dependent'`
@@ -474,9 +470,13 @@ Some values in JavaScript—`null` and `undefined`, to be precise—are 'hostile
 `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and `Symbol`s which will fail silently
 (even in JS `strict` mode) when you try to define a property on them. These two groups together share the
 property that they are compared by value, not by identity, which is why `d = [ 7, 8, ]; d.indexOf 8` returns
-`1` while `d = [ 7, {}, ]; d.indexOf {}` does *not* return `1`. The set of primitive values, then, is the
-set of values that is **(1)** not open for (user-defined) properties, and, **(2)** at the same time, can be
-meaningfully compared by value.
+`1` while `d = [ 7, {}, ]; d.indexOf {}` does *not* return `1` (because `{} === {}` is `false`). The set of
+primitive values, then, is the set of values that is **(1)** not open for (user-defined) properties, and,
+**(2)** at the same time, can be meaningfully compared by value.
+
+[MDN](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) defines primitive types as follows: "In
+JavaScript, a primitive (primitive value, primitive data type) is data that is not an object and has no
+methods or properties".
 
 ### Notation
 
