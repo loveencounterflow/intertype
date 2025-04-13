@@ -313,9 +313,9 @@ InterType methods.
 `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a given
 enumeration type, the
 [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
-method will be used, meaning that it probably makes little sense to include anything but JS [primitive values]()
-(`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and
-public `Symbol`s) in the enumeration.
+method will be used, meaning that it probably makes little sense to include anything but JS [primitive
+values](#primitive-types) (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers,
+`BigInt`s, strings and public `Symbol`s) in the enumeration.
 
 ### Variant Types
 
