@@ -338,8 +338,10 @@ vocabulary:
   returned `true`; testing will stop and return `false` as soon as the first non-conformant field has been
   encountered, if any.
 
-  Furthermore, in case the declaration doesn't specify an explicit `$isa` method, `$isa` will implicitly be
-  set to test whether XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  Furthermore, in case the declaration doesn't specify an explicit value for `$isa`, that property will
+  implicitly be configured to test whether the respective value can have properties at all. When the
+  explicit or implicit `$isa` function has returned `true`, testing will then proceed to retrieve each
+  field's name and value and field ISA method
 
   For example, to declare a `temperature` datatype, one could stipulate:
 
