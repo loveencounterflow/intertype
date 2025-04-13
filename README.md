@@ -288,19 +288,28 @@ Declaration property `$kind` may take on one of the following values:
   and public `Symbol`s) in the enumeration.
 
 * **'$variant'**: [*Sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
-  &c)](https://en.wikipedia.org/wiki/Tagged_union) are types whose domain is the union of the domains of two
-  or more other types, for example:
+  &c)](https://en.wikipedia.org/wiki/Tagged_union) are, in type theory, types whose domain is the union of
+  the domains of two or more other types; in InterType, the term refers to types whose declaration contain
+  one or more user properties (called 'alternatives' in this context in contradistinction to the 'fields' of
+  a `$record`) that each declare a domain (a set of values); a value satisfies the given variant type when
+  it satisfies any one of the named member types. In this example:
 
   ```coffee
   ts = new Typespace
-    int_or_text:
+    integer:      ( x ) -> Number.isInteger x
+    text:         ( x ) -> ( typeof x ) is 'string'
+    digits:       ( x ) -> ( @isa @typespace.text, x ) and ( /^[-+]?[0-9]+$/.test x )
+    integer_or_literal:
       $kind:      '$variant'
-      integer:    std.integer
-      digits:     std.digits
+      integer:    'integer'
+      digits:     'digits'
   ```
 
-  declares a variant type `int_or_text` whose domain comprises all values that satisfy `std.integer` or
-  `std.digits` or both, so `-45` and `'876'` would (presumably) both satisfy `int_or_text`.
+  declares a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
+  `ts.integer` or `ts.digits` or both, so `-45` and `'876'` would both satisfy `integer_or_literal`. A
+  variant's alternatives will be tested one by one, in the <a href='#c1234'>order as declared</a>
+
+<p id=c1234>Link target</p>
 
 * **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
