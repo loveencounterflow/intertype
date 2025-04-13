@@ -17,6 +17,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Kinds of Types](#kinds-of-types)
+    - [Implicit Values of `$kind`](#implicit-values-of-kind)
   - [XXXXXXXXXXXXXXXXXXXXXXXXXX](#xxxxxxxxxxxxxxxxxxxxxxxxxx)
     - [Notes](#notes)
       - [Ordering of Properties of JS Objects](#ordering-of-properties-of-js-objects)
@@ -266,7 +267,9 @@ enumerable key that is not listed in `fields`.
 
 ## Kinds of Types
 
-Declaration property `$kind` may take on one of the following values:
+Declaration property `$kind` may take on one of the following values; the leading dollar signs `$...` in the
+names of kinds are there to indicate that these are not user-definable names but elements of an internal,
+controlled vocabulary:
 
 * **'$independent'**: *Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
   other types; ex. `list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is
@@ -339,8 +342,7 @@ Declaration property `$kind` may take on one of the following values:
       unit:               'temperature_unit'
   ```
 
-The leading dollar signs `$...` in the names of kinds are there to indicate that these are not
-user-definable names but elements of an internal, controlled vocabulary.
+### Implicit Values of `$kind`
 
 Use of property `$kind` is optional *except* for variant types where it is mandatory; in a declaration with
 no `$kind` property but at least one property that is *not* prefixed with a dollar sign `$`, `$kind` will be
