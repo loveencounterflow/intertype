@@ -265,21 +265,21 @@ enumerable key that is not listed in `fields`.
 
 Declaration property `$kind` may take on one of the following values:
 
-* **'$independent'**: *terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
-  other types; ex. `list` may be defined as `( x ) -> Array.isArray x`. — Use of the value `'$independent'`
-  is purely informational and has no effect on the behavior of InterType methods.
+* **'$independent'**: *Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
+  other types; ex. `list` may be defined as `( x ) -> Array.isArray x`.—Use of the value `'$independent'` is
+  purely informational and has no effect on the behavior of InterType methods.
 
   **Note** 'terminal' types are an entirely different concept from ['primitive'
   types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive): "In JavaScript, a primitive
   (primitive value, primitive data type) is data that is not an object and has no methods or properties".
 
-* **'$refinement'**: A *refinement*, *non-terminal* or *dependent types* type is a type whose domain is a
-  proper subset of another type, for example `integer` may be defined as `( x, t ) -> ( t.isa std.float x )
-  and ( ( Math.floor x ) is x )` or as `( x ) -> Number.isInteger x`. In either case, the set of JS numbers
-  that satisfy `integer` is a proper subset of the numbers (implemented as `std.float`). — Use of the value
-  `'$refinement'` is purely informational and has no effect on the behavior of InterType methods.
+* **'$dependent'**: A *non-terminal* or *dependent type* type is a type whose declaration refers to another
+  type and thus depends on that other type. For example, `integer` may be declared as a dependent type: `(
+  x, t ) -> ( t.isa std.float x ) and ( ( Math.floor x ) is x )` (depending on `std.float`) or as an
+  independent type: `( x ) -> Number.isInteger x`.—Use of the value `'$dependent'` is purely informational
+  and has no effect on the behavior of InterType methods.
 
-* **'$enumeration'**: *enumeration types* are types that are declared as a finite number of constant values,
+* **'$enumeration'**: *Enumeration types* are types that are declared as a finite number of constant values,
   e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a
   given enumeration type, the
   [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
@@ -287,7 +287,7 @@ Declaration property `$kind` may take on one of the following values:
   values (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings
   and public `Symbol`s) in the enumeration.
 
-* **'$variant'**: [*sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
+* **'$variant'**: [*Sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
   &c)](https://en.wikipedia.org/wiki/Tagged_union) are types whose domain is the union of the domains of two
   or more other types, for example:
 
@@ -317,7 +317,7 @@ is an error to set `$kind` to anything but the string `'$enumeration'` if `$isa`
 is set to `'$enumeration'`, then `$isa` must be a list. (Later implementations may accept iterables other
 than JS `Array`s.)
 
-Using `'$independent'` and `'$refinement'` is purely of informative value at this point.
+Using `'$independent'` and `'$dependent'` is purely of informative value at this point.
 
 A typespace is just a variant type; its user-space keys identify
 the types in that typespace.
@@ -348,7 +348,7 @@ It is not possible to use the above model for declaring adjectives on `$record`s
 ## Terminology
 
 * **kind**: The type of a type; in InterType, the domain of kind (the set of allowed values of declaration
-  property `$kind`) is given by the list `[ '$independent', '$refinement', '$enumeration', '$variant', ]`.
+  property `$kind`) is given by the list `[ '$independent', '$dependent', '$enumeration', '$variant', ]`.
 
 * **domain**: The domain of a type `t` is the set of values for which the ISA method returns `true`.
 
