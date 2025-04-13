@@ -194,7 +194,7 @@ declaration`. Type `t` will then have the following properties:
 * (**dB**) If the declaration is a non-empty string, try to interpret it as the name of another type in the
   same typespace as the type being declared and use that types ISA method and other settings; this
   effectively makes the new type an alias of an existing one. *Note* As such the ability to define aliases
-  is not very helpful, but it tuns out to be handy when declaring field types of objects.
+  is not very helpful, but it turns out to be handy when declaring field types of objects.
 * (**dC**) Using a type object (from another typespace) has the same effect as using a type name (from the
   same typespace); again, this is handy to declare that e.g. field `quantity` of type `ingredient` should be
   a `float` according to an existing declaration.
@@ -302,8 +302,21 @@ Declaration property `$kind` may take on one of the following values:
   declares a variant type `int_or_text` whose domain comprises all values that satisfy `std.integer` or
   `std.digits` or both, so `-45` and `'876'` would (presumably) both satisfy `int_or_text`.
 
-* **'$record'**: [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
-  types**](https://en.wikipedia.org/wiki/Record_(computer_science))
+* **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
+  type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
+  least) the properties that are indicated in its declaration, with each property (called a 'field' in this
+  context) satisfying the namesake declaration. For example, to declare a `temperature` datatype, one could
+  stipulate:
+
+  ```coffee
+  ts = new Typespace
+    float:              ( x ) -> Number.isFinite x
+    temperature_unit:   [ '°C', 'C', '°F', 'F', 'K', ]
+    temperature:
+      $kind:              '$record'
+      value:              'float'
+      unit:               'temperature_unit'
+  ```
 
 The leading dollar signs `$...` in the names of kinds are there to indicate that these are not
 user-definable names but elements of an internal, controlled vocabulary.
@@ -458,6 +471,26 @@ for key in keys
 * **`[—]`** public symbols (produced by `Symbol.for()`) and `BigInt`s (`123456789012345678901234567890n`)
   are probably missing from the list of primitive types
 
+* **`[—]`** ISA methods should be called with `this` / `@` set to a special context object that allows,
+  among other things, to access the type's typespace, the present type object, and—important for field
+  declarations—the full value of the tested value. The context object could be implemented using managed
+  properties by way of a `Proxy`. **It should be possible to set the `Intertype` instance used for the
+  present call and remove the `t` function argument that way.**
+
+  Example:
+
+  ```coffee
+  ts = new Typespace
+    float:              ( x ) -> Number.isFinite x
+    temperature_unit:   [ '°C', 'C', '°F', 'F', 'K', ]
+    temperature:
+      $kind:              '$record'
+      unit:               'temperature_unit'
+      value:              ( x, t ) ->
+                            return false unless ( t.isa @typespace.float, x )
+                            return true unless @value.unit is 'K'
+                            return false unless x >= 0 # questionable as per https://en.wikipedia.org/wiki/Negative_temperature
+  ```
 
 
 ## Is Done
