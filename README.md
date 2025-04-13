@@ -310,7 +310,8 @@ Declaration property `$kind` may take on one of the following values:
 
   declares a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
   `ts.integer` or `ts.digits` or both, so `-45` and `'876'` would both satisfy `integer_or_literal`. A
-  variant's alternatives will be tested one by one, in the [order as declared](#c1234).
+  variant's alternatives will be tested one by one, in the [order as
+  declared](#ordering-of-properties-of-js-objects).
 
 * **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
