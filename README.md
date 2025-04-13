@@ -266,14 +266,13 @@ enumerable key that is not listed in `fields`.
 ## Terminology
 
 <dl>
-  <dt>Beast of Bodmin</dt>
-  <dd>A large feline inhabiting Bodmin Moor.</dd>
 
-  <dt>Morgawr</dt>
-  <dd>A sea serpent.</dd>
+<dt>kind</dt> <dd>The type of a type; in InterType, the domain of kinds is given by the list `[
+'$independent', '$refinement', '$enumeration', '$variant', ]`</dd>
 
-  <dt>Owlman</dt>
-  <dd>A giant owl-like creature.</dd>
+<dt>domain</dt> <dd>The domain of a type `t` is the set of values for which the ISA method returns
+`true`.</dd>
+
 </dl>
 
 ## Notation
