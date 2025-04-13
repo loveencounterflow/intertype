@@ -309,15 +309,25 @@ Declaration property `$kind` may take on one of the following values:
   ```
 
   declares a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
-  `ts.integer` or `ts.digits` or both, so `-45` and `'876'` would both satisfy `integer_or_literal`. A
-  variant's alternatives will be tested one by one, in the [order as
-  declared](#ordering-of-properties-of-js-objects).
+  `ts.integer` or `ts.digits` or both, so `-45` and `'876'` would both satisfy `integer_or_literal`, but
+  `Infinity` or `'7%'` would not.
+
+  A variant's alternatives will be tested in the [order as declared](#ordering-of-properties-of-js-objects);
+  as soon the ISA method of any alternative returns `true`, testing will stop and the ISA method of the
+  variant returns `true` as well. Only when each alternative's ISA method has returned `false` will the
+  variant's ISA method return `false`.
 
 * **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
-  least) the properties that are indicated in its declaration, with each property (called a 'field' in this
-  context) satisfying the namesake declaration. For example, to declare a `temperature` datatype, one could
-  stipulate:
+  least) the properties that are indicated in its declaration, with each of its listed properties (called
+  'fields' in this context) satisfying the namesake declaration.
+
+  As with variants, fields will be tested in the [order as declared](#ordering-of-properties-of-js-objects);
+  but unlike variants, the record type's ISA method will return `true` only when each field's ISA method has
+  returned `true`; testing will stop and return `false` as soon as the first non-conformant field has been
+  encountered, if any.
+
+  For example, to declare a `temperature` datatype, one could stipulate:
 
   ```coffee
   ts = new Typespace
