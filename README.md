@@ -19,7 +19,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Kinds of Types](#kinds-of-types)
   - [XXXXXXXXXXXXXXXXXXXXXXXXXX](#xxxxxxxxxxxxxxxxxxxxxxxxxx)
     - [Notes](#notes)
-      - [c1234](#c1234)
+      - [Ordering of Properties of JS Objects](#ordering-of-properties-of-js-objects)
     - [Terminology](#terminology)
     - [Notation](#notation)
   - [To Do](#to-do)
@@ -371,7 +371,16 @@ It is not possible to use the above model for declaring adjectives on `$record`s
 
 ### Notes
 
-#### c1234
+#### Ordering of Properties of JS Objects
+
+* in principle ordering of properties (that is, ordering of assignment) is preserved by JavaScript
+* but there is no way to retrieve string-valued and symbol-valued property names of an object in the order
+  they were assigned to an object—one can only ever get the string-valued names and the symbol-valued ones
+  in two separate API calls
+* this means we can preserve ordering of properties *within* string-valued and *within* symbol-valued
+  property names, but crucially not preserve ordering *across* string- and symbol-valued property names.
+* for the time being, no commitment to the relative ordering of name-valued property names relative to
+  symbol-valued ones is made; their relative ordering is undefined
 
 ### Terminology
 
