@@ -265,9 +265,10 @@ enumerable key that is not listed in `fields`.
 
 Declaration property `$kind` may take on one of the following values:
 
-* **'$independent'**: *terminal* or *independent types* don't refer to (and thus depend on) any other
-  types; ex. `list` may be defined as `( x ) -> Array.isArray x`. Distinguish 'terminal' from
-  'primitive' types.
+* **'$independent'**: *terminal* or *independent types* don't refer to (and, therefore, don't depend on) any
+  other types; ex. `list` may be defined as `( x ) -> Array.isArray x`. (**Note** 'terminal' types are an
+  entirely different concept from ['primitive'
+  types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive).)
 
 * **'$refinement'**: *refinement*, *non-terminal* or *dependent types* do refer to (and thus depend on)
   one or more other types; ex. `integer` may be defined as `( x, t ) -> ( t.isa std.float x ) and ( (
