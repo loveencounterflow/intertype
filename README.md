@@ -289,7 +289,7 @@ vocabulary:
   e.g. `freeze_parameter: [ false, 'deep', 'shallow', ]`. When testing whether a given value `x` is of a
   given enumeration type, the
   [`Array::indexOf()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
-  method will be used, meaning that it makes probably little sense to include anything but JS primitive
+  method will be used, meaning that it probably makes little sense to include anything but JS primitive
   values (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings
   and public `Symbol`s) in the enumeration.
 
@@ -430,6 +430,14 @@ It is not possible to use the above model for declaring adjectives on `$record`s
 
 * **domain**: The domain of a type `t` is the set of values for which the ISA method returns `true`.
 
+* **primitive types**: Some values in JavaScript—`null` and `undefined`, to be precise—are 'hostile' to
+  properties—when you try to `null.prop = 9`, you'll reap an exception. Other values are 'indifferent' to
+  properties—these are `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings and
+  `Symbol`s which will fail silently (even in JS `strict` mode) when you try to define a property on them.
+  These two groups together share the property that they are compared by value, not by identity, which is
+  why `d = [ 7, 8, ]; d.indexOf 8` returns `1` while `d = [ 7, {}, ]; d.indexOf {}` does *not* return `1`.
+  The set of primitive values, then, is the set of values that is **(1)** not open for (user-defined)
+  properties, and, **(2)** at the same time, can be meaningfully compared by value.
 
 ### Notation
 
