@@ -197,7 +197,7 @@ declaration`. Type `t` will then have the following properties:
   declaration values take on their default values.
 * (**dB**) If the declaration is a non-empty string, try to interpret it as the name of another type in the
   same typespace as the type being declared and use that types ISA method and other settings; this
-  effectively makes the new type an alias of an existing one. *Note* As such the ability to define aliases
+  effectively makes the new type an alias of an existing one. **Note** As such the ability to define aliases
   is not very helpful, but it turns out to be handy when declaring field types of objects.
 * (**dC**) Using a type object (from another typespace) has the same effect as using a type name (from the
   same typespace); again, this is handy to declare that e.g. field `quantity` of type `ingredient` should be
@@ -293,12 +293,10 @@ vocabulary:
   values (`null`, `undefined`, `true`, `false`, `+Infinity`, `-Infinity`, finite numbers, `BigInt`s, strings
   and public `Symbol`s) in the enumeration.
 
-* **'$variant'**: [*Sum* or *variant types* (a.k.a. *tagged unions*, *choice types*
-  &c)](https://en.wikipedia.org/wiki/Tagged_union) are, in type theory, types whose domain is the union of
-  the domains of two or more other types; in InterType, the term refers to types whose declaration contain
-  one or more user properties (called 'alternatives' in this context in contradistinction to the 'fields' of
-  a `$record`) that each declare a domain (a set of values); a value satisfies the given variant type when
-  it satisfies any one of the named member types. In this example:
+* **'$variant'**: *Variant types* are types whose declaration contain one or more user properties (called
+  'alternatives' in this context in contradistinction to the 'fields' of a `$record`) that each declare a
+  domain (a set of values); a value satisfies the given variant type when it satisfies any one of the named
+  alternatives. In this example:
 
   ```coffee
   ts = new Typespace
@@ -307,8 +305,8 @@ vocabulary:
     digits:       ( x ) -> ( @isa @typespace.text, x ) and ( /^[-+]?[0-9]+$/.test x )
     integer_or_literal:
       $kind:      '$variant'
-      integer:    'integer'
-      digits:     'digits'
+      numerical:  'integer'
+      digital:    'digits'
   ```
 
   we declare a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
@@ -322,7 +320,7 @@ vocabulary:
   variant's ISA method return `false`.
 
   Alternatives of a variant type are types themselves (and potentially variant types themselves), so it's
-  always possible to test alternatives individually, as in `t.isa ts.integer_or_literal.digits '123'`. This
+  always possible to test alternatives individually, as in `t.isa ts.integer_or_literal.digital '123'`. This
   is why all `Typespace`s are `$variant`s and all `$variant`s are, functionally, typespaces. In fact,
   instances of `Typespace` are implemented as `Type`s that have their `$kind` set to `'$variant'` so you
   don't have to. If you wanted to you could totally `t.isa ts, x` to see whether `x` conforms to any of the
@@ -339,6 +337,9 @@ vocabulary:
   but unlike variants, the record type's ISA method will return `true` only when each field's ISA method has
   returned `true`; testing will stop and return `false` as soon as the first non-conformant field has been
   encountered, if any.
+
+  Furthermore, in case the declaration doesn't specify an explicit `$isa` method, `$isa` will implicitly be
+  set to test whether XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
   For example, to declare a `temperature` datatype, one could stipulate:
 
@@ -524,7 +525,8 @@ for key in keys
   properties by way of a `Proxy`. **It should be possible to set the `Intertype` instance used for the
   present call and remove the `t` function argument that way.**
 
-  Example:
+  Example (in fact sort of questionable as per
+  [Wikipedia](https://en.wikipedia.org/wiki/Negative_temperature)):
 
   ```coffee
   ts = new Typespace
@@ -533,11 +535,17 @@ for key in keys
     temperature:
       $kind:              '$record'
       unit:               'temperature_unit'
-      value:              ( x, t ) ->
-                            return false unless ( t.isa @typespace.float, x )
-                            return true unless @value.unit is 'K'
-                            return false unless x >= 0 # questionable as per https://en.wikipedia.org/wiki/Negative_temperature
+      value:              ( x ) ->
+                            return false unless ( @isa @typespace.float, x )
+                            return true  unless @value.unit is 'K'
+                            return false unless x >= 0
   ```
+
+* **`[—]`** add a declaration property to specify a test for the implicit types of `$record`s: meaningfully,
+  that could be any of:
+  * `x?`, i.e. any kind of value except `null` and `undefined`;
+  * `pod`, i.e. objects with `Object` or `undefined` as their prototype;
+  * any object, i.e. any value that is not a `primitive`.
 
 
 ## Is Done
