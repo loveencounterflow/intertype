@@ -17,8 +17,11 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Kinds of Types](#kinds-of-types)
-  - [Terminology](#terminology)
-  - [Notation](#notation)
+  - [XXXXXXXXXXXXXXXXXXXXXXXXXX](#xxxxxxxxxxxxxxxxxxxxxxxxxx)
+    - [Notes](#notes)
+      - [c1234](#c1234)
+    - [Terminology](#terminology)
+    - [Notation](#notation)
   - [To Do](#to-do)
   - [Is Done](#is-done)
   - [Don't](#dont)
@@ -307,9 +310,7 @@ Declaration property `$kind` may take on one of the following values:
 
   declares a variant type `ts.integer_or_literal` whose domain comprises all values that satisfy
   `ts.integer` or `ts.digits` or both, so `-45` and `'876'` would both satisfy `integer_or_literal`. A
-  variant's alternatives will be tested one by one, in the <a href='#c1234'>order as declared</a>
-
-<p id=c1234>Link target</p>
+  variant's alternatives will be tested one by one, in the [order as declared](#c1234).
 
 * **'$record'**: A [*product*](https://en.wikipedia.org/wiki/Product_type) or [**record
   type**](https://en.wikipedia.org/wiki/Record_(computer_science)) is some kind of object that has (at
@@ -366,8 +367,13 @@ log t.isa ts.list.empty,  [ 3, 5, 7, ]   # false
 
 It is not possible to use the above model for declaring adjectives on `$record`s.
 
+## XXXXXXXXXXXXXXXXXXXXXXXXXX
 
-## Terminology
+### Notes
+
+#### c1234
+
+### Terminology
 
 * **kind**: The type of a type; in InterType, the domain of kind (the set of allowed values of declaration
   property `$kind`) is given by the list `[ '$independent', '$dependent', '$enumeration', '$variant', ]`.
@@ -375,7 +381,7 @@ It is not possible to use the above model for declaring adjectives on `$record`s
 * **domain**: The domain of a type `t` is the set of values for which the ISA method returns `true`.
 
 
-## Notation
+### Notation
 
 * **Types** are indicated in *pointy brackets* behind variable and property names, as in `count <cardinal>`,
   `name <text>`.
