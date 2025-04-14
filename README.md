@@ -275,9 +275,10 @@ enumerable key that is not listed in `fields`.
 
 ## Kinds of Types
 
-Declaration property `$kind` may take on one of the following values; the leading dollar signs `$...` in the
-names of kinds are there to indicate that these are not user-definable names but elements of a controlled
-vocabulary:
+Declaration property `$kind` may take on one of the following values: `'$independent'`, `'$dependent'`,
+`'$enumeration'`, `'$record'`, `'$variant'`, as detailed below; the leading dollar signs `$...` in the names
+of kinds are there to indicate that these are not user-definable names but elements of a controlled
+vocabulary.
 
 ### Independent Types
 
@@ -457,7 +458,7 @@ It is not possible to use the above model for declaring adjectives on `$record`s
 
 The **kind** of a type is the type of a type; in InterType, the domain of kind (the set of allowed values of
 declaration property `$kind`) is given by the list `[ '$independent', '$dependent', '$enumeration',
-'$variant', ]`.
+'$record', '$variant', ]`.
 
 #### Domain
 
