@@ -205,7 +205,7 @@ declaration`. Type `t` will then have the following properties:
   declaration values take on their default values.
 * (**dB**) If the declaration is a non-empty string, try to interpret it as the name of another type in the
   same typespace as the type being declared and use that types ISA method and other settings; this
-  effectively makes the new type an alias of an existing one. **Note** As such the ability to define aliases
+  effectively makes the new type an alias of an existing one. ⚠️**Note** As such the ability to define aliases
   is not very helpful, but it turns out to be handy when declaring field types of objects.
 * (**dC**) Using a type object (from another typespace) has the same effect as using a type name (from the
   same typespace); again, this is handy to declare that e.g. field `quantity` of type `ingredient` should be
@@ -266,7 +266,7 @@ unless the type's ISA method accepts `null`s.
     `undefined`, coerce to `null` to create the new value (which will commonly fail for all types that are
     not nullable).
 
-**Note** As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
+⚠️**Note** As for what fields a composite POD type has, the Source of Truth is the `fields` property of the
 declaration, *not* the `template` property. The `template` property's fields will be examined as dictated by
 the enumerable key/value pairs of `fields`; where `template` is missing a field, it will be assumed that the
 field's declared type can be used to create a value (which may fail). `template` should not have an
@@ -286,7 +286,7 @@ vocabulary:
 *Terminal* or *independent types* don't refer to (and, therefore, don't depend on) any other types; ex.
 `list` may be defined as `( x ) -> Array.isArray x`.
 
-**Note** Use of the value `'$independent'` is purely informational and has no effect on the behavior of
+⚠️**Note** Use of the value `'$independent'` is purely informational and has no effect on the behavior of
 InterType methods.
 
 ### Dependent Types
@@ -298,7 +298,7 @@ depends on that other type. For example, `integer` may be declared as a dependen
 std.float x ) and ( ( Math.floor x ) is x )` (depending on `std.float`) or as an independent type: `( x ) ->
 Number.isInteger x`.
 
-**Note** Use of the value `'$dependent'` is purely informational and has no effect on the behavior of
+⚠️**Note** Use of the value `'$dependent'` is purely informational and has no effect on the behavior of
 InterType methods.
 
 ### Enumeration Types
