@@ -239,6 +239,7 @@ class Type
       throw new Error "Ω__11 expected `fields` to be a POD, got a #{$type_of declaration.fields}"
     #.......................................................................................................
     for field_name, field_declaration of declaration.fields
+      ### TAINT use API method ###
       field_typename = "#{typename}_$#{field_name}"
       declaration.fields[ field_name ] = \
         typespace[ field_typename ] = new Type typespace, field_typename, field_declaration
