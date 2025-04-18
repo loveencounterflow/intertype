@@ -148,9 +148,11 @@ class Type
     hide @, '$typespace', typespace
     #.......................................................................................................
     declaration = @_declaration_as_pod  typespace, typename, declaration
-    @_declaration_isa_as_function       typespace, typename, declaration
     @_compile_declaration_fields        typespace, typename, declaration
-    @_compile_declaration_create        typespace, typename, declaration
+    @_compile_declaration_$kind         typespace, typename, declaration
+    @_compile_declaration_$isa          typespace, typename, declaration
+    @_compile_declaration_$freeze       typespace, typename, declaration
+    @_compile_declaration_$create       typespace, typename, declaration
     #.......................................................................................................
     for key, value of declaration
       ### TAINT check for overrides ###
@@ -165,14 +167,28 @@ class Type
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
-  _declaration_isa_as_function: ( typespace, typename, declaration ) ->
-    if declaration.fields? then @_compile_isa_with_fields     typespace, typename, declaration
+  _compile_declaration_$freeze: ( typespace, typename, declaration ) ->
+    return declaration
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_declaration_$kind: ( typespace, typename, declaration ) ->
+    # unless declaration.$kind?
+    unless $isa.declaration_$kind @$kind
+      throw new Error "Ω__10 unexpected value of `$kind`: #{rpr @$kind}"
+    return declaration
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_declaration_$isa: ( typespace, typename, declaration ) ->
+    if declaration.fields? then @_compile_isa_with_record_fields     typespace, typename, declaration
     else                        @_compile_isa_without_fields  typespace, typename, declaration
     nameit typename, declaration.isa
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_isa_with_fields: ( typespace, typename, declaration ) ->
+  _compile_isa_with_variant_fields: ( typespace, typename, declaration ) ->
+
+  #---------------------------------------------------------------------------------------------------------
+  _compile_isa_with_record_fields: ( typespace, typename, declaration ) ->
     return null if $isa.function declaration.isa
     check_fields = @_get_fields_check typespace, typename, declaration
     switch true
@@ -238,7 +254,7 @@ class Type
       return true
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_declaration_create: ( typespace, typename, declaration ) ->
+  _compile_declaration_$create: ( typespace, typename, declaration ) ->
     has_fields      = declaration.fields?
     fields_isa_pod  = $isa.pod declaration.fields
     #.......................................................................................................
