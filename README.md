@@ -17,8 +17,7 @@ A JavaScript type checker with helpers to implement own types and do object shap
   - [Type Declaration Values](#type-declaration-values)
   - [Value Creation](#value-creation)
   - [Kinds of Types](#kinds-of-types)
-    - [Independent Types](#independent-types)
-    - [Dependent Types](#dependent-types)
+    - [Unspecified Types](#unspecified-types)
     - [Enumeration Types](#enumeration-types)
     - [Variant Types](#variant-types)
     - [Record Types](#record-types)
@@ -280,6 +279,11 @@ Declaration property `$kind` may take on one of the following values: `'$indepen
 of kinds are there to indicate that these are not user-definable names but elements of a controlled
 vocabulary.
 
+### Unspecified Types
+
+* Declaration setting: `$kind: '$unspecified'`
+
+<!--
 ### Independent Types
 
 * Declaration setting: `$kind: '$independent'`
@@ -301,6 +305,8 @@ Number.isInteger x`.
 
 ⚠️**Note** Use of the value `'$dependent'` is purely informational and has no effect on the behavior of
 InterType methods.
+
+-->
 
 ### Enumeration Types
 
@@ -677,16 +683,3 @@ for key in keys
 > Negative potential consequences of an action.
 
  -->
-
-------------------------------------------------
-
-Here is a simple footnote[^1].
-
-A footnote can also have multiple lines[^2].
-
-[^1]: My reference.
-[^2]: To add line breaks within a footnote, prefix new lines with 2 spaces.
-  This is a second line.
-
-
-------------------------------------------------
