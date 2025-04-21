@@ -106,14 +106,22 @@ class Type
     @$typename = typename
     hide @, '$typespace',     typespace
     hide @, '$members',       {}
+    hide @, '$fields',        {}
+    hide @, '$variants',      {}
     hide @, '$member_names',  []
+    hide @, '$field_names',   []
+    hide @, '$variant_names', []
     hide @, '$has_members',   false
+    hide @, '$has_fields',    false
+    hide @, '$has_variants',  false
     hide @, '$kind',          null
+    hide @, '$isa',           null
     #.......................................................................................................
     declaration = @_declaration_as_pod  typespace, typename, declaration
-    @_compile_declaration_members       typespace, typename, declaration
-    # @_compile_declaration_fields        typespace, typename, declaration
-    @_compile_declaration_$kind         typespace, typename, declaration
+    @_prepare_members       typespace, typename, declaration
+    @_prepare_kind          typespace, typename, declaration
+    @_prepare_fields        typespace, typename, declaration
+    @_prepare_variants      typespace, typename, declaration
     return undefined
 
     @_compile_declaration_$isa          typespace, typename, declaration
@@ -133,9 +141,7 @@ class Type
     return declaration
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_declaration_members: ( typespace, typename, declaration ) ->
-    # debug 'Ω___7', typename, declaration
-    # debug 'Ω___8', H.get_own_user_keys declaration
+  _prepare_members: ( typespace, typename, declaration ) ->
     for name in H.get_own_user_keys declaration
       @$members[ name ] = declaration[ name ]
       @$member_names.push name
@@ -143,7 +149,7 @@ class Type
     return null
 
   #---------------------------------------------------------------------------------------------------------
-  _compile_declaration_$kind: ( typespace, typename, declaration ) ->
+  _prepare_kind: ( typespace, typename, declaration ) ->
     if declaration.$kind?
       if @$has_members
         unless declaration.$kind in [ '$record', '$variant', ]
@@ -164,6 +170,40 @@ class Type
     unless B.isa.declaration_$kind @$kind
       throw new Error "Ω__11 unexpected value of `$kind`: #{rpr @$kind}"
     return declaration
+
+  #---------------------------------------------------------------------------------------------------------
+  _prepare_fields: ( typespace, typename, declaration ) ->
+    return null unless @$kind is '$record'
+    @$fields        = @$members
+    @$has_fields    = @$has_members
+    @$field_names   = @$member_names
+    return null
+
+  #---------------------------------------------------------------------------------------------------------
+  _prepare_variants: ( typespace, typename, declaration ) ->
+    return null unless @$kind is '$variant'
+    @$variants      = @$members
+    @$has_variants  = @$has_members
+    @$variant_names = @$member_names
+    return null
+
+  #   return declaration unless declaration.fields?
+  #   unless B.isa.pod declaration.fields
+  #     throw new Error "Ω__16 expected `fields` to be a POD, got a #{B.type_of declaration.fields}"
+  #   #.......................................................................................................
+  #   for field_name, field_declaration of declaration.fields
+  #     ### TAINT use API method ###
+  #     field_typename = "#{typename}_$#{field_name}"
+  #     declaration.fields[ field_name ] = \
+  #       typespace[ field_typename ] = new Type typespace, field_typename, field_declaration
+  #   #.......................................................................................................
+  #   declaration.isa = @_get_fields_check typespace, typename, declaration
+  #   return declaration
+
+  ##########################################################################################################
+  ##########################################################################################################
+  ##########################################################################################################
+  ##########################################################################################################
 
   #---------------------------------------------------------------------------------------------------------
   _compile_declaration_$freeze: ( typespace, typename, declaration ) ->
@@ -223,21 +263,6 @@ class Type
       else
         throw new Error "Ω__15 expected `declaration.isa` to be a function, a type or a typeref, got a #{B.type_of declaration.isa}"
     return null
-
-  # #---------------------------------------------------------------------------------------------------------
-  # _compile_declaration_fields: ( typespace, typename, declaration ) ->
-  #   return declaration unless declaration.fields?
-  #   unless B.isa.pod declaration.fields
-  #     throw new Error "Ω__16 expected `fields` to be a POD, got a #{B.type_of declaration.fields}"
-  #   #.......................................................................................................
-  #   for field_name, field_declaration of declaration.fields
-  #     ### TAINT use API method ###
-  #     field_typename = "#{typename}_$#{field_name}"
-  #     declaration.fields[ field_name ] = \
-  #       typespace[ field_typename ] = new Type typespace, field_typename, field_declaration
-  #   #.......................................................................................................
-  #   declaration.isa = @_get_fields_check typespace, typename, declaration
-  #   return declaration
 
   #---------------------------------------------------------------------------------------------------------
   _get_fields_check: ( typespace, typename, declaration ) ->
