@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       guy:
-        specifier: ^14.1.0
-        version: 14.1.0
+        specifier: ^14.2.0
+        version: 14.2.0
       letsfreezethat:
         specifier: ^3.1.0
         version: 3.1.0
@@ -23,8 +23,8 @@ packages:
   dayjs@1.11.10:
     resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
 
-  guy@14.1.0:
-    resolution: {integrity: sha512-iraLTMV2gRbp6G2FlAx1PUyOd75geWKojry7PeEc4XpvUsPHK+xPMBxgzzOGsgeIj8B9JG1bhCEcDxmOuH2jfQ==}
+  guy@14.2.0:
+    resolution: {integrity: sha512-3b3TgmxfspcLULdJ4oOw8uD6hNnVJ4aFJnzoWSHigil+y1UGb3/otrrZcPDQaiL5LRzaJsRi/6AorNOf/F4VtA==}
 
   intertype-legacy@7.7.1:
     resolution: {integrity: sha512-Bj3k9bCu8vA6JLIvnCrJXOdkecgY5wtCmORclJ87uq22N53swREHT5bezSeK5TwcxgSJEDg2wEfcn4kNr9Qv8A==}
@@ -45,7 +45,7 @@ snapshots:
 
   dayjs@1.11.10: {}
 
-  guy@14.1.0:
+  guy@14.2.0:
     dependencies:
       intertype-legacy: 7.7.1
 
